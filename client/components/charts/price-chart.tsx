@@ -32,7 +32,7 @@ export function PriceChart({
 }: PriceChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} isAnimationActive animationDuration={600}>
         {showGrid && (
           <CartesianGrid
             strokeDasharray="3 3"
@@ -76,6 +76,8 @@ export function PriceChart({
           strokeWidth={2}
           fill={color}
           fillOpacity={0.2}
+          isAnimationActive
+          animationDuration={600}
         />
       </AreaChart>
     </ResponsiveContainer>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import {
   Select,
   SelectContent,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { LOCATIONS } from "@/lib/constants";
+import { IMAGES } from "@/lib/images";
 import { MapPin, Upload, AlertTriangle } from "lucide-react";
 
 export default function SurveySubmissionPage() {
@@ -28,13 +30,27 @@ export default function SurveySubmissionPage() {
   return (
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl font-bold">Survey submission</h1>
-        <p className="mt-1 text-muted-foreground">
-          Auto-detect location, add price, market. We show fraud detection and reward preview.
-        </p>
+        <div className="relative mb-8 overflow-hidden rounded-xl border border-dark-border">
+          <div className="relative aspect-[21/9] min-h-[140px] bg-dark-elevated">
+            <OptimizedImage
+              src={IMAGES.marketSurvey}
+              alt="Market survey"
+              fill
+              sizes="100vw"
+              className="object-cover opacity-80"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-panel to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <h1 className="font-display text-xl font-bold">Survey submission</h1>
+              <p className="text-sm text-muted-foreground">
+                Auto-detect location, add price, market. We show fraud detection and reward preview.
+              </p>
+            </div>
+          </div>
+        </div>
       </motion.div>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-dark-border bg-dark-panel shadow-depth-1">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />

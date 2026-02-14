@@ -13,55 +13,18 @@ import { MiniTrend } from "@/components/charts/mini-trend";
 import { Input } from "@/components/ui/input";
 import { formatPrice, formatDistance } from "@/lib/utils";
 import { LOCATIONS } from "@/lib/constants";
-import { Phone, User, MapPin, Filter } from "lucide-react";
+import { IMAGES } from "@/lib/images";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+import { AnimatedPrice } from "@/components/data/animated-price";
+import { HoverLift } from "@/components/motion/hover-lift";
+import { Phone, User, MapPin, Filter, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data for search results
 const MOCK_RESULTS = [
-  {
-    id: "1",
-    productName: "Rice (Premium)",
-    vendorName: "Mama Put Market",
-    market: "Oyingbo Market",
-    location: "Lagos",
-    price: 4850,
-    distance: 2.3,
-    verified: true,
-    trend: [4200, 4400, 4600, 4700, 4850],
-  },
-  {
-    id: "2",
-    productName: "Rice (Premium)",
-    vendorName: "Balogun Foods",
-    market: "Balogun Market",
-    location: "Lagos",
-    price: 5100,
-    distance: 5.1,
-    verified: true,
-    trend: [5000, 5050, 5100, 5080, 5100],
-  },
-  {
-    id: "3",
-    productName: "Rice (Premium)",
-    vendorName: "Ikeja Fresh",
-    market: "Ikeja",
-    location: "Lagos",
-    price: 4600,
-    distance: 8.2,
-    verified: false,
-    trend: [4500, 4550, 4600, 4580, 4600],
-  },
-  {
-    id: "4",
-    productName: "Rice (Premium)",
-    vendorName: "Agege Central",
-    market: "Agege Market",
-    location: "Lagos",
-    price: 4400,
-    distance: 12,
-    verified: true,
-    trend: [4300, 4350, 4400, 4420, 4400],
-  },
+  { id: "1", productName: "Rice (Premium)", vendorName: "Mama Put Market", market: "Oyingbo Market", location: "Lagos", price: 4850, distance: 2.3, verified: true, trend: [4200, 4400, 4600, 4700, 4850], updatedAt: "2 hours ago", image: IMAGES.vendorStorefront },
+  { id: "2", productName: "Rice (Premium)", vendorName: "Balogun Foods", market: "Balogun Market", location: "Lagos", price: 5100, distance: 5.1, verified: true, trend: [5000, 5050, 5100, 5080, 5100], updatedAt: "1 hour ago", image: IMAGES.vendorStorefront },
+  { id: "3", productName: "Rice (Premium)", vendorName: "Ikeja Fresh", market: "Ikeja", location: "Lagos", price: 4600, distance: 8.2, verified: false, trend: [4500, 4550, 4600, 4580, 4600], updatedAt: "5 hours ago", image: IMAGES.marketArea },
+  { id: "4", productName: "Rice (Premium)", vendorName: "Agege Central", market: "Agege Market", location: "Lagos", price: 4400, distance: 12, verified: true, trend: [4300, 4350, 4400, 4420, 4400], updatedAt: "3 hours ago", image: IMAGES.marketArea },
 ];
 
 function SearchResultsInner() {
@@ -135,68 +98,83 @@ function SearchResultsInner() {
           <p className="mb-4 text-sm text-muted-foreground">
             {results.length} results for &quot;{q}&quot; in {location}
           </p>
-          <ul className="space-y-4">
+          <ul className="space-y-5">
             {results.map((r, i) => (
               <motion.li
                 key={r.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
               >
-                <Card className="overflow-hidden transition-shadow hover:shadow-md">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center">
-                      <div className="flex-1 p-4 sm:p-5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-display font-semibold">{r.productName}</h3>
-                          {r.verified && <VerifiedBadge size="sm" />}
+                <HoverLift y={-4}>
+                  <Card className="overflow-hidden border border-light-border shadow-depth-1 transition-shadow hover:shadow-depth-2 dark:border-dark-border">
+                    <CardContent className="p-0">
+                      <div className="flex flex-col sm:flex-row sm:items-stretch">
+                        <div className="relative hidden w-40 shrink-0 overflow-hidden sm:block">
+                          <OptimizedImage
+                            src={r.image}
+                            alt={r.market}
+                            fill
+                            sizes="160px"
+                            className="object-cover"
+                          />
                         </div>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {r.vendorName} · {r.market}
-                        </p>
-                        <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3.5 w-3.5" />
-                            {formatDistance(r.distance)}
-                          </span>
-                          <span className="text-muted-foreground">{r.location}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 border-t border-light-border bg-light-panel/50 p-4 dark:border-dark-border dark:bg-dark-elevated/50 sm:border-t-0 sm:border-l sm:px-6">
-                        <MiniTrend
-                          data={r.trend}
-                          trend={
-                            r.trend[r.trend.length - 1] > r.trend[0]
-                              ? "up"
-                              : r.trend[r.trend.length - 1] < r.trend[0]
-                              ? "down"
-                              : "flat"
-                          }
-                        />
-                        <div className="text-right">
-                          <p className="font-display text-xl font-semibold text-primary dark:text-accent">
-                            {formatPrice(r.price)}
-                          </p>
-                          <div className="mt-2 flex gap-2">
-                            <Button size="sm" variant="secondary" asChild>
-                              <Link href={`/item/${r.id}`}>Details</Link>
-                            </Button>
-                            <Button size="sm" variant="ghost" className="gap-1">
-                              <Phone className="h-3.5 w-3.5" />
-                              Call
-                            </Button>
-                            <Button size="sm" variant="outline" className="gap-1" asChild>
-                              <Link href="/personal-shopper">
-                                <User className="h-3.5 w-3.5" />
-                                Shopper
-                              </Link>
-                            </Button>
+                        <div className="flex flex-1 flex-col sm:flex-row sm:items-center">
+                          <div className="flex-1 p-4 sm:p-5">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="font-display font-semibold">{r.productName}</h3>
+                              {r.verified && <VerifiedBadge size="sm" />}
+                            </div>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              {r.vendorName} · {r.market}
+                            </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <MapPin className="h-3.5 w-3.5" />
+                                {formatDistance(r.distance)}
+                              </span>
+                              <span>{r.location}</span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                Updated {r.updatedAt}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 border-t border-light-border bg-light-panel/50 p-4 dark:border-dark-border dark:bg-dark-elevated/50 sm:border-t-0 sm:border-l sm:px-6">
+                            <MiniTrend
+                              data={r.trend}
+                              trend={
+                                r.trend[r.trend.length - 1] > r.trend[0]
+                                  ? "up"
+                                  : r.trend[r.trend.length - 1] < r.trend[0]
+                                  ? "down"
+                                  : "flat"
+                              }
+                            />
+                            <div className="text-right">
+                              <AnimatedPrice value={r.price} className="text-xl font-semibold text-primary dark:text-accent" />
+                              <div className="mt-2 flex gap-2">
+                                <Button size="sm" variant="secondary" asChild>
+                                  <Link href={`/item/${r.id}`}>Details</Link>
+                                </Button>
+                                <Button size="sm" variant="ghost" className="gap-1">
+                                  <Phone className="h-3.5 w-3.5" />
+                                  Call
+                                </Button>
+                                <Button size="sm" variant="outline" className="gap-1" asChild>
+                                  <Link href="/personal-shopper">
+                                    <User className="h-3.5 w-3.5" />
+                                    Shopper
+                                  </Link>
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </HoverLift>
               </motion.li>
             ))}
           </ul>

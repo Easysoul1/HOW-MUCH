@@ -4,6 +4,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+import { HoverLift } from "@/components/motion/hover-lift";
+import { IMAGES } from "@/lib/images";
 import { formatPrice } from "@/lib/utils";
 import { Truck, MapPin, ArrowRight } from "lucide-react";
 
@@ -19,20 +22,25 @@ export default function SuggestiveBuyPage() {
   const savings = Math.max(...MOCK_OPTIONS.map((o) => o.total)) - best.total;
 
   return (
-    <div className="container px-4 py-8 md:px-6 md:py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mx-auto max-w-3xl"
-      >
-        <h1 className="font-display text-2xl font-bold md:text-3xl">
-          Suggestive buy engine
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Compare total cost (item + shipping) and see recommended option.
-        </p>
+    <div className="relative min-h-screen">
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <OptimizedImage src={IMAGES.routeMap} alt="" fill sizes="100vw" className="object-cover opacity-20 dark:opacity-10" />
+        <div className="absolute inset-0 bg-background/90 backdrop-blur-[2px]" />
+      </div>
+      <div className="container relative z-10 px-4 py-10 md:px-6 md:py-14">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-auto max-w-3xl"
+        >
+          <h1 className="font-display text-2xl font-bold md:text-3xl">
+            Suggestive buy engine
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Compare total cost (item + shipping) and see recommended option. Route intelligence included.
+          </p>
 
-        <Card className="mt-8">
+          <Card className="mt-8 shadow-depth-2 border-light-border dark:border-dark-border">
           <CardHeader>
             <CardTitle>Rice (Premium) 5kg — Lagos</CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -41,21 +49,21 @@ export default function SuggestiveBuyPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {MOCK_OPTIONS.map((opt, i) => (
-              <motion.div
-                key={opt.vendor}
-                layout
-                className={`rounded-xl border-2 p-4 transition-colors ${
-                  selected === i
-                    ? "border-accent bg-accent-muted dark:bg-accent-muted"
-                    : "border-light-border dark:border-dark-border"
-                }`}
-                onClick={() => setSelected(i)}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent/20 dark:text-accent">
-                      <MapPin className="h-5 w-5" />
-                    </div>
+              <HoverLift key={opt.vendor} y={-2}>
+                <motion.div
+                  layout
+                  className={`cursor-pointer rounded-xl border-2 p-4 transition-colors ${
+                    selected === i
+                      ? "border-accent bg-accent-muted dark:bg-accent-muted"
+                      : "border-light-border dark:border-dark-border hover:border-primary/30 dark:hover:border-accent/30"
+                  }`}
+                  onClick={() => setSelected(i)}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent/20 dark:text-accent">
+                        <MapPin className="h-5 w-5" />
+                      </div>
                     <div>
                       <p className="font-medium">{opt.vendor}</p>
                       <p className="text-sm text-muted-foreground">{opt.market}</p>
@@ -82,6 +90,7 @@ export default function SuggestiveBuyPage() {
                   </div>
                 </div>
               </motion.div>
+              </HoverLift>
             ))}
           </CardContent>
         </Card>

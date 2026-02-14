@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { VerifiedBadge } from "@/components/data/verified-badge";
+import { AnimatedPrice } from "@/components/data/animated-price";
 import { PriceChart } from "@/components/charts/price-chart";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+import { IMAGES } from "@/lib/images";
 import { formatPrice, formatPercent } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Truck, Shield, TrendingUp } from "lucide-react";
+import { Truck, Shield, TrendingUp, Clock } from "lucide-react";
 
 const MOCK_PRODUCT = {
   name: "Rice (Premium) 5kg",
@@ -59,37 +62,54 @@ export default function ItemDetailPage() {
   const id = params.id as string;
 
   return (
-    <div className="container px-4 py-6 md:px-6 md:py-8">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <Link href="/search" className="text-sm text-muted-foreground hover:text-foreground">
-          ← Back to search
-        </Link>
-        <h1 className="mt-2 font-display text-2xl font-bold md:text-3xl">
-          {MOCK_PRODUCT.name}
-        </h1>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Badge variant="secondary">{MOCK_PRODUCT.category}</Badge>
-          {MOCK_PRODUCT.fraudRisk === "low" && (
-            <Badge variant="success">Low fraud risk</Badge>
-          )}
-        </div>
-      </motion.div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Nationwide price heatmap</span>
-                <span className="font-display text-2xl text-accent">
-                  {formatPrice(MOCK_PRODUCT.currentPrice)}
+    <div className="relative min-h-screen">
+      <div className="absolute inset-0 bg-gradient-to-b from-light-panel/50 to-transparent dark:from-dark-panel/30 pointer-events-none" aria-hidden />
+      <div className="container relative px-4 py-8 md:px-6 md:py-10">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <Link href="/search" className="text-sm text-muted-foreground hover:text-foreground">
+            ← Back to search
+          </Link>
+          <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
+            <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl bg-light-panel shadow-depth-2 dark:bg-dark-elevated sm:h-40 sm:w-56">
+              <OptimizedImage
+                src={IMAGES.riceProduct}
+                alt={MOCK_PRODUCT.name}
+                fill
+                sizes="224px"
+                className="object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-2xl font-bold md:text-3xl">
+                {MOCK_PRODUCT.name}
+              </h1>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">{MOCK_PRODUCT.category}</Badge>
+                {MOCK_PRODUCT.fraudRisk === "low" && (
+                  <Badge variant="success">Low fraud risk</Badge>
+                )}
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" />
+                  Updated 2 hours ago
                 </span>
-              </CardTitle>
-            </CardHeader>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="shadow-depth-1">
+              <CardHeader>
+                <CardTitle className="flex flex-wrap items-center justify-between gap-2">
+                  <span>Nationwide price heatmap</span>
+                  <AnimatedPrice value={MOCK_PRODUCT.currentPrice} className="text-2xl text-accent" />
+                </CardTitle>
+              </CardHeader>
             <CardContent>
               <div className="rounded-lg border border-light-border dark:border-dark-border overflow-hidden">
                 <table className="w-full text-sm">
@@ -114,7 +134,7 @@ export default function ItemDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-depth-1">
             <CardHeader>
               <CardTitle>Price history</CardTitle>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

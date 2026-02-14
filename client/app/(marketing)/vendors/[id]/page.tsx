@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/data/verified-badge";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+import { IMAGES } from "@/lib/images";
 import { formatPrice } from "@/lib/utils";
 import { MapPin, Phone, User, Star } from "lucide-react";
 
@@ -16,10 +18,11 @@ const MOCK_VENDOR = {
   verified: true,
   rating: 4.8,
   phone: "+234 800 000 0000",
+  banner: IMAGES.vendorBanner,
   items: [
-    { name: "Rice 5kg", price: 4850 },
-    { name: "Beans 10kg", price: 7200 },
-    { name: "Garri 2kg", price: 1200 },
+    { name: "Rice 5kg", price: 4850, image: IMAGES.riceProduct },
+    { name: "Beans 10kg", price: 7200, image: IMAGES.beansProduct },
+    { name: "Garri 2kg", price: 1200, image: IMAGES.grid1 },
   ],
 };
 
@@ -37,49 +40,71 @@ export default function VendorStorefrontPage() {
           ← Back to directory
         </Link>
 
-        <div className="mt-6 rounded-2xl border border-light-border bg-light-panel p-6 dark:border-dark-border dark:bg-dark-panel md:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-display text-2xl font-bold">{MOCK_VENDOR.name}</h1>
-                {MOCK_VENDOR.verified && <VerifiedBadge />}
+        <div className="mt-6 overflow-hidden rounded-2xl border border-light-border shadow-depth-2 dark:border-dark-border">
+          <div className="relative aspect-[21/9] min-h-[180px] bg-light-panel dark:bg-dark-elevated">
+            <OptimizedImage
+              src={MOCK_VENDOR.banner}
+              alt={MOCK_VENDOR.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 1024px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">{MOCK_VENDOR.name}</h1>
+                    {MOCK_VENDOR.verified && <VerifiedBadge />}
+                  </div>
+                  <p className="mt-1 flex items-center gap-1 text-foreground/90">
+                    <MapPin className="h-4 w-4" />
+                    {MOCK_VENDOR.market}, {MOCK_VENDOR.location}
+                  </p>
+                  <div className="mt-2 flex items-center gap-1 text-foreground">
+                    <Star className="h-4 w-4 fill-amber-highlight text-amber-highlight" />
+                    <span className="font-medium">{MOCK_VENDOR.rating}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="secondary" className="gap-2 bg-background/90 backdrop-blur-sm">
+                    <Phone className="h-4 w-4" />
+                    Contact
+                  </Button>
+                  <Button className="gap-2 bg-background/90 backdrop-blur-sm" asChild>
+                    <Link href="/personal-shopper">
+                      <User className="h-4 w-4" />
+                      Use personal shopper
+                    </Link>
+                  </Button>
+                </div>
               </div>
-              <p className="mt-1 flex items-center gap-1 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                {MOCK_VENDOR.market}, {MOCK_VENDOR.location}
-              </p>
-              <div className="mt-2 flex items-center gap-1">
-                <Star className="h-4 w-4 fill-amber-highlight text-amber-highlight" />
-                <span className="font-medium">{MOCK_VENDOR.rating}</span>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="gap-2">
-                <Phone className="h-4 w-4" />
-                Contact
-              </Button>
-              <Button className="gap-2" asChild>
-                <Link href="/personal-shopper">
-                  <User className="h-4 w-4" />
-                  Use personal shopper
-                </Link>
-              </Button>
             </div>
           </div>
         </div>
 
-        <Card className="mt-8">
+        <Card className="mt-8 shadow-depth-1">
           <CardContent className="p-0">
-            <div className="border-b border-light-border px-5 py-3 dark:border-dark-border">
+            <div className="border-b border-light-border px-5 py-4 dark:border-dark-border">
               <h2 className="font-display font-semibold">Items</h2>
+              <p className="text-sm text-muted-foreground">Updated 1 hour ago</p>
             </div>
             <ul className="divide-y divide-light-border dark:divide-dark-border">
               {MOCK_VENDOR.items.map((item) => (
                 <li
                   key={item.name}
-                  className="flex items-center justify-between px-5 py-4"
+                  className="flex items-center gap-4 px-5 py-4"
                 >
-                  <span className="font-medium">{item.name}</span>
+                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-light-panel dark:bg-dark-elevated">
+                    <OptimizedImage
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      sizes="80px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="flex-1 font-medium">{item.name}</span>
                   <span className="font-display font-semibold text-accent">
                     {formatPrice(item.price)}
                   </span>

@@ -8,6 +8,7 @@ function Skeleton({
     <div
       className={cn(
         "animate-pulse rounded-lg bg-light-panel dark:bg-dark-elevated",
+        "relative overflow-hidden",
         className
       )}
       {...props}
