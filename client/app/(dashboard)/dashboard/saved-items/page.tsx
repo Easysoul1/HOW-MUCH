@@ -1,0 +1,62 @@
+"use client";
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
+
+const MOCK_SAVED = [
+  { id: "1", name: "Rice 5kg", location: "Lagos", price: 4850, trend: "+2%" },
+  { id: "2", name: "Beans 10kg", location: "Abuja", price: 7200, trend: "-1%" },
+];
+
+export default function SavedItemsPage() {
+  return (
+    <div className="space-y-6">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="font-display text-2xl font-bold">Saved items</h1>
+        <p className="mt-1 text-muted-foreground">
+          Track prices for items you care about.
+        </p>
+      </motion.div>
+
+      <ul className="space-y-4">
+        {MOCK_SAVED.map((item, i) => (
+          <motion.li
+            key={item.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card className="border-dark-border bg-dark-panel">
+              <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
+                <div>
+                  <h3 className="font-display font-semibold">{item.name}</h3>
+                  <p className="text-sm text-muted-foreground">{item.location}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="font-display text-lg font-semibold text-accent">
+                      {formatPrice(item.price)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{item.trend} vs last week</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon-sm" asChild>
+                      <Link href={`/item/${item.id}`}>View</Link>
+                    </Button>
+                    <Button variant="ghost" size="icon-sm" aria-label="Remove">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.li>
+        ))}
+      </ul>
+    </div>
+  );
+}

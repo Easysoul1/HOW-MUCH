@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 20px;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+  }
+
+  html {
+    @apply antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Strong numeric hierarchy for price display */
+  .font-numeric {
+    font-feature-settings: "tnum", "lnum";
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/80 dark:bg-dark-panel/80 backdrop-blur-xl border border-white/20 dark:border-dark-border/50;
+  }
+
+  .glass-panel {
+    @apply bg-white/90 dark:bg-dark-panel/90 backdrop-blur-xl border border-light-border dark:border-dark-border shadow-glass dark:shadow-glass-dark;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 8pt grid alignment */
+.grid-8 {
+  display: grid;
+  gap: 8px;
+}
+
+.gap-grid {
+  gap: 8px;
+}
