@@ -22,8 +22,8 @@ export function ScrollFade({
     <motion.div
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, margin: "-40px" }}
-      transition={{ duration: 0.5, delay }}
+      viewport={{ once, margin: "-32px" }}
+      transition={{ duration: 0.28, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={cn(className)}
     >
       {children}

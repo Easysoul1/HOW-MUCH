@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -57,14 +58,27 @@ const MOCK_PRODUCT = {
   logisticsPreview: 500,
 };
 
+function ItemPageLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative min-h-screen">
+      <div className="absolute inset-0 bg-gradient-to-b from-light-panel/50 to-transparent dark:from-dark-panel/30 pointer-events-none" aria-hidden />
+      <div className="container relative px-4 py-8 md:px-6 md:py-10">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function ItemDetailPage() {
   const params = useParams();
   const id = params.id as string;
 
   return (
-    <div className="relative min-h-screen">
-      <div className="absolute inset-0 bg-gradient-to-b from-light-panel/50 to-transparent dark:from-dark-panel/30 pointer-events-none" aria-hidden />
-      <div className="container relative px-4 py-8 md:px-6 md:py-10">
+    <ItemPageLayout>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -225,6 +239,6 @@ export default function ItemDetailPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </ItemPageLayout>
   );
 }

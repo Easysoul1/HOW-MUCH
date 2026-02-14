@@ -23,7 +23,7 @@ export function AnimatedCounter({ value, format = (n) => n.toString(), className
   }, [spring]);
 
   return (
-    <motion.span className={className} initial={false}>
+    <motion.span className={className} initial={false} style={{ fontVariantNumeric: "tabular-nums" }}>
       {format(Math.round(display))}
     </motion.span>
   );

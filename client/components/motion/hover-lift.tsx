@@ -14,7 +14,7 @@ export function HoverLift({ children, className, y = -4 }: HoverLiftProps) {
     <motion.div
       className={cn(className)}
       whileHover={{ y }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       {children}
     </motion.div>

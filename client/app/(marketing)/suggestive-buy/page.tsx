@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,7 @@ const MOCK_OPTIONS = [
   { vendor: "Balogun Foods", market: "Balogun", itemPrice: 5100, logistics: 400, total: 5500 },
 ];
 
-export default function SuggestiveBuyPage() {
-  const [selected, setSelected] = useState(0);
-  const best = MOCK_OPTIONS.reduce((a, b) => (a.total < b.total ? a : b));
-  const savings = Math.max(...MOCK_OPTIONS.map((o) => o.total)) - best.total;
-
+function SuggestiveBuyLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -28,6 +24,19 @@ export default function SuggestiveBuyPage() {
         <div className="absolute inset-0 bg-background/90 backdrop-blur-[2px]" />
       </div>
       <div className="container relative z-10 px-4 py-10 md:px-6 md:py-14">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export default function SuggestiveBuyPage() {
+  const [selected, setSelected] = useState(0);
+  const best = MOCK_OPTIONS.reduce((a, b) => (a.total < b.total ? a : b));
+  const savings = Math.max(...MOCK_OPTIONS.map((o) => o.total)) - best.total;
+
+  return (
+    <SuggestiveBuyLayout>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -116,6 +125,6 @@ export default function SuggestiveBuyPage() {
           </CardContent>
         </Card>
       </motion.div>
-    </div>
+    </SuggestiveBuyLayout>
   );
 }

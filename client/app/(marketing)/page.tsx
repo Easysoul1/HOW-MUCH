@@ -48,8 +48,8 @@ const HOW_IT_WORKS = [
 export default function LandingPage() {
   return (
     <div className="flex flex-col">
-      {/* Hero with subtle market background overlay */}
-      <section className="relative min-h-[85vh] overflow-hidden border-b border-light-border dark:border-dark-border">
+      {/* Hero: layered depth + gradient overlay */}
+      <section className="relative min-h-[85vh] overflow-hidden section-divider">
         <div className="absolute inset-0">
           <OptimizedImage
             src={IMAGES.heroMarket}
@@ -57,24 +57,25 @@ export default function LandingPage() {
             fill
             sizes="100vw"
             priority
-            className="object-cover opacity-30 dark:opacity-20"
+            className="object-cover opacity-25 dark:opacity-15"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background" />
+          <div className="absolute inset-0 bg-gradient-hero dark:bg-gradient-hero-dark" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.06),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.08),transparent)]" />
         </div>
-        <div className="container relative z-10 flex min-h-[85vh] flex-col justify-center px-4 md:px-6">
+        <div className="container relative z-10 flex min-h-[85vh] flex-col justify-center">
           <motion.div
             className="mx-auto max-w-3xl text-center"
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <h1 className="font-display text-4xl font-bold tracking-tight text-primary dark:text-accent md:text-5xl lg:text-6xl">
+            <h1 className="text-display-xl md:text-4xl lg:text-5xl xl:text-display-xl text-primary dark:text-accent">
               {SITE.name}
             </h1>
-            <p className="mt-6 text-xl text-muted-foreground md:text-2xl">
+            <p className="mt-6 text-body-lg text-muted-foreground md:text-display-sm md:font-normal md:text-muted-foreground">
               {SITE.tagline}
             </p>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-3 text-body-sm text-muted-foreground">
               Nigeria&apos;s grocery intelligence engine. Not a marketplace — clarity on real prices, anywhere.
             </p>
             <div className="relative mx-auto mt-12 flex justify-center">
@@ -85,7 +86,7 @@ export default function LandingPage() {
       </section>
 
       {/* Live price ticker */}
-      <section className="border-b border-light-border bg-light-panel/80 py-4 dark:border-dark-border dark:bg-dark-panel/80">
+      <section className="section-divider bg-light-panel/70 py-4 dark:bg-dark-panel/50">
         <div className="flex overflow-hidden">
           <motion.div
             className="flex gap-10 whitespace-nowrap"
@@ -93,10 +94,10 @@ export default function LandingPage() {
             transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
           >
             {[...TICKER_ITEMS, ...TICKER_ITEMS].map((row, i) => (
-              <span key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span key={i} className="flex items-center gap-2 text-body-sm text-muted-foreground">
                 <span className="font-medium text-foreground">{row.item}</span>
                 <span>{row.location}</span>
-                <span className="font-display font-semibold text-accent">{formatPrice(row.price)}</span>
+                <span className="font-numeric font-semibold text-accent">{formatPrice(row.price)}</span>
               </span>
             ))}
           </motion.div>
@@ -104,23 +105,23 @@ export default function LandingPage() {
       </section>
 
       {/* Trust metrics */}
-      <section className="section-padding-sm border-b border-light-border dark:border-dark-border">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding-sm section-divider">
+        <div className="container">
           <div className="mx-auto max-w-5xl">
             <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
               {TRUST_METRICS.map((m, i) => (
                 <motion.div
                   key={m.label}
                   className="text-center"
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 8 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.08 * i }}
+                  transition={{ duration: 0.28, delay: 0.05 * i }}
                 >
-                  <p className="font-display text-3xl font-bold text-primary dark:text-accent md:text-4xl">
+                  <p className="font-numeric text-display-md font-bold text-primary dark:text-accent md:text-display-lg">
                     {m.value}
                   </p>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{m.label}</p>
+                  <p className="mt-1.5 text-caption text-muted-foreground">{m.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -129,24 +130,24 @@ export default function LandingPage() {
       </section>
 
       {/* Markets: Mile 12, Bodija — real-world context */}
-      <section className="section-padding border-b border-light-border bg-light-panel/50 dark:border-dark-border dark:bg-dark-panel/30">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding section-divider bg-light-panel/40 dark:bg-dark-panel/25">
+        <div className="container">
           <div className="mx-auto max-w-5xl">
             <ScrollFade className="text-center">
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">
+              <h2 className="text-display-md md:text-display-lg">
                 Real prices from real markets
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              <p className="mx-auto mt-3 max-w-xl text-body text-muted-foreground">
                 We track prices at Mile 12 (Lagos), Bodija (Ibadan), Wuse (Abuja), and dozens more. See where your staples actually cost less.
               </p>
             </ScrollFade>
             <div className="mt-14 grid gap-8 md:grid-cols-2">
               {MARKETS.map((market, i) => (
-                <ScrollFade key={market.name} delay={i * 0.1}>
+                <ScrollFade key={market.name} delay={i * 0.08}>
                   <HoverLift>
                     <Link
                       href="/search?location=Lagos"
-                      className="group block overflow-hidden rounded-2xl border border-light-border bg-white shadow-depth-2 transition-shadow hover:shadow-depth-3 dark:border-dark-border dark:bg-dark-panel"
+                      className="group block overflow-hidden rounded-xl border border-light-border bg-white shadow-depth-2 shadow-inner-soft transition-all duration-normal hover:border-light-border/80 hover:shadow-depth-3 dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <OptimizedImage
@@ -172,21 +173,21 @@ export default function LandingPage() {
       </section>
 
       {/* Image grid: grocery markets */}
-      <section className="section-padding border-b border-light-border dark:border-dark-border">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding section-divider">
+        <div className="container">
           <div className="mx-auto max-w-5xl">
             <ScrollFade className="text-center">
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">
+              <h2 className="text-display-md md:text-display-lg">
                 From the stalls to your screen
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              <p className="mx-auto mt-3 max-w-xl text-body text-muted-foreground">
                 Crowdsourced and verified data from markets across Nigeria. No guesswork — just the numbers.
               </p>
             </ScrollFade>
             <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
               {[IMAGES.grid1, IMAGES.grid2, IMAGES.grid3, IMAGES.grid4].map((src, i) => (
-                <ScrollFade key={i} delay={i * 0.06}>
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-depth-1">
+                <ScrollFade key={i} delay={i * 0.05}>
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-depth-1 shadow-inner-soft">
                     <OptimizedImage
                       src={src}
                       alt="Grocery market"
@@ -203,14 +204,14 @@ export default function LandingPage() {
       </section>
 
       {/* Try it now / CTA */}
-      <section className="section-padding border-b border-light-border dark:border-dark-border">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding section-divider">
+        <div className="container">
           <div className="mx-auto max-w-2xl text-center">
             <ScrollFade>
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">
+              <h2 className="text-display-md md:text-display-lg">
                 Try it now
               </h2>
-              <p className="mt-3 text-muted-foreground">
+              <p className="mt-3 text-body text-muted-foreground">
                 Search any staple. See prices across Lagos, Abuja, Ibadan and more.
               </p>
             </ScrollFade>
@@ -233,27 +234,27 @@ export default function LandingPage() {
       </section>
 
       {/* How it works — cards with hover lift */}
-      <section className="section-padding border-b border-light-border bg-light-panel/50 dark:border-dark-border dark:bg-dark-panel/30">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding section-divider bg-light-panel/40 dark:bg-dark-panel/25">
+        <div className="container">
           <div className="mx-auto max-w-4xl">
             <ScrollFade className="text-center">
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">
+              <h2 className="text-display-md md:text-display-lg">
                 How it works
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              <p className="mx-auto mt-3 max-w-xl text-body text-muted-foreground">
                 From search to decision — we give you the data to buy with confidence.
               </p>
             </ScrollFade>
             <div className="mt-14 grid gap-8 md:grid-cols-3">
               {HOW_IT_WORKS.map((item, i) => (
-                <ScrollFade key={item.step} delay={0.1 * i}>
-                  <HoverLift y={-6}>
-                    <div className="rounded-2xl border border-light-border bg-white p-8 shadow-depth-1 transition-shadow hover:shadow-depth-2 dark:border-dark-border dark:bg-dark-panel">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent">
-                        <item.icon className="h-6 w-6" />
+                <ScrollFade key={item.step} delay={0.08 * i}>
+                  <HoverLift y={-4}>
+                    <div className="rounded-xl border border-light-border bg-white p-6 shadow-depth-1 shadow-inner-soft transition-all duration-normal hover:border-light-border/80 hover:shadow-depth-2 dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-accent/12 text-accent">
+                        <item.icon className="h-5 w-5" />
                       </div>
-                      <h3 className="mt-5 font-display text-lg font-semibold">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      <h3 className="mt-5 text-display-sm">{item.title}</h3>
+                      <p className="mt-2 text-body-sm leading-relaxed text-muted-foreground">
                         {item.description}
                       </p>
                     </div>
@@ -266,20 +267,20 @@ export default function LandingPage() {
       </section>
 
       {/* Analytics preview — data dashboard mock */}
-      <section className="section-padding border-b border-light-border dark:border-dark-border">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding section-divider">
+        <div className="container">
           <div className="mx-auto max-w-5xl">
             <ScrollFade className="text-center">
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">
+              <h2 className="text-display-md md:text-display-lg">
                 Price intelligence, not noise
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              <p className="mx-auto mt-3 max-w-xl text-body text-muted-foreground">
                 Interactive charts, inflation indicators, and exportable data. Built for anyone who cares where their naira goes.
               </p>
             </ScrollFade>
-            <ScrollFade delay={0.15}>
-              <div className="relative mt-12 overflow-hidden rounded-2xl border border-light-border bg-white shadow-depth-3 dark:border-dark-border dark:bg-dark-panel">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent dark:from-accent/5" />
+            <ScrollFade delay={0.1}>
+              <div className="relative mt-12 overflow-hidden rounded-xl border border-light-border bg-white shadow-depth-3 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] to-transparent dark:from-accent/[0.04]" />
                 <div className="relative aspect-[2/1] md:aspect-[21/9]">
                   <OptimizedImage
                     src={IMAGES.analyticsDashboard}
@@ -302,16 +303,16 @@ export default function LandingPage() {
       </section>
 
       {/* API teaser */}
-      <section className="section-padding border-b border-light-border bg-light-panel/50 dark:border-dark-border dark:bg-dark-panel/30">
-        <div className="container px-4 md:px-6">
+      <section className="section-padding section-divider bg-light-panel/40 dark:bg-dark-panel/25">
+        <div className="container">
           <div className="mx-auto max-w-2xl">
             <ScrollFade>
-              <div className="flex flex-col items-center rounded-2xl border border-light-border bg-white p-10 text-center shadow-depth-1 dark:border-dark-border dark:bg-dark-panel md:p-14">
-                <Code2 className="h-14 w-14 text-accent" />
-                <h2 className="mt-6 font-display text-2xl font-semibold">
+              <div className="flex flex-col items-center rounded-xl border border-light-border bg-white p-10 text-center shadow-depth-1 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft md:p-14">
+                <Code2 className="h-12 w-12 text-accent" />
+                <h2 className="mt-6 text-display-md md:text-display-lg">
                   Build on HOW MUCH
                 </h2>
-                <p className="mt-3 text-muted-foreground">
+                <p className="mt-3 text-body text-muted-foreground">
                   Integrate price intelligence into your app. API documentation, keys, and usage analytics for developers.
                 </p>
                 <Button className="mt-8" size="lg" asChild>
@@ -325,13 +326,13 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <section className="section-padding">
-        <div className="container px-4 md:px-6">
+        <div className="container">
           <div className="mx-auto max-w-xl text-center">
             <ScrollFade>
-              <h2 className="font-display text-2xl font-semibold">
+              <h2 className="text-display-md md:text-display-lg">
                 Know the real price. Anywhere in Nigeria.
               </h2>
-              <p className="mt-3 text-muted-foreground">
+              <p className="mt-3 text-body text-muted-foreground">
                 Join thousands who make informed grocery decisions every day.
               </p>
             </ScrollFade>
