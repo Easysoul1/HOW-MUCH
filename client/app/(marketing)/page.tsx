@@ -59,7 +59,7 @@ export default function LandingPage() {
             priority
             className="object-cover opacity-100 dark:opacity-90"
           />
-          <div className="absolute inset-0 bg-gradient-hero dark:bg-gradient-hero-dark opacity-20" />
+          <div className="absolute inset-0 bg-gradient-hero dark:bg-gradient-hero-dark opacity-80" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.06),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.08),transparent)]" />
         </div>
         <div className="container relative z-10 flex min-h-[85vh] flex-col justify-center">
@@ -69,13 +69,16 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <h1 className="text-display-xl md:text-4xl lg:text-5xl xl:text-display-xl text-primary dark:text-accent">
+            {/* Subtle backdrop for text readability */}
+            <div className="absolute inset-0 -z-10 bg-radial-gradient from-black/40 to-transparent blur-2xl" />
+            
+            <h1 className="text-display-xl md:text-4xl lg:text-5xl xl:text-display-xl text-white drop-shadow-lg">
               {SITE.name}
             </h1>
-            <p className="mt-6 text-body-lg text-muted-foreground md:text-display-sm md:font-normal md:text-muted-foreground">
+            <p className="mt-6 text-body-lg text-white/90 md:text-display-sm md:font-normal drop-shadow-md">
               {SITE.tagline}
             </p>
-            <p className="mt-3 text-body-sm text-muted-foreground">
+            <p className="mt-3 text-body-md text-white/80 drop-shadow-md">
               Nigeria&apos;s grocery intelligence engine. Not a marketplace — clarity on real prices, anywhere.
             </p>
             <div className="relative mx-auto mt-12 flex justify-center">
