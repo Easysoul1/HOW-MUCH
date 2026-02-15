@@ -20,7 +20,7 @@ function SuggestiveBuyLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <OptimizedImage src={IMAGES.routeMap} alt="" fill sizes="100vw" className="object-cover opacity-20 dark:opacity-10" />
+        <OptimizedImage src={IMAGES.routeMap} alt="" fill sizes="100vw" className="object-cover opacity-50 dark:opacity-30" />
         <div className="absolute inset-0 bg-background/90 backdrop-blur-[2px]" />
       </div>
       <div className="container relative z-10 px-4 py-10 md:px-6 md:py-14">

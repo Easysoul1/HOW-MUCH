@@ -1,21 +1,25 @@
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-xl border border-light-border bg-white text-foreground shadow-depth-1 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-depth-1 dark:shadow-inner-soft",
-      "transition-all duration-normal ease-out",
-      "hover:border-light-border/90 hover:shadow-card-hover dark:hover:border-dark-border/90 dark:hover:shadow-depth-2",
-      className
-    )}
-    {...props}
-  />
-));
+  React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div";
+  return (
+    <Comp
+      ref={ref}
+      className={cn(
+        "rounded-xl border border-light-border bg-white text-foreground shadow-depth-1 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-depth-1 dark:shadow-inner-soft",
+        "transition-all duration-normal ease-out",
+        "hover:border-light-border/90 hover:shadow-card-hover dark:hover:border-dark-border/90 dark:hover:shadow-depth-2",
+        className
+      )}
+      {...props}
+    />
+  );
+});
 Card.displayName = "Card";
 
 const CARD_PADDING = "p-6";

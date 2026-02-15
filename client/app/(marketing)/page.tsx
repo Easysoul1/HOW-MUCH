@@ -57,7 +57,7 @@ export default function LandingPage() {
             fill
             sizes="100vw"
             priority
-            className="object-cover opacity-25 dark:opacity-15"
+            className="object-cover opacity-100 dark:opacity-90"
           />
           <div className="absolute inset-0 bg-gradient-hero dark:bg-gradient-hero-dark" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.06),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.08),transparent)]" />
