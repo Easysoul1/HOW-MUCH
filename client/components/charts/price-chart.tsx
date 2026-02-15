@@ -34,7 +34,7 @@ export function PriceChart({
   const gradientId = useId().replace(/:/g, "");
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} isAnimationActive animationDuration={400}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         {showGrid && (
           <CartesianGrid
             strokeDasharray="3 3"
