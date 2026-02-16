@@ -86,26 +86,26 @@ export function MarketingHeader() {
       </div>
 
       {mobileOpen && (
-        <div className="section-divider bg-white dark:bg-dark-panel md:hidden animate-in slide-in-from-top-2 duration-200">
-          <nav className="container flex flex-col gap-0.5 py-4">
+        <div className="fixed inset-x-0 top-[3.5rem] bottom-0 z-50 bg-white dark:bg-dark-panel md:hidden animate-in slide-in-from-top-5 duration-200 overflow-y-auto border-t border-light-border dark:border-dark-border">
+          <nav className="container flex flex-col gap-1 py-6 px-6">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "rounded-lg px-3 py-2.5 text-body-sm font-medium transition-colors",
-                  pathname === link.href ? "bg-primary-muted text-primary dark:bg-accent-muted dark:text-accent" : "text-muted-foreground hover:bg-light-panel dark:hover:bg-dark-elevated"
+                  "rounded-lg px-4 py-3 text-body-md font-medium transition-colors",
+                  pathname === link.href ? "bg-primary/5 text-primary dark:bg-accent/10 dark:text-accent" : "text-muted-foreground hover:bg-light-panel dark:hover:bg-dark-elevated hover:text-foreground"
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="mt-4 flex gap-2">
-              <Button variant="outline" className="flex-1" asChild>
+            <div className="mt-6 grid grid-cols-2 gap-4 border-t border-light-border pt-6 dark:border-dark-border">
+              <Button variant="outline" className="w-full" asChild>
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button className="flex-1" asChild>
+              <Button className="w-full" asChild>
                 <Link href="/signup">Sign up</Link>
               </Button>
             </div>

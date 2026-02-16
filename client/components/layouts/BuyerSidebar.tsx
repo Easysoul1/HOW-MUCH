@@ -10,12 +10,18 @@ import {
   MapPin,
   Clock,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 
 export const buyerItems = [
   {
+    title: "Overview",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
     title: "My Orders",
-    href: "/dashboard", // Main dashboard for buyer is orders/overview
+    href: "/dashboard/orders",
     icon: ShoppingBag,
   },
   {

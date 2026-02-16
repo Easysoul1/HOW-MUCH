@@ -104,7 +104,7 @@ export default function VendorStorefrontPage() {
                       className="object-cover"
                     />
                   </div>
-                  <span className="flex-1 font-medium">{item.name}</span>
+                  <span className="flex-1 font-medium min-w-0 truncate pr-4">{item.name}</span>
                   <span className="font-display font-semibold text-accent">
                     {formatPrice(item.price)}
                   </span>

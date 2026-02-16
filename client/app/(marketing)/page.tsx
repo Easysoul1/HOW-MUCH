@@ -62,7 +62,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-hero dark:bg-gradient-hero-dark opacity-80 dark:opacity-100" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.06),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.08),transparent)]" />
         </div>
-        <div className="container relative z-10 flex min-h-[85vh] flex-col justify-center">
+        <div className="container relative z-10 flex min-h-[85vh] flex-col justify-center px-4 md:px-6">
           <motion.div
             className="mx-auto max-w-3xl text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -72,16 +72,16 @@ export default function LandingPage() {
             {/* Subtle backdrop for text readability - mainly for dark mode or if image shows through */}
             <div className="absolute inset-0 -z-10 hidden dark:block bg-radial-gradient from-black/40 to-transparent blur-2xl" />
             
-            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl dark:text-display-xl dark:md:text-4xl dark:lg:text-5xl dark:xl:text-display-xl text-black dark:text-white drop-shadow-sm dark:drop-shadow-lg font-bold tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl dark:text-display-xl dark:md:text-4xl dark:lg:text-5xl dark:xl:text-display-xl text-black dark:text-white drop-shadow-sm dark:drop-shadow-lg font-bold tracking-tight break-words">
               {SITE.name}
             </h1>
-            <p className="mt-6 text-2xl md:text-3xl dark:text-body-lg dark:md:text-display-sm text-black/90 dark:text-white/90 font-medium dark:font-normal drop-shadow-sm dark:drop-shadow-md">
+            <p className="mt-6 text-xl sm:text-2xl md:text-3xl dark:text-body-lg dark:md:text-display-sm text-black/90 dark:text-white/90 font-medium dark:font-normal drop-shadow-sm dark:drop-shadow-md px-2">
               {SITE.tagline}
             </p>
-            <p className="mt-4 text-xl md:text-2xl dark:text-body-lg text-black/80 dark:text-white/80 drop-shadow-sm dark:drop-shadow-md max-w-2xl mx-auto">
+            <p className="mt-4 text-lg sm:text-xl md:text-2xl dark:text-body-lg text-black/80 dark:text-white/80 drop-shadow-sm dark:drop-shadow-md max-w-2xl mx-auto px-2">
               Nigeria&apos;s grocery intelligence engine. Not a marketplace — clarity on real prices, anywhere.
             </p>
-            <div className="relative mx-auto mt-12 flex justify-center">
+            <div className="relative mx-auto mt-12 flex justify-center w-full px-4 sm:px-0">
               <LiveSearchBar variant="hero" />
             </div>
           </motion.div>
@@ -93,7 +93,7 @@ export default function LandingPage() {
         <div className="flex overflow-hidden">
           <motion.div
             className="flex gap-10 whitespace-nowrap"
-            animate={{ x: [0, -1200] }}
+            animate={{ x: "-50%" }}
             transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
           >
             {[...TICKER_ITEMS, ...TICKER_ITEMS].map((row, i) => (
