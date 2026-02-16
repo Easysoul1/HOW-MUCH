@@ -12,7 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 
-const buyerItems = [
+export const buyerItems = [
   {
     title: "My Orders",
     href: "/dashboard", // Main dashboard for buyer is orders/overview

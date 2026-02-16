@@ -126,24 +126,26 @@ export default function ItemDetailPage() {
               </CardHeader>
             <CardContent>
               <div className="rounded-lg border border-light-border dark:border-dark-border overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-light-border bg-light-panel dark:border-dark-border dark:bg-dark-elevated">
-                      <th className="p-3 text-left font-medium">Location</th>
-                      <th className="p-3 text-right font-medium">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {MOCK_PRODUCT.heatmap.map((row) => (
-                      <tr key={row.location} className="border-b border-light-border dark:border-dark-border">
-                        <td className="p-3">{row.location}</td>
-                        <td className="p-3 text-right font-display font-medium">
-                          {formatPrice(row.price)}
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-light-border bg-light-panel dark:border-dark-border dark:bg-dark-elevated">
+                        <th className="p-3 text-left font-medium">Location</th>
+                        <th className="p-3 text-right font-medium">Price</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {MOCK_PRODUCT.heatmap.map((row) => (
+                        <tr key={row.location} className="border-b border-light-border dark:border-dark-border">
+                          <td className="p-3">{row.location}</td>
+                          <td className="p-3 text-right font-display font-medium">
+                            {formatPrice(row.price)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>

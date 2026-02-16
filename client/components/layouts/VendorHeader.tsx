@@ -2,12 +2,14 @@
 
 import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileVendorNav } from "./MobileVendorNav";
 
 export function VendorHeader() {
   return (
     <header className="h-16 border-b border-[#E5E7EB] bg-white sticky top-0 z-50 flex items-center justify-between px-6">
       <div className="flex items-center gap-4 flex-1">
-        <div className="relative w-96">
+        <MobileVendorNav />
+        <div className="relative w-full max-w-sm hidden sm:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -18,7 +20,7 @@ export function VendorHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-200">
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-200">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           Store Online
         </div>

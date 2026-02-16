@@ -29,56 +29,58 @@ export default function AdminVendorsPage() {
       </div>
 
       <div className="bg-dark-elem rounded-lg border border-dark-border overflow-hidden">
-          <table className="w-full text-sm text-left">
-              <thead className="bg-dark-panel text-muted-foreground font-medium border-b border-dark-border">
-                  <tr>
-                      <th className="px-6 py-4">Vendor</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4 flex items-center gap-1 cursor-pointer hover:text-white">
-                          Revenue <ArrowUpDown className="w-3 h-3" />
-                      </th>
-                      <th className="px-6 py-4">Joined</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
-                  </tr>
-              </thead>
-              <tbody className="divide-y divide-dark-border">
-                  {MOCK_VENDORS.map((vendor) => (
-                      <tr key={vendor.id} className="hover:bg-white/5 transition-colors">
-                          <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                  <div 
-                                    className="w-10 h-10 rounded-full bg-cover bg-center border border-dark-border"
-                                    style={{ backgroundImage: `url(${vendor.imageUrl})` }}
-                                  />
-                                  <div>
-                                      <div className="font-medium text-white">{vendor.name}</div>
-                                      <div className="text-xs text-muted-foreground">{vendor.location}</div>
-                                  </div>
-                              </div>
-                          </td>
-                          <td className="px-6 py-4">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                ${vendor.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
-                                  vendor.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
-                                  'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                                  {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
-                              </span>
-                          </td>
-                          <td className="px-6 py-4 text-white font-mono">
-                              ₦{vendor.revenue.toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 text-muted-foreground">
-                              {vendor.joinedDate}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white">
-                                  <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                          </td>
-                      </tr>
-                  ))}
-              </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+                <thead className="bg-dark-panel text-muted-foreground font-medium border-b border-dark-border">
+                    <tr>
+                        <th className="px-6 py-4">Vendor</th>
+                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4 flex items-center gap-1 cursor-pointer hover:text-white">
+                            Revenue <ArrowUpDown className="w-3 h-3" />
+                        </th>
+                        <th className="px-6 py-4">Joined</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-dark-border">
+                    {MOCK_VENDORS.map((vendor) => (
+                        <tr key={vendor.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                    <div 
+                                      className="w-10 h-10 rounded-full bg-cover bg-center border border-dark-border"
+                                      style={{ backgroundImage: `url(${vendor.imageUrl})` }}
+                                    />
+                                    <div>
+                                        <div className="font-medium text-white">{vendor.name}</div>
+                                        <div className="text-xs text-muted-foreground">{vendor.location}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td className="px-6 py-4">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                                  ${vendor.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
+                                    vendor.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
+                                    'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                                    {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+                                </span>
+                            </td>
+                            <td className="px-6 py-4 text-white font-mono">
+                                ₦{vendor.revenue.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 text-muted-foreground">
+                                {vendor.joinedDate}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white">
+                                    <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+          </div>
       </div>
     </div>
   );
