@@ -14,7 +14,7 @@ import {
   Package,
 } from "lucide-react";
 
-const sidebarItems = [
+export const sidebarItems = [
   {
     title: "Overview",
     href: "/admin",

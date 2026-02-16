@@ -12,7 +12,7 @@ import {
   Archive,
 } from "lucide-react";
 
-const vendorItems = [
+export const vendorItems = [
   {
     title: "Dashboard",
     href: "/vendor/dashboard",
