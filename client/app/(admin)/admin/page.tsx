@@ -1,59 +1,70 @@
-"use client";
-
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { formatNumber } from "@/lib/utils";
-import { Store, FileCheck, AlertTriangle, Image } from "lucide-react";
+import { AnalyticsCard } from "@/components/admin/AnalyticsCard";
+import { ANALYTICS_DATA } from "@/lib/mock-data";
+import { BarChart3, Users, Store, DollarSign } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-8">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl font-bold">Admin dashboard</h1>
-        <p className="mt-1 text-muted-foreground">
-          Verification queue, survey validation, fraud monitoring.
-        </p>
-      </motion.div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-display font-medium text-white">Dashboard</h1>
+        <p className="text-muted-foreground">Platform overview and performance metrics.</p>
+      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-dark-border bg-dark-panel" asChild>
-          <Link href="/admin/vendor-verification">
-            <CardContent className="p-5">
-              <Store className="h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">Vendor queue</p>
-              <p className="font-display text-2xl font-bold">12</p>
-            </CardContent>
-          </Link>
-        </Card>
-        <Card className="border-dark-border bg-dark-panel" asChild>
-          <Link href="/admin/survey-validation">
-            <CardContent className="p-5">
-              <FileCheck className="h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">Survey pending</p>
-              <p className="font-display text-2xl font-bold">28</p>
-            </CardContent>
-          </Link>
-        </Card>
-        <Card className="border-dark-border bg-dark-panel" asChild>
-          <Link href="/admin/fraud">
-            <CardContent className="p-5">
-              <AlertTriangle className="h-8 w-8 text-amber-highlight" />
-              <p className="mt-2 text-sm text-muted-foreground">Fraud alerts</p>
-              <p className="font-display text-2xl font-bold">3</p>
-            </CardContent>
-          </Link>
-        </Card>
-        <Card className="border-dark-border bg-dark-panel" asChild>
-          <Link href="/admin/social">
-            <CardContent className="p-5">
-              <Image className="h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">Social generator</p>
-              <p className="font-display text-2xl font-bold">—</p>
-            </CardContent>
-          </Link>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <AnalyticsCard
+          title="Total Revenue"
+          value={ANALYTICS_DATA.totalRevenue}
+          prefix="₦"
+          change={12.5}
+          trend="up"
+        />
+        <AnalyticsCard
+          title="Active Vendors"
+          value={ANALYTICS_DATA.activeVendors}
+          change={4}
+          trend="up"
+        />
+        <AnalyticsCard
+          title="Active Buyers"
+          value={ANALYTICS_DATA.activeBuyers}
+          change={2.1}
+          trend="up"
+        />
+        <AnalyticsCard
+          title="Pending Approvals"
+          value={ANALYTICS_DATA.pendingApprovals}
+          change={5}
+          trend="down" // Down is good for backlog
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4 bg-dark-elem border border-dark-border rounded-xl p-6">
+             <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-white">Revenue Overview</h3>
+                <BarChart3 className="w-4 h-4 text-muted-foreground"/>
+             </div>
+             <div className="h-[300px] flex items-center justify-center text-muted-foreground bg-white/5 rounded-lg border border-dashed border-dark-border">
+                Chart Placeholder
+             </div>
+        </div>
+        <div className="col-span-3 bg-dark-elem border border-dark-border rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-white">Recent Activity</h3>
+            </div>
+             <div className="space-y-4">
+                {[1,2,3,4,5].map((i) => (
+                    <div key={i} className="flex items-center gap-4 text-sm border-b border-dark-border/50 last:border-0 pb-3 last:pb-0">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                        <div className="flex-1">
+                            <p className="text-white">New Vendor Registration</p>
+                            <p className="text-xs text-muted-foreground">Mama Nkechi Provisions joined.</p>
+                        </div>
+                        <span className="text-xs text-muted-foreground">2m ago</span>
+                    </div>
+                ))}
+             </div>
+        </div>
       </div>
     </div>
   );
