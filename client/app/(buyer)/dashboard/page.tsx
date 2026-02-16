@@ -1,65 +1,111 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MOCK_ORDERS } from "@/lib/mock-data";
-import { Package, Truck } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-export default function BuyerDashboardPage() {
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { PriceChart } from "@/components/charts/price-chart";
+import { formatPrice } from "@/lib/utils";
+import { Heart, Search, ShoppingBag, TrendingUp } from "lucide-react";
+
+const MOCK_STATS = [
+  { label: "Saved items", value: 12, href: "/dashboard/saved-items", icon: Heart },
+  { label: "Saved searches", value: 3, href: "/dashboard/saved-searches", icon: Search },
+  { label: "Orders", value: 5, href: "/dashboard/orders", icon: ShoppingBag },
+];
+
+const MOCK_CHART = [
+  { date: "Mon", price: 4700 },
+  { date: "Tue", price: 4750 },
+  { date: "Wed", price: 4720 },
+  { date: "Thu", price: 4800 },
+  { date: "Fri", price: 4850 },
+];
+
+export default function DashboardOverviewPage() {
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-milano font-bold">My Orders</h1>
-        <Button variant="outline">Browse Products</Button>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 className="font-display text-2xl font-bold">Overview</h1>
+        <p className="mt-1 text-muted-foreground">
+          Your saved items, searches, and quick stats.
+        </p>
+      </motion.div>
 
-      <div className="grid gap-6">
-        {MOCK_ORDERS.map((order) => (
-          <Card key={order.id} className="overflow-hidden border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="bg-gray-50 border-b border-gray-100 py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-4 text-sm text-gray-500">
-                  <div className="flex flex-col">
-                    <span className="text-xs uppercase">Order Placed</span>
-                    <span className="font-medium text-black">{order.date}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs uppercase">Total</span>
-                    <span className="font-medium text-black">₦{order.total.toLocaleString()}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs uppercase">Order ID</span>
-                    <span className="font-medium text-black">#{order.id}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                     <Button size="sm" variant="outline" className="h-8 text-xs">View Invoice</Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
-                <div className="flex gap-4">
-                  <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center">
-                      <Package className="w-8 h-8 text-gray-300" />
-                  </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {MOCK_STATS.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Card className="glass-panel border-dark-border bg-dark-panel">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-lg text-black">{order.items} Items from {order.customerName === "Chinedu Okeke" ? "Mama Nkechi Provisions" : "Multiple Vendors"}</h3>
-                    <p className="text-sm text-gray-500 mb-2">Expected Delivery: Feb 18, 2026</p>
-                    <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
-                        <Truck className="w-4 h-4" />
-                        <span>{order.status === 'delivered' ? 'Delivered' : 'On the way'}</span>
-                    </div>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    <p className="font-display text-2xl font-bold text-accent">
+                      {stat.value}
+                    </p>
                   </div>
+                  <stat.icon className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <Button className="flex-1 md:flex-none">Track Package</Button>
-                    <Button variant="outline" className="flex-1 md:flex-none">Buy Again</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                <Button variant="ghost" size="sm" className="mt-3 w-full" asChild>
+                  <Link href={stat.href}>View</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Card className="glass-panel border-dark-border bg-dark-panel">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Rice 5kg — price trend (Lagos)
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              From your saved items
+            </p>
+          </CardHeader>
+          <CardContent>
+            <PriceChart data={MOCK_CHART} height={220} color="#00D084" />
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <Card className="glass-panel border-dark-border bg-dark-panel">
+          <CardHeader>
+            <CardTitle>Quick actions</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            <Button asChild>
+              <Link href="/search">Search prices</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/ai-shopping-list">AI Shopping List</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/personal-shopper">Personal shopper</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }
