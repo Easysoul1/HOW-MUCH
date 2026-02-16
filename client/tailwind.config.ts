@@ -11,18 +11,29 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#0B3D2E",
-          foreground: "#F8FAFC",
-          muted: "rgba(11, 61, 46, 0.08)",
+          DEFAULT: "#0F0F0F", // Black for primary brand
+          foreground: "#FFFFFF",
+          muted: "#1A1A1A",
+        },
+        brand: {
+          DEFAULT: "#0B3D2E", // Keep deep green as brand identifier
+          foreground: "#FFFFFF",
         },
         accent: {
           DEFAULT: "#00D084",
-          foreground: "#0B3D2E",
-          muted: "rgba(0, 208, 132, 0.12)",
+          foreground: "#000000",
         },
-        amber: {
-          highlight: "#F59E0B",
-          muted: "rgba(245, 158, 11, 0.12)",
+        status: {
+          success: "#10B981",
+          warning: "#F59E0B",
+          danger: "#EF4444",
+          info: "#3B82F6",
+        },
+        surface: {
+          DEFAULT: "#FFFFFF",
+          elevated: "#FEFEFE", // High brightness for clean look
+          muted: "#F4F4F4",
+          dim: "#E4E4E7",
         },
         dark: {
           DEFAULT: "#0F172A",
@@ -36,8 +47,8 @@ const config: Config = {
           border: "#E2E8F0",
         },
         muted: {
-          DEFAULT: "#64748B",
-          foreground: "#94A3B8",
+          DEFAULT: "#71717A",
+          foreground: "#A1A1AA",
         },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
