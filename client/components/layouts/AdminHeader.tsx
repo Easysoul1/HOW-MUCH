@@ -10,11 +10,11 @@ export function AdminHeader() {
       <div className="flex items-center gap-4 flex-1">
         <MobileAdminNav />
         <div className="relative w-full max-w-sm hidden sm:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search vendors, products, or orders..."
-            className="w-full bg-dark-elevated border-none rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full bg-dark-elevated border-none rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
       </div>
@@ -23,7 +23,7 @@ export function AdminHeader() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-muted-foreground hover:text-white"
+          className="relative text-gray-300 hover:text-white"
         >
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-status-danger rounded-full border-2 border-dark" />

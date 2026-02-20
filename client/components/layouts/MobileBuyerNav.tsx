@@ -1,16 +1,25 @@
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, LogOut } from "lucide-react";
 import { buyerItems } from "./BuyerSidebar";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth";
 
 export function MobileBuyerNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await logout();
+    setOpen(false);
+    router.push('/login');
+  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -55,7 +64,10 @@ export function MobileBuyerNav() {
          </div>
          
          <div className="p-4 border-t border-gray-100 mt-auto">
-             <button className="flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 w-full rounded-lg transition-colors">
+             <button 
+               onClick={handleSignOut}
+               className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 w-full rounded-lg transition-colors font-medium"
+             >
                 <LogOut className="w-4 h-4" />
                 <span>Sign Out</span>
              </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Heart,
@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -24,6 +25,13 @@ const navItems = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleSignOut = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <aside className="hidden w-56 shrink-0 flex-col border-r border-dark-border bg-dark-panel md:flex">
@@ -35,8 +43,8 @@ export function DashboardSidebar() {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               pathname === item.href
-                ? "bg-dark-elevated text-accent"
-                : "text-muted-foreground hover:bg-dark-elevated hover:text-foreground"
+                ? "bg-dark-elevated text-white"
+                : "text-gray-300 hover:bg-dark-elevated hover:text-white"
             )}
           >
             <item.icon className="h-4 w-4" />
@@ -44,13 +52,13 @@ export function DashboardSidebar() {
           </Link>
         ))}
         <div className="mt-auto border-t border-dark-border pt-4">
-          <Link
-            href="/"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-dark-elevated hover:text-foreground"
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 w-full transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Exit dashboard
-          </Link>
+            Sign Out
+          </button>
         </div>
       </nav>
     </aside>

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +13,7 @@ import {
   ShieldCheck,
   AlertCircle,
   Package,
+  LogOut,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -60,6 +62,13 @@ export const sidebarItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleSignOut = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <aside className="w-64 border-r border-dark-border bg-dark-panel hidden md:flex flex-col h-screen sticky top-0">
@@ -85,8 +94,8 @@ export function AdminSidebar() {
                 className={cn(
                   "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-white/5 hover:text-white"
+                    ? "bg-primary/10 text-white"
+                    : "text-gray-300 hover:bg-white/5 hover:text-white"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -105,15 +114,24 @@ export function AdminSidebar() {
       </div>
 
       <div className="p-4 border-t border-dark-border">
-        <div className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground">
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <span className="text-xs font-bold text-white">AD</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-medium">System Admin</span>
-            <span className="text-xs">admin@howmuch.ng</span>
+        <div className="mb-3 px-3 py-2">
+          <div className="flex items-center gap-3 text-sm">
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+              <span className="text-xs font-bold text-white">AD</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-white font-medium">System Admin</span>
+              <span className="text-xs text-gray-400">admin@howmuch.ng</span>
+            </div>
           </div>
         </div>
+        <button 
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 w-full rounded-lg transition-colors font-medium"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
+        </button>
       </div>
     </aside>
   );

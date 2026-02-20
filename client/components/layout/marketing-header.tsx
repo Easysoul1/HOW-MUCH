@@ -42,10 +42,10 @@ export function MarketingHeader() {
               key={link.href}
               href={link.href}
               className={cn(
-                "relative rounded-lg px-3 py-2 text-body-sm font-medium transition-colors duration-normal hover:bg-light-panel hover:text-primary dark:hover:bg-dark-elevated dark:hover:text-accent",
+                "relative rounded-lg px-3 py-2 text-body-sm font-medium transition-colors duration-normal hover:bg-light-panel hover:text-primary dark:hover:bg-dark-elevated dark:hover:text-white",
                 pathname === link.href
-                  ? "text-primary dark:text-accent"
-                  : "text-muted-foreground"
+                  ? "text-primary dark:text-white"
+                  : "text-gray-700 dark:text-gray-300"
               )}
             >
               {link.label}
@@ -57,7 +57,7 @@ export function MarketingHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="text-gray-700 dark:text-gray-300">
             <Link href="/search" aria-label="Search">
               <Search className="h-5 w-5" />
             </Link>
@@ -67,11 +67,12 @@ export function MarketingHeader() {
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label="Toggle theme"
+            className="text-gray-700 dark:text-gray-300"
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+          <Button variant="ghost" size="icon" className="md:hidden text-gray-700 dark:text-gray-300" onClick={() => setMobileOpen(!mobileOpen)}>
             <Menu className="h-5 w-5" />
           </Button>
           <div className="hidden gap-2 md:flex">
@@ -95,7 +96,7 @@ export function MarketingHeader() {
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   "rounded-lg px-4 py-3 text-body-md font-medium transition-colors",
-                  pathname === link.href ? "bg-primary/5 text-primary dark:bg-accent/10 dark:text-accent" : "text-muted-foreground hover:bg-light-panel dark:hover:bg-dark-elevated hover:text-foreground"
+                  pathname === link.href ? "bg-primary/5 text-primary dark:bg-accent/10 dark:text-white" : "text-gray-700 dark:text-gray-300 hover:bg-light-panel dark:hover:bg-dark-elevated hover:text-primary dark:hover:text-white"
                 )}
               >
                 {link.label}
