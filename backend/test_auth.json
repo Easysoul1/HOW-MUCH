@@ -1,0 +1,12 @@
+{
+  "username": "testuser",
+  "email": "testuser@howmuch.com",
+  "password": "SecurePassword123!",
+  "password_confirm": "SecurePassword123!",
+  "first_name": "Test",
+  "last_name": "User",
+  "user_type": "CUSTOMER",
+  "phone_number": "+2348012345678",
+  "city": "Lagos",
+  "state": "Lagos"
+}
