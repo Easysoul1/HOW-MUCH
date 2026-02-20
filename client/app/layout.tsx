@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AuthProvider } from "@/lib/auth";
+import { LocationProvider } from "@/lib/location";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +37,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          {children}
+          <AuthProvider>
+            <LocationProvider>
+              {children}
+            </LocationProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

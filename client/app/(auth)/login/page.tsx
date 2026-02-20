@@ -8,15 +8,61 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/lib/auth";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const { login } = useAuth();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/dashboard");
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const user = await login(username, password);
+      
+      // Check if user object is valid
+      if (!user || !user.user_type) {
+        throw new Error('Invalid response from server. Please try again.');
+      }
+      
+      // Redirect based on user type
+      if (user.user_type === 'VENDOR') {
+        router.push('/vendor/dashboard');
+      } else if (user.user_type === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      console.error('Login error:', err);
+      
+      // Handle different error types
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (err.message) {
+        // Check for specific error patterns
+        if (err.message.includes('credentials') || err.message.includes('Invalid')) {
+          errorMessage = 'Invalid username or password. Please try again.';
+        } else if (err.message.includes('Network') || err.message.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection.';
+        } else if (err.message.includes('non_field_errors')) {
+          errorMessage = err.message.split('non_field_errors:')[1]?.trim() || 'Invalid credentials.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -28,26 +74,28 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle>Log in</CardTitle>
-          <CardDescription>Enter your email and password.</CardDescription>
+          <CardDescription>Enter your username and password.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="johndoe123"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="mt-1"
                 required
+                disabled={isLoading}
+                autoComplete="username"
               />
             </div>
             <div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-accent">
+                <Link href="/forgot-password" className="text-xs text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white">
                   Forgot?
                 </Link>
               </div>
@@ -58,13 +106,34 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1"
                 required
+                disabled={isLoading}
+                autoComplete="current-password"
               />
             </div>
-            <Button type="submit" className="w-full">Log in</Button>
+
+            {error && (
+              <div className="flex items-start gap-2 p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <p className="flex-1">{error}</p>
+              </div>
+            )}
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                "Log in"
+              )}
+            </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-accent hover:underline">Sign up</Link>
+            <Link href="/signup" className="text-black dark:text-white font-medium hover:underline">
+              Sign up
+            </Link>
           </p>
         </CardContent>
       </Card>

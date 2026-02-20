@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 import {
   ShoppingBag,
   Heart,
@@ -48,12 +49,19 @@ export const buyerItems = [
 
 export function BuyerSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleSignOut = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <aside className="w-64 border-r border-gray-100 bg-white hidden md:flex flex-col h-screen sticky top-0">
       <div className="h-16 flex items-center px-6 border-b border-gray-100">
         <Link href="/" className="flex items-center gap-2">
-           <span className="font-milano text-xl font-bold tracking-tight">HOW MUCH</span>
+           <span className="font-milano text-xl font-bold tracking-tight text-black">HOW MUCH</span>
         </Link>
       </div>
 
@@ -84,7 +92,10 @@ export function BuyerSidebar() {
       </div>
 
        <div className="p-4 border-t border-gray-100">
-         <button className="flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 w-full rounded-lg transition-colors">
+         <button 
+           onClick={handleSignOut}
+           className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 w-full rounded-lg transition-colors font-medium"
+         >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
          </button>

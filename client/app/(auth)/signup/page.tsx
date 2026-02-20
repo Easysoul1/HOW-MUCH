@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,13 +8,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Store, ShoppingBag, ArrowLeft, Check } from "lucide-react";
+import { Loader2, Store, ShoppingBag, ArrowLeft, MapPin, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
+import { useLocation } from "@/lib/location";
 
 type Role = "buyer" | "vendor" | null;
 
 export default function SignupPage() {
   const router = useRouter();
+  const { register } = useAuth();
+  const { location, address, loading: locationLoading, error: locationError, requestLocation } = useLocation();
+  
   const [role, setRole] = useState<Role>(null);
   const [step, setStep] = useState<"role-selection" | "form">("role-selection");
   const [isLoading, setIsLoading] = useState(false);
@@ -25,13 +30,34 @@ export default function SignupPage() {
     username: "",
     email: "",
     phone: "",
+    city: "",
+    state: "",
     address: "",
     password: "",
     confirmPassword: "",
-    businessName: "", // Helper for vendors
+    businessName: "",
   });
 
   const [error, setError] = useState("");
+
+  // Auto-fill address fields when location is detected (only if fields are empty)
+  useEffect(() => {
+    if (address && !formData.city && !formData.state && !formData.address) {
+      setFormData((prev) => ({
+        ...prev,
+        city: address.city || '',
+        state: address.state || '',
+        address: address.address || '',
+      }));
+    }
+  }, [address]);
+
+  // Request location when form step loads (optional)
+  useEffect(() => {
+    if (step === "form" && !location && !locationError) {
+      requestLocation();
+    }
+  }, [step]);
 
   const handleRoleSelect = (selectedRole: "buyer" | "vendor") => {
     setRole(selectedRole);
@@ -60,15 +86,40 @@ export default function SignupPage() {
       return;
     }
 
-    // Mock API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log(`Signup data for ${role}:`, formData);
-    
-    // Redirect based on role
-    if (role === "vendor") {
-      router.push("/vendor/dashboard");
-    } else {
-      router.push("/dashboard");
+    try {
+      // Map role to backend user_type
+      const userType = role === "vendor" ? "VENDOR" : "CUSTOMER";
+      
+      const registrationData = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        password_confirm: formData.confirmPassword,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        user_type: userType,
+        phone_number: formData.phone,
+        city: formData.city,
+        state: formData.state,
+        address: formData.address,
+        // Round coordinates to 6 decimal places (backend constraint: max_digits=9, decimal_places=6)
+        latitude: location?.latitude ? Number(location.latitude.toFixed(6)) : undefined,
+        longitude: location?.longitude ? Number(location.longitude.toFixed(6)) : undefined,
+      };
+      
+      console.log('Registration data:', registrationData);
+      
+      await register(registrationData);
+
+      // Redirect based on role
+      if (role === "vendor") {
+        router.push("/vendor/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.message || "Registration failed. Please try again.");
+      setIsLoading(false);
     }
   };
 
@@ -166,6 +217,46 @@ export default function SignupPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Location Status */}
+                {locationLoading && (
+                  <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      Getting your location and address...
+                    </p>
+                  </div>
+                )}
+                {locationError && (
+                  <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600" />
+                    <div className="flex-1">
+                      <p className="text-sm text-amber-700 dark:text-amber-300">{locationError}</p>
+                      <Button 
+                        variant="link" 
+                        className="h-auto p-0 text-xs text-amber-700 dark:text-amber-300"
+                        onClick={requestLocation}
+                      >
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                {location && address && (
+                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-green-600 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                          Location Detected!
+                        </p>
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                          {address.city}, {address.state}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
@@ -240,11 +331,34 @@ export default function SignupPage() {
                     </div>
                   </div>
 
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        placeholder="Lagos"
+                        required
+                        value={formData.city}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                        id="state"
+                        placeholder="Lagos"
+                        required
+                        value={formData.state}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="address">Address</Label>
                     <Input
                       id="address"
-                      placeholder="123 Market Street, Lagos"
+                      placeholder="123 Market Street"
                       required
                       value={formData.address}
                       onChange={handleChange}
@@ -274,7 +388,7 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {error && <p className="text-sm text-red-500 text-center bg-red-50 py-2 rounded-lg">{error}</p>}
+                  {error && <p className="text-sm text-red-500 text-center bg-red-50 dark:bg-red-900/20 py-2 rounded-lg">{error}</p>}
 
                   <Button 
                     type="submit" 

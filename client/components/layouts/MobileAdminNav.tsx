@@ -15,7 +15,7 @@ export function MobileAdminNav() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button variant="ghost" size="icon" className="md:hidden text-gray-300 hover:text-white">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -44,8 +44,8 @@ export function MobileAdminNav() {
                     className={cn(
                       "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                       isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-white/5 hover:text-white"
+                        ? "bg-primary/10 text-white"
+                        : "text-gray-300 hover:bg-white/5 hover:text-white"
                     )}
                   >
                     <div className="flex items-center gap-3">
