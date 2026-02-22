@@ -12,16 +12,16 @@ const badgeVariants = cva(
         accent:
           "border-transparent bg-accent text-accent-foreground",
         verified:
-          "border-transparent bg-accent/20 text-accent dark:bg-accent-muted",
+          "border-transparent bg-accent/20 text-accent dark:bg-accent/30 dark:text-accent",
         outline: "border-current text-foreground",
         secondary:
           "border-transparent bg-light-panel text-muted dark:bg-dark-elevated dark:text-muted-foreground",
         warning:
-          "border-transparent bg-amber-highlight/20 text-amber-highlight dark:bg-amber-muted",
+          "border-transparent bg-status-warning/20 text-status-warning dark:bg-status-warning/30 dark:text-status-warning",
         destructive:
-          "border-transparent bg-red-500/15 text-red-600 dark:text-red-400",
+          "border-transparent bg-status-danger/15 text-status-danger dark:bg-status-danger/20 dark:text-status-danger",
         success:
-          "border-transparent bg-accent/15 text-accent",
+          "border-transparent bg-status-success/15 text-status-success dark:bg-status-success/20 dark:text-status-success",
       },
     },
     defaultVariants: {

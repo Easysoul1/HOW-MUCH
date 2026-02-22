@@ -145,14 +145,14 @@ export default function SignupPage() {
                 onClick={() => handleRoleSelect("buyer")}
                 className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white dark:bg-dark-panel shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 dark:hover:border-white/10 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-black"
               >
-                <div className="h-20 w-20 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <ShoppingBag className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                <div className="h-20 w-20 rounded-full bg-status-info/10 dark:bg-status-info/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <ShoppingBag className="w-10 h-10 text-status-info" />
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Buyer</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
                   Discover fair prices, track market trends, and make informed grocery decisions.
                 </p>
-                <div className="mt-8 px-6 py-2 rounded-full bg-gray-100 dark:bg-white/5 text-sm font-medium group-hover:bg-black group-hover:text-white transition-colors">
+                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   Join as Buyer
                 </div>
               </button>
@@ -162,17 +162,17 @@ export default function SignupPage() {
                 onClick={() => handleRoleSelect("vendor")}
                 className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white dark:bg-dark-panel shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 dark:hover:border-white/10 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-brand"
               >
-                <div className="absolute top-4 right-4 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                <div className="absolute top-4 right-4 px-3 py-1 bg-accent/15 text-accent text-xs font-bold rounded-full">
                   GROWTH
                 </div>
-                <div className="h-20 w-20 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Store className="w-10 h-10 text-green-600 dark:text-green-400" />
+                <div className="h-20 w-20 rounded-full bg-accent/10 dark:bg-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Store className="w-10 h-10 text-accent" />
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Vendor</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
                   List your products, reach more customers, and manage your store inventory.
                 </p>
-                <div className="mt-8 px-6 py-2 rounded-full bg-gray-100 dark:bg-white/5 text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
+                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
                   Become a Vendor
                 </div>
               </button>
@@ -180,7 +180,7 @@ export default function SignupPage() {
             
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="text-black dark:text-white font-medium hover:underline">
+              <Link href="/login" className="text-foreground font-medium hover:underline">
                 Log in
               </Link>
             </p>
@@ -205,7 +205,7 @@ export default function SignupPage() {
             <Card className="border-light-border shadow-depth-2 dark:border-dark-border dark:bg-dark-panel">
               <CardHeader className="space-y-1">
                 <div className="flex items-center gap-3 mb-2">
-                   <div className={cn("p-2 rounded-lg", role === 'vendor' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700")}>
+                   <div className={cn("p-2 rounded-lg", role === 'vendor' ? "bg-accent/15 text-accent" : "bg-status-info/15 text-status-info")}>
                       {role === 'vendor' ? <Store className="w-5 h-5"/> : <ShoppingBag className="w-5 h-5"/>}
                    </div>
                    <CardTitle className="text-xl">
@@ -249,7 +249,7 @@ export default function SignupPage() {
                         <p className="text-sm font-medium text-green-700 dark:text-green-300">
                           Location Detected!
                         </p>
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                        <p className="text-xs text-status-success mt-1">
                           {address.city}, {address.state}
                         </p>
                       </div>
@@ -290,7 +290,7 @@ export default function SignupPage() {
                         required
                         value={formData.businessName}
                         onChange={handleChange}
-                        className="border-green-200 focus:ring-green-500"
+                        className="border-status-success/30 focus:ring-status-success/80 dark:border-status-success/40"
                       />
                     </div>
                   )}
@@ -388,7 +388,7 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {error && <p className="text-sm text-red-500 text-center bg-red-50 dark:bg-red-900/20 py-2 rounded-lg">{error}</p>}
+                  {error && <p className="text-sm text-status-danger text-center bg-status-danger/10 dark:bg-status-danger/20 py-2 rounded-lg border border-status-danger/20">{error}</p>}
 
                   <Button 
                     type="submit" 

@@ -6,8 +6,8 @@ export default function VendorDashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-milano font-bold text-black">Dashboard</h1>
-        <p className="text-gray-500">Welcome back, Mama Nkechi Provisions</p>
+        <h1 className="text-3xl font-display font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome back, Mama Nkechi Provisions</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -61,14 +61,14 @@ export default function VendorDashboardPage() {
           <CardContent>
              <div className="space-y-4">
                  {MOCK_ORDERS.map((order) => (
-                     <div key={order.id} className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                     <div key={order.id} className="flex items-center justify-between border-b border-light-border dark:border-dark-border pb-4 last:border-0 last:pb-0">
                          <div className="flex flex-col">
-                             <span className="font-medium text-black">{order.customerName}</span>
-                             <span className="text-xs text-gray-500">{order.items} items • {order.date}</span>
+                             <span className="font-medium text-foreground">{order.customerName}</span>
+                             <span className="text-xs text-muted-foreground">{order.items} items • {order.date}</span>
                          </div>
                          <div className="flex flex-col items-end gap-1">
-                             <span className="font-bold text-black">₦{order.total.toLocaleString()}</span>
-                             <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                             <span className="font-bold text-foreground">₦{order.total.toLocaleString()}</span>
+                             <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${order.status === 'processing' ? 'bg-status-warning/20 text-status-warning' : 'bg-status-success/20 text-status-success'}`}>
                                  {order.status}
                              </span>
                          </div>
@@ -85,13 +85,13 @@ export default function VendorDashboardPage() {
               <div className="space-y-4">
                   <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg"></div>
+                          <div className="w-10 h-10 bg-light-panel dark:bg-dark-elevated rounded-lg"></div>
                           <div>
                               <p className="text-sm font-medium">Palm Oil (5L)</p>
-                              <p className="text-xs text-red-500">Only 12 left</p>
+                              <p className="text-xs text-status-danger">Only 12 left</p>
                           </div>
                       </div>
-                      <button className="text-xs border border-gray-200 px-3 py-1 rounded hover:bg-black hover:text-white transition-colors">Restock</button>
+                      <button className="text-xs border border-light-border dark:border-dark-border px-3 py-1 rounded hover:bg-primary hover:text-primary-foreground dark:hover:bg-accent dark:hover:text-accent-foreground transition-colors">Restock</button>
                   </div>
               </div>
           </CardContent>

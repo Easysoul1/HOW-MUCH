@@ -22,12 +22,17 @@ const config: Config = {
         accent: {
           DEFAULT: "#00D084",
           foreground: "#000000",
+          muted: "#004D38",
         },
         status: {
           success: "#10B981",
           warning: "#F59E0B",
           danger: "#EF4444",
           info: "#3B82F6",
+        },
+        amber: {
+          highlight: "#F59E0B",
+          muted: "#78350F",
         },
         surface: {
           DEFAULT: "#FFFFFF",

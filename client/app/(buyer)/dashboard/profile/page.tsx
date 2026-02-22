@@ -47,7 +47,7 @@ export default function ProfilePage() {
 
     try {
       const response = await authApi.updateProfile(formData);
-      updateUser(response);
+      updateUser(response as any);
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       setIsEditing(false);
     } catch (error: any) {
@@ -87,7 +87,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -95,15 +95,15 @@ export default function ProfilePage() {
   return (
     <div className="container max-w-4xl py-8 px-4 sm:px-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-        <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
+        <h1 className="text-3xl font-bold text-foreground">My Profile</h1>
+        <p className="text-muted-foreground mt-2">Manage your account settings and preferences</p>
       </div>
 
       {message && (
         <div className={`mb-6 flex items-start gap-3 p-4 rounded-lg border ${
           message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-800' 
-            : 'bg-red-50 border-red-200 text-red-800'
+            ? 'bg-status-success/10 border-status-success/20 text-status-success' 
+            : 'bg-status-danger/10 border-status-danger/20 text-status-danger'
         }`}>
           {message.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -134,23 +134,23 @@ export default function ProfilePage() {
             <div className="space-y-6">
               {/* Account Info */}
               <div className="grid gap-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <User className="w-5 h-5 text-gray-500" />
+                <div className="flex items-center gap-3 p-3 bg-light-panel dark:bg-dark-elevated rounded-lg">
+                  <User className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Username</p>
-                    <p className="text-gray-900 font-medium">{user.username}</p>
+                    <p className="text-sm font-medium text-muted-foreground">Username</p>
+                    <p className="text-foreground font-medium">{user.username}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Calendar className="w-5 h-5 text-gray-500" />
+                <div className="flex items-center gap-3 p-3 bg-light-panel dark:bg-dark-elevated rounded-lg">
+                  <Calendar className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Member Since</p>
-                    <p className="text-gray-900">
-                      {new Date(user.date_joined).toLocaleDateString('en-US', { 
+                    <p className="text-sm font-medium text-muted-foreground">Member Since</p>
+                    <p className="text-foreground">
+                      {user.date_joined ? new Date(user.date_joined).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
-                      })}
+                      }) : 'N/A'}
                     </p>
                   </div>
                 </div>

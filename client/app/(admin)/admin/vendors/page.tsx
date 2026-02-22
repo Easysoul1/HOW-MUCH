@@ -59,9 +59,9 @@ export default function AdminVendorsPage() {
                             </td>
                             <td className="px-6 py-4">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                  ${vendor.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
-                                    vendor.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
-                                    'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                                  ${vendor.status === 'active' ? 'bg-status-success/10 text-status-success border-status-success/20' : 
+                                    vendor.status === 'pending' ? 'bg-status-warning/10 text-status-warning border-status-warning/20' : 
+                                    'bg-status-danger/10 text-status-danger border-status-danger/20'}`}>
                                     {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
                                 </span>
                             </td>

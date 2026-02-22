@@ -13,9 +13,11 @@ interface User {
   phone_number?: string;
   city?: string;
   state?: string;
+  address?: string;
   latitude?: number;
   longitude?: number;
   is_verified: boolean;
+  date_joined?: string;
 }
 
 interface AuthContextType {

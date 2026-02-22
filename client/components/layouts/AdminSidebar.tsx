@@ -74,7 +74,7 @@ export function AdminSidebar() {
     <aside className="w-64 border-r border-dark-border bg-dark-panel hidden md:flex flex-col h-screen sticky top-0">
       <div className="h-16 flex items-center px-6 border-b border-dark-border">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-accent text-accent-foreground flex items-center justify-center font-bold">
             A
           </div>
           <span className="font-display font-medium text-lg text-white">
@@ -94,8 +94,8 @@ export function AdminSidebar() {
                 className={cn(
                   "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-primary/10 text-white"
-                    : "text-gray-300 hover:bg-white/5 hover:text-white"
+                    ? "bg-accent/15 text-accent border border-accent/20"
+                    : "text-muted-foreground hover:bg-white/5 hover:text-white"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export function AdminSidebar() {
                   <span>{item.title}</span>
                 </div>
                 {item.badge && (
-                  <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+                  <span className="bg-accent text-accent-foreground text-xs px-2 py-0.5 rounded-full font-bold">
                     {item.badge}
                   </span>
                 )}
@@ -116,18 +116,18 @@ export function AdminSidebar() {
       <div className="p-4 border-t border-dark-border">
         <div className="mb-3 px-3 py-2">
           <div className="flex items-center gap-3 text-sm">
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-              <span className="text-xs font-bold text-white">AD</span>
+            <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center">
+              <span className="text-xs font-bold text-accent">AD</span>
             </div>
             <div className="flex flex-col">
               <span className="text-white font-medium">System Admin</span>
-              <span className="text-xs text-gray-400">admin@howmuch.ng</span>
+              <span className="text-xs text-muted-foreground">admin@howmuch.ng</span>
             </div>
           </div>
         </div>
         <button 
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 w-full rounded-lg transition-colors font-medium"
+          className="flex items-center gap-3 px-3 py-2 text-sm text-status-danger hover:bg-status-danger/10 w-full rounded-lg transition-colors font-medium"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
