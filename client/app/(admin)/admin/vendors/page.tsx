@@ -17,7 +17,7 @@ export default function AdminVendorsPage() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-4 bg-dark-elem p-4 rounded-lg border border-dark-border">
+      <div className="flex items-center gap-4 bg-dark-panel p-4 rounded-lg border border-dark-border">
           <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
@@ -28,7 +28,7 @@ export default function AdminVendorsPage() {
           <Button variant="outline" className="border-dark-border text-white hover:bg-dark-panel">Filter</Button>
       </div>
 
-      <div className="bg-dark-elem rounded-lg border border-dark-border overflow-hidden">
+      <div className="bg-dark-panel rounded-lg border border-dark-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
                 <thead className="bg-dark-panel text-muted-foreground font-medium border-b border-dark-border">

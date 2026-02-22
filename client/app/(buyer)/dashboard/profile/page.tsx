@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { authApi } from "@/lib/api";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, User, Mail, Phone, MapPin, Calendar, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { user, loading, updateUser } = useAuth();
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -84,7 +86,13 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />

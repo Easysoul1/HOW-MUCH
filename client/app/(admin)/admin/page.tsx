@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 bg-dark-elem border border-dark-border rounded-xl p-6">
+        <div className="col-span-4 bg-dark-panel border border-dark-border rounded-xl p-6">
              <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-white">Revenue Overview</h3>
                 <BarChart3 className="w-4 h-4 text-muted-foreground"/>
@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
                 Chart Placeholder
              </div>
         </div>
-        <div className="col-span-3 bg-dark-elem border border-dark-border rounded-xl p-6">
+        <div className="col-span-3 bg-dark-panel border border-dark-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-white">Recent Activity</h3>
             </div>

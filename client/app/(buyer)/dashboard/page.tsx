@@ -30,7 +30,7 @@ export default function DashboardOverviewPage() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="font-display text-2xl font-bold">Overview</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-black">
           Your saved items, searches, and quick stats.
         </p>
       </motion.div>

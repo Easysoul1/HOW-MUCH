@@ -52,8 +52,8 @@ const config: Config = {
           border: "#E2E8F0",
         },
         muted: {
-          DEFAULT: "#71717A",
-          foreground: "#A1A1AA",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

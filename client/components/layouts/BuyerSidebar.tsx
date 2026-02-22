@@ -27,7 +27,7 @@ export const buyerItems = [
   },
   {
     title: "Saved Items",
-    href: "/dashboard/saved",
+    href: "/dashboard/saved-items",
     icon: Heart,
   },
   {
@@ -36,13 +36,13 @@ export const buyerItems = [
     icon: User,
   },
   {
-    title: "Addresses",
-    href: "/dashboard/addresses",
+    title: "Settings",
+    href: "/dashboard/settings",
     icon: MapPin,
   },
   {
-    title: "Recently Viewed",
-    href: "/dashboard/history",
+    title: "Notifications",
+    href: "/dashboard/notifications",
     icon: Clock,
   },
 ];
