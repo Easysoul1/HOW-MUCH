@@ -17,7 +17,7 @@ export default function AdminVendorsPage() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-4 bg-dark-elem p-4 rounded-lg border border-dark-border">
+      <div className="flex items-center gap-4 bg-dark-panel p-4 rounded-lg border border-dark-border">
           <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
@@ -28,7 +28,7 @@ export default function AdminVendorsPage() {
           <Button variant="outline" className="border-dark-border text-white hover:bg-dark-panel">Filter</Button>
       </div>
 
-      <div className="bg-dark-elem rounded-lg border border-dark-border overflow-hidden">
+      <div className="bg-dark-panel rounded-lg border border-dark-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
                 <thead className="bg-dark-panel text-muted-foreground font-medium border-b border-dark-border">
@@ -59,9 +59,9 @@ export default function AdminVendorsPage() {
                             </td>
                             <td className="px-6 py-4">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                  ${vendor.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
-                                    vendor.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
-                                    'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                                  ${vendor.status === 'active' ? 'bg-status-success/10 text-status-success border-status-success/20' : 
+                                    vendor.status === 'pending' ? 'bg-status-warning/10 text-status-warning border-status-warning/20' : 
+                                    'bg-status-danger/10 text-status-danger border-status-danger/20'}`}>
                                     {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
                                 </span>
                             </td>

@@ -30,7 +30,7 @@ export default function DashboardOverviewPage() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="font-display text-2xl font-bold">Overview</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-black">
           Your saved items, searches, and quick stats.
         </p>
       </motion.div>
@@ -43,7 +43,7 @@ export default function DashboardOverviewPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <Card className="glass-panel border-dark-border bg-dark-panel">
+            <Card>
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
@@ -68,7 +68,7 @@ export default function DashboardOverviewPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <Card className="glass-panel border-dark-border bg-dark-panel">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -89,7 +89,7 @@ export default function DashboardOverviewPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <Card className="glass-panel border-dark-border bg-dark-panel">
+        <Card>
           <CardHeader>
             <CardTitle>Quick actions</CardTitle>
           </CardHeader>

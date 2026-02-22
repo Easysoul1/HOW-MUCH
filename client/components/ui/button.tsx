@@ -20,7 +20,7 @@ const buttonVariants = cva(
           "bg-light-panel dark:bg-dark-panel text-foreground hover:bg-light-border dark:hover:bg-dark-elevated",
         ghost: "hover:bg-light-panel dark:hover:bg-dark-panel",
         link: "text-primary underline-offset-4 hover:underline dark:text-accent",
-        destructive: "bg-red-600 text-white hover:bg-red-700",
+        destructive: "bg-status-danger text-white hover:bg-status-danger/90 dark:bg-status-danger dark:hover:bg-status-danger/90",
       },
       size: {
         default: "h-10 px-5 py-2",

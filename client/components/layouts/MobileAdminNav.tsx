@@ -15,7 +15,7 @@ export function MobileAdminNav() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden text-gray-300 hover:text-white">
+        <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-white">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -23,7 +23,7 @@ export function MobileAdminNav() {
       <SheetContent side="left" className="w-[80vw] sm:w-[350px] p-0 bg-dark-panel border-dark-border">
          <div className="h-16 flex items-center px-6 border-b border-dark-border">
             <Link href="/admin" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-              <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-lg bg-accent text-accent-foreground flex items-center justify-center font-bold">
                 A
               </div>
               <span className="font-display font-medium text-lg text-white">
@@ -44,8 +44,8 @@ export function MobileAdminNav() {
                     className={cn(
                       "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                       isActive
-                        ? "bg-primary/10 text-white"
-                        : "text-gray-300 hover:bg-white/5 hover:text-white"
+                        ? "bg-accent/15 text-accent border border-accent/20"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-white"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -53,7 +53,7 @@ export function MobileAdminNav() {
                       <span>{item.title}</span>
                     </div>
                     {item.badge && (
-                      <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+                      <span className="bg-accent text-accent-foreground text-xs px-2 py-0.5 rounded-full font-bold">
                         {item.badge}
                       </span>
                     )}

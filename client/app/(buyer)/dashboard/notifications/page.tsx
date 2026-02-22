@@ -14,8 +14,8 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl font-bold">Notifications</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="font-display text-2xl font-bold text-black">Notifications</h1>
+        <p className="mt-1 text-black">
           Price alerts and order updates.
         </p>
       </motion.div>

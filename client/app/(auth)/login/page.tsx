@@ -95,7 +95,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white">
+                <Link href="/forgot-password" className="text-xs text-muted hover:text-foreground dark:text-muted-foreground dark:hover:text-white">
                   Forgot?
                 </Link>
               </div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-2 p-3 text-sm text-status-danger bg-status-danger/10 border border-status-danger/20 rounded-lg">
                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <p className="flex-1">{error}</p>
               </div>
@@ -129,9 +129,9 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-4 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-black dark:text-white font-medium hover:underline">
+            <Link href="/signup" className="text-foreground font-medium hover:underline">
               Sign up
             </Link>
           </p>

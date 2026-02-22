@@ -8,12 +8,16 @@
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --focus-ring: 160 84% 39%;
+    --muted: 240 5% 42%;
+    --muted-foreground: 240 5% 35%;
   }
 
   .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
     --focus-ring: 160 84% 45%;
+    --muted: 240 3% 65%;
+    --muted-foreground: 240 5% 85%;
   }
 
   html {

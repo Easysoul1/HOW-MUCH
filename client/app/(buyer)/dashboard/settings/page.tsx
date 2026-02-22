@@ -11,8 +11,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl font-bold">Settings</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="font-display text-2xl text-black font-bold">Settings</h1>
+        <p className="mt-1 text-black">
           Account and preferences.
         </p>
       </motion.div>
@@ -47,8 +47,8 @@ export default function SettingsPage() {
       >
         <Card className="border-dark-border bg-dark-panel">
           <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <CardTitle className="text-black">Notifications</CardTitle>
+            <p className="text-sm text-black">
               Price alerts and order updates.
             </p>
           </CardHeader>
