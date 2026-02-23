@@ -53,12 +53,14 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for product listings"""
     category_name = serializers.CharField(source='category.name', read_only=True)
+    suggested_by_email = serializers.EmailField(source='suggested_by.email', read_only=True)
 
     class Meta:
         model = Product
         fields = (
             'id', 'name', 'slug', 'sku', 'category', 'category_name',
-            'image', 'status', 'is_active', 'is_featured'
+            'image', 'status', 'is_active', 'is_featured',
+            'suggested_by_email', 'created_at',
         )
 
 

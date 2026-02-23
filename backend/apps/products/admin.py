@@ -7,7 +7,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'parent', 'is_active', 'created_at')
     list_filter = ('is_active', 'parent')
     search_fields = ('name', 'description')
-    prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ('slug',)
+    prepopulated_fields = {}
 
 
 @admin.register(UnitOfMeasurement)
@@ -33,7 +34,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'sku', 'category', 'status', 'is_active', 'is_featured', 'created_at')
     list_filter = ('is_active', 'is_featured', 'status', 'category', 'created_at')
     search_fields = ('name', 'sku', 'description')
-    prepopulated_fields = {'slug': ('name',)}
+    prepopulated_fields = {}
     filter_horizontal = ('available_sizes',)
     inlines = [ProductImageInline]
     readonly_fields = ('sku', 'slug', 'reviewed_at')

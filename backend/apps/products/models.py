@@ -68,7 +68,9 @@ class ProductSize(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.label:
-            self.label = f"{self.value}{self.unit.abbreviation}"
+            val = float(self.value)
+            formatted = str(int(val)) if val == int(val) else str(val)
+            self.label = f"{formatted}{self.unit.abbreviation}"
         super().save(*args, **kwargs)
 
     def __str__(self):

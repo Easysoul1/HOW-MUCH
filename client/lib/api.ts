@@ -107,6 +107,35 @@ class ApiClient {
     });
     return this.handleResponse<T>(response);
   }
+
+  async postFormData<T>(endpoint: string, formData: FormData, includeAuth = true): Promise<T> {
+    // Don't set Content-Type — browser sets it with correct boundary for multipart
+    const headers: HeadersInit = {};
+    if (includeAuth && typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    return this.handleResponse<T>(response);
+  }
+
+  async patchFormData<T>(endpoint: string, formData: FormData, includeAuth = true): Promise<T> {
+    const headers: HeadersInit = {};
+    if (includeAuth && typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'PATCH',
+      headers,
+      body: formData,
+    });
+    return this.handleResponse<T>(response);
+  }
 }
 
 const apiClient = new ApiClient(API_URL);
@@ -202,6 +231,34 @@ export const sizesApi = {
     const query = queryParams.toString();
     return apiClient.get(`/products/sizes/${query ? `?${query}` : ''}`, false);
   },
+  create: (data: { value: number; unit_id: number; label?: string }) =>
+    apiClient.post('/products/sizes/', data),
+};
+
+// Admin Products API
+export const adminProductsApi = {
+  list: (params?: { search?: string; status?: string; page?: number }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    const query = queryParams.toString();
+    return apiClient.get(`/products/${query ? `?${query}` : ''}`);
+  },
+  get: (slug: string) => apiClient.get(`/products/${slug}/`),
+  create: (formData: FormData) => apiClient.postFormData('/products/', formData),
+  update: (slug: string, formData: FormData) => apiClient.patchFormData(`/products/${slug}/`, formData),
+  delete: (slug: string) => apiClient.delete(`/products/${slug}/`),
+  approve: (slug: string) => apiClient.post(`/products/${slug}/approve/`),
+  reject: (slug: string, reason: string) => apiClient.post(`/products/${slug}/reject/`, { reason }),
+  pending: () => apiClient.get('/products/pending/'),
+};
+
+// Vendor Products API
+export const vendorProductsApi = {
+  mySuggestions: () => apiClient.get('/products/my_suggestions/'),
+  suggest: (formData: FormData) => apiClient.postFormData('/products/', formData),
+  update: (slug: string, formData: FormData) => apiClient.patchFormData(`/products/${slug}/`, formData),
 };
 
 export default apiClient;
