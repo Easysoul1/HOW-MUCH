@@ -91,7 +91,7 @@ export default function SignupPage() {
       const userType = role === "vendor" ? "VENDOR" : "CUSTOMER";
       
       const registrationData = {
-        username: formData.username,
+        username: formData.email,
         email: formData.email,
         password: formData.password,
         password_confirm: formData.confirmPassword,
@@ -294,17 +294,6 @@ export default function SignupPage() {
                       />
                     </div>
                   )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      placeholder="johndoe123"
-                      required
-                      value={formData.username}
-                      onChange={handleChange}
-                    />
-                  </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">

@@ -18,6 +18,7 @@ interface User {
   longitude?: number;
   is_verified: boolean;
   date_joined?: string;
+  created_at?: string;
 }
 
 interface AuthContextType {

@@ -20,7 +20,7 @@ class UnitOfMeasurementAdmin(admin.ModelAdmin):
 class ProductSizeAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'value', 'unit')
     list_filter = ('unit',)
-    search_fields = ('name',)
+    search_fields = ('label',)
 
 
 class ProductImageInline(admin.TabularInline):
@@ -30,13 +30,14 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'sku', 'category', 'is_active', 'is_featured', 'created_at')
-    list_filter = ('is_active', 'is_featured', 'category', 'created_at')
+    list_display = ('name', 'sku', 'category', 'status', 'is_active', 'is_featured', 'created_at')
+    list_filter = ('is_active', 'is_featured', 'status', 'category', 'created_at')
     search_fields = ('name', 'sku', 'description')
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('available_sizes',)
     inlines = [ProductImageInline]
-    
+    readonly_fields = ('sku', 'slug', 'reviewed_at')
+
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'sku', 'description', 'category')
@@ -45,7 +46,11 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('available_sizes', 'image')
         }),
         ('Status', {
-            'fields': ('is_active', 'is_featured')
+            'fields': ('is_active', 'is_featured', 'status', 'rejection_reason')
+        }),
+        ('Review', {
+            'fields': ('suggested_by', 'reviewed_by', 'reviewed_at'),
+            'classes': ('collapse',),
         }),
     )
 

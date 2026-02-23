@@ -63,8 +63,15 @@ class LoginView(APIView):
         
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
-        
+
+        # Try authenticating by username first, then fall back to email
         user = authenticate(username=username, password=password)
+        if user is None:
+            try:
+                user_obj = User.objects.get(email__iexact=username)
+                user = authenticate(username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
         
         if user is None:
             return Response(
