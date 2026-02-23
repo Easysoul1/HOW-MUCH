@@ -152,6 +152,12 @@ export const authApi = {
     new_password: string;
     new_password_confirm: string;
   }) => apiClient.post('/users/change-password/', data),
+
+  requestEmailVerification: (email: string) => 
+    apiClient.post('/users/request-email-verification/', { email }, false),
+    
+  verifyEmailCode: (email: string, code: string) => 
+    apiClient.post('/users/verify-email-code/', { email, otp_code: code }, false),
 };
 
 // Products API
@@ -202,6 +208,58 @@ export const sizesApi = {
     const query = queryParams.toString();
     return apiClient.get(`/products/sizes/${query ? `?${query}` : ''}`, false);
   },
+};
+
+// Vendors API
+export const vendorsApi = {
+  list: (params?: any) => {
+    const query = new URLSearchParams(params || {}).toString();
+    return apiClient.get(`/vendors/${query ? `?${query}` : ''}`, true);
+  },
+  get: (id: string) => apiClient.get(`/vendors/${id}/`, true),
+  update: (id: string, data: any) => apiClient.put(`/vendors/${id}/`, data, true),
+  partialUpdate: (id: string, data: any) => apiClient.patch(`/vendors/${id}/`, data, true),
+};
+
+// Buyers API (Users filtered by CUSTOMER type)
+export const buyersApi = {
+  list: (params?: any) => {
+    const query = new URLSearchParams({ user_type: 'CUSTOMER', ...(params || {}) }).toString();
+    return apiClient.get(`/users/${query ? `?${query}` : ''}`, true);
+  },
+  get: (id: string) => apiClient.get(`/users/${id}/`, true),
+  update: (id: string, data: any) => apiClient.put(`/users/${id}/`, data, true),
+};
+
+// Orders API
+export const ordersApi = {
+  list: (params?: any) => {
+    const query = new URLSearchParams(params || {}).toString();
+    return apiClient.get(`/orders/${query ? `?${query}` : ''}`, true);
+  },
+  get: (id: string) => apiClient.get(`/orders/${id}/`, true),
+  create: (data: any) => apiClient.post('/orders/', data, true),
+  updateStatus: (id: string, status: string) => apiClient.patch(`/orders/${id}/`, { status }, true),
+};
+
+// Analytics API
+export const analyticsApi = {
+  getAdminOverview: () => apiClient.get('/analytics/admin/overview/', true),
+  getVendorOverview: () => apiClient.get('/analytics/vendor/overview/', true),
+};
+
+// Approvals API
+export const approvalsApi = {
+  listPendingVendors: () => apiClient.get('/vendors/?status=pending', true),
+  approveVendor: (id: string) => apiClient.patch(`/vendors/${id}/`, { status: 'active' }, true),
+  rejectVendor: (id: string) => apiClient.patch(`/vendors/${id}/`, { status: 'rejected' }, true),
+};
+
+// Wishlist API
+export const wishlistApi = {
+  list: () => apiClient.get('/wishlist/', true),
+  add: (productId: number) => apiClient.post('/wishlist/', { product: productId }, true),
+  remove: (id: string | number) => apiClient.delete(`/wishlist/${id}/`, true),
 };
 
 export default apiClient;
