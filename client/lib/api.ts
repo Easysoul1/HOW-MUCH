@@ -261,4 +261,18 @@ export const vendorProductsApi = {
   update: (slug: string, formData: FormData) => apiClient.patchFormData(`/products/${slug}/`, formData),
 };
 
+// Vendor Listings (Inventory) API
+export const listingsApi = {
+  list: (params?: { search?: string; is_available?: boolean }) => {
+    const q = new URLSearchParams();
+    if (params?.search) q.append('search', params.search);
+    if (params?.is_available !== undefined) q.append('is_available', String(params.is_available));
+    const qs = q.toString();
+    return apiClient.get(`/pricing/listings/${qs ? `?${qs}` : ''}`);
+  },
+  create: (data: object) => apiClient.post('/pricing/listings/', data),
+  update: (id: number, data: object) => apiClient.patch(`/pricing/listings/${id}/`, data),
+  delete: (id: number) => apiClient.delete(`/pricing/listings/${id}/`),
+};
+
 export default apiClient;
