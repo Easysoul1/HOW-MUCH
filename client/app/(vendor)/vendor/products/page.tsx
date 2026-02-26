@@ -212,7 +212,7 @@ export default function VendorProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-           <h1 className="text-3xl font-milano font-bold text-black dark:text-white">Products</h1>
+           <h1 className="text-3xl font-milano font-bold text-black">Products</h1>
            <p className="text-muted-foreground">Manage your inventory and pricing.</p>
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -240,8 +240,8 @@ export default function VendorProductsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-                <div key={product.id} className="bg-white dark:bg-dark-panel rounded-xl border border-light-border dark:border-dark-border overflow-hidden group hover:shadow-lg transition-shadow">
-                    <div className="relative aspect-square bg-light-panel dark:bg-dark-elevated">
+                <div key={product.id} className="bg-white rounded-xl border border-light-border overflow-hidden group hover:shadow-lg transition-shadow">
+                    <div className="relative aspect-square bg-light-panel">
                          <Image 
                            src={product.image || product.imageUrl || 'https://via.placeholder.com/300'} 
                            alt={product.name}
@@ -249,7 +249,7 @@ export default function VendorProductsPage() {
                            className="object-cover"
                          />
                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                             <button className="p-2 bg-white dark:bg-dark-panel rounded-full shadow-sm hover:bg-light-panel dark:hover:bg-dark-elevated text-foreground">
+                             <button className="p-2 bg-white rounded-full shadow-sm hover:bg-light-panel text-foreground">
                                  <Edit2 className="w-4 h-4" />
                              </button>
                          </div>
@@ -257,7 +257,7 @@ export default function VendorProductsPage() {
                     <div className="p-4">
                         <div className="flex justify-between items-start mb-2">
                             <div>
-                                <h3 className="font-medium text-black dark:text-white truncate pr-4">{product.name}</h3>
+                                <h3 className="font-medium text-black truncate pr-4">{product.name}</h3>
                                 <p className="text-xs text-muted-foreground">{product.category_name || product.category || 'Uncategorized'}</p>
                             </div>
                             <button className="text-muted-foreground hover:text-foreground">
@@ -266,7 +266,7 @@ export default function VendorProductsPage() {
                         </div>
                         <div className="flex items-end justify-between mt-4">
                             <div>
-                                <span className="text-lg font-bold text-black dark:text-white">₦{parseFloat(product.price).toLocaleString()}</span>
+                                <span className="text-lg font-bold text-black">₦{parseFloat(product.price).toLocaleString()}</span>
                                 {product.previousPrice && (
                                     <span className="text-xs text-muted-foreground line-through ml-2">₦{parseFloat(product.previousPrice).toLocaleString()}</span>
                                 )}
@@ -280,8 +280,8 @@ export default function VendorProductsPage() {
             ))}
             
             {/* Add New Card Placeholder */}
-            <button className="bg-light-panel dark:bg-dark-elevated rounded-xl border-2 border-dashed border-light-border dark:border-dark-border flex flex-col items-center justify-center gap-4 hover:border-primary dark:hover:border-accent hover:bg-white dark:hover:bg-dark-panel transition-colors aspect-square">
-                <div className="w-12 h-12 rounded-full bg-white dark:bg-dark-panel flex items-center justify-center shadow-sm">
+            <button className="bg-light-panel rounded-xl border-2 border-dashed border-light-border flex flex-col items-center justify-center gap-4 hover:border-primary hover:bg-white transition-colors aspect-square">
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
                     <Plus className="w-6 h-6 text-foreground" />
                 </div>
                 <span className="font-medium text-muted-foreground">Add New Product</span>

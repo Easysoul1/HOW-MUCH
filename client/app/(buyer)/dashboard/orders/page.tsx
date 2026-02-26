@@ -35,7 +35,7 @@ export default function BuyerDashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl text-black dark:text-white font-display font-bold">My Orders</h1>
+        <h1 className="text-2xl text-black font-display font-bold">My Orders</h1>
         <Button variant="outline" asChild>
           <Link href="/shop">Browse Products</Link>
         </Button>

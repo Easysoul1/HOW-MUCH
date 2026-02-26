@@ -52,8 +52,8 @@ export default function SavedItemsPage() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl text-black dark:text-white font-bold">Saved items</h1>
-        <p className="mt-1 text-black dark:text-gray-300">
+        <h1 className="font-display text-2xl text-black font-bold">Saved items</h1>
+        <p className="mt-1 text-black">
           Track prices for items you care about.
         </p>
       </motion.div>

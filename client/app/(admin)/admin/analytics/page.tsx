@@ -119,12 +119,12 @@ export default function AnalyticsPage() {
                 <div className="flex items-center gap-3">
                    <div className={`w-10 h-10 rounded-lg ${cat.bg} flex items-center justify-center ${cat.color} font-medium`}>{cat.txId}</div>
                    <div>
-                      <h4 className="text-sm font-medium text-white">{cat.name}</h4>
+                      <h4 className="text-sm font-medium text-gray-900">{cat.name}</h4>
                       <p className="text-xs text-muted-foreground">{cat.count.toLocaleString()} transactions</p>
                    </div>
                 </div>
                 <div className="text-right">
-                   <p className="text-sm font-medium text-white">₦{cat.revenue}M</p>
+                   <p className="text-sm font-medium text-gray-900">₦{cat.revenue}M</p>
                    <p className="text-xs text-status-success flex items-center justify-end gap-1"><ArrowUpRight className="w-3 h-3" /> +{cat.trend}%</p>
                 </div>
               </div>

@@ -41,12 +41,7 @@ const config: Config = {
           muted: "#F4F4F4",
           dim: "#E4E4E7",
         },
-        dark: {
-          DEFAULT: "#0F0F0F",
-          panel: "#141718",
-          elevated: "#1A1A1A",
-          border: "#333333",
-        },
+
         light: {
           DEFAULT: "#F8FAFC",
           panel: "#F1F5F9",
@@ -98,18 +93,17 @@ const config: Config = {
       },
       boxShadow: {
         glass: "0 4px 24px -1px rgba(0, 0, 0, 0.06), 0 2px 8px -2px rgba(0, 0, 0, 0.04)",
-        "glass-dark":
-          "0 4px 24px -1px rgba(0, 0, 0, 0.28), 0 2px 8px -2px rgba(0, 0, 0, 0.18)",
+
         glow: "0 0 32px -8px rgba(0, 208, 132, 0.2)",
         "glow-amber": "0 0 32px -8px rgba(245, 158, 11, 0.16)",
         "inner-soft": "inset 0 1px 1px 0 rgba(255, 255, 255, 0.05)",
-        "inner-soft-dark": "inset 0 1px 0 0 rgba(255, 255, 255, 0.04)",
+
         "card-hover": "0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-hero": "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.88) 50%, rgba(241,245,249,0.95) 100%)",
-        "gradient-hero-dark": "linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.92) 100%)",
+
         "glass-panel":
           "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
       },

@@ -423,7 +423,7 @@ export default function SignupPage() {
                           value={formData.email}
                           onChange={handleChange}
                           disabled={emailVerified}
-                          className={cn("flex-1", emailVerified && "bg-status-success/10 border-status-success text-status-success dark:text-status-success disabled:opacity-100")}
+                          className={cn("flex-1", emailVerified && "bg-status-success/10 border-status-success text-status-success disabled:opacity-100")}
                         />
                         {!emailVerified && (
                           <Button 
@@ -450,7 +450,7 @@ export default function SignupPage() {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="mt-3 p-3 bg-light-panel dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-lg space-y-3"
+                            className="mt-3 p-3 bg-light-panel border border-light-border rounded-lg space-y-3"
                           >
                             <Label htmlFor="otpCode" className="text-xs">Enter Verification Code</Label>
                             <div className="flex gap-2">
