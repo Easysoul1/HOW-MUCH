@@ -50,7 +50,7 @@ function SearchResultsInner() {
       <div className="flex gap-6">
         {/* Sticky filter panel */}
         <aside className="hidden w-56 shrink-0 lg:block">
-          <div className="sticky top-24 rounded-lg border border-light-border bg-white p-4 dark:border-dark-border dark:bg-dark-panel">
+          <div className="sticky top-24 rounded-lg border border-light-border bg-white p-4">
             <div className="flex items-center gap-2 font-medium">
               <Filter className="h-4 w-4" />
               Filters
@@ -107,7 +107,7 @@ function SearchResultsInner() {
                 transition={{ delay: i * 0.05 }}
               >
                 <HoverLift y={-4}>
-                  <Card className="overflow-hidden border border-light-border shadow-depth-1 transition-shadow hover:shadow-depth-2 dark:border-dark-border">
+                  <Card className="overflow-hidden border border-light-border shadow-depth-1 transition-shadow hover:shadow-depth-2">
                     <CardContent className="p-0">
                       <div className="flex flex-col sm:flex-row sm:items-stretch">
                         <div className="relative hidden w-40 shrink-0 overflow-hidden sm:block">
@@ -140,7 +140,7 @@ function SearchResultsInner() {
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4 border-t border-light-border bg-light-panel/50 p-4 dark:border-dark-border dark:bg-dark-elevated/50 sm:border-t-0 sm:border-l sm:px-6">
+                          <div className="flex items-center gap-4 border-t border-light-border bg-light-panel/50 p-4 sm:border-t-0 sm:border-l sm:px-6">
                             <MiniTrend
                               data={r.trend}
                               trend={
@@ -152,7 +152,7 @@ function SearchResultsInner() {
                               }
                             />
                             <div className="text-right">
-                              <AnimatedPrice value={r.price} className="text-xl font-semibold text-primary dark:text-accent" />
+                              <AnimatedPrice value={r.price} className="text-xl font-semibold text-primary" />
                               <div className="mt-2 flex gap-2">
                                 <Button size="sm" variant="secondary" asChild>
                                   <Link href={`/item/${r.id}`}>Details</Link>

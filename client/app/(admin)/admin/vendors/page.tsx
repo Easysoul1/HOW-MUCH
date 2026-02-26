@@ -8,52 +8,52 @@ export default function AdminVendorsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-           <h1 className="text-3xl font-display font-medium text-white">Vendors</h1>
-           <p className="text-muted-foreground">Manage vendor accounts and approvals.</p>
+           <h1 className="text-2xl sm:text-3xl font-display font-medium text-gray-900">Vendors</h1>
+           <p className="text-gray-500">Manage vendor accounts and approvals.</p>
         </div>
-        <Button className="bg-primary text-white hover:bg-primary/90">
+        <Button className="bg-primary text-gray-900 hover:bg-primary/90">
              <UserPlus className="w-4 h-4 mr-2" />
              Add Vendor
         </Button>
       </div>
 
-      <div className="flex items-center gap-4 bg-dark-panel p-4 rounded-lg border border-dark-border">
+      <div className="flex items-center gap-4 bg-white p-4 rounded-lg border border-gray-200">
           <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <Input 
                 placeholder="Search vendors..." 
-                className="pl-10 bg-dark-panel border-dark-border text-white focus:ring-primary"
+                className="pl-10 bg-white border-gray-200 text-gray-900 focus:ring-primary"
               />
           </div>
-          <Button variant="outline" className="border-dark-border text-white hover:bg-dark-panel">Filter</Button>
+          <Button variant="outline" className="border-gray-200 text-gray-900 hover:bg-white">Filter</Button>
       </div>
 
-      <div className="bg-dark-panel rounded-lg border border-dark-border overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-                <thead className="bg-dark-panel text-muted-foreground font-medium border-b border-dark-border">
+                <thead className="bg-white text-gray-500 font-medium border-b border-gray-200">
                     <tr>
                         <th className="px-6 py-4">Vendor</th>
                         <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 flex items-center gap-1 cursor-pointer hover:text-white">
+                        <th className="px-6 py-4 flex items-center gap-1 cursor-pointer hover:text-gray-900">
                             Revenue <ArrowUpDown className="w-3 h-3" />
                         </th>
                         <th className="px-6 py-4">Joined</th>
                         <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-dark-border">
+                <tbody className="divide-y divide-gray-200">
                     {MOCK_VENDORS.map((vendor) => (
-                        <tr key={vendor.id} className="hover:bg-white/5 transition-colors">
+                        <tr key={vendor.id} className="hover:bg-gray-50 transition-colors">
                             <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
                                     <div 
-                                      className="w-10 h-10 rounded-full bg-cover bg-center border border-dark-border"
+                                      className="w-10 h-10 rounded-full bg-cover bg-center border border-gray-200"
                                       style={{ backgroundImage: `url(${vendor.imageUrl})` }}
                                     />
                                     <div>
-                                        <div className="font-medium text-white">{vendor.name}</div>
-                                        <div className="text-xs text-muted-foreground">{vendor.location}</div>
+                                        <div className="font-medium text-gray-900">{vendor.name}</div>
+                                        <div className="text-xs text-gray-500">{vendor.location}</div>
                                     </div>
                                 </div>
                             </td>
@@ -65,14 +65,14 @@ export default function AdminVendorsPage() {
                                     {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 text-white font-mono">
+                            <td className="px-6 py-4 text-gray-900 font-mono">
                                 ₦{vendor.revenue.toLocaleString()}
                             </td>
-                            <td className="px-6 py-4 text-muted-foreground">
+                            <td className="px-6 py-4 text-gray-500">
                                 {vendor.joinedDate}
                             </td>
                             <td className="px-6 py-4 text-right">
-                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white">
+                                <Button variant="ghost" size="icon" className="text-gray-500 hover:text-gray-900">
                                     <MoreHorizontal className="w-4 h-4" />
                                 </Button>
                             </td>

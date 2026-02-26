@@ -176,14 +176,14 @@ export default function ProfilePage() {
             <div className="space-y-6">
               {/* Account Info */}
               <div className="grid gap-4">
-                <div className="flex items-center gap-3 p-3 bg-light-panel dark:bg-dark-elevated rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-light-panel rounded-lg">
                   <User className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Username</p>
                     <p className="text-foreground font-medium">{user.username}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-light-panel dark:bg-dark-elevated rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-light-panel rounded-lg">
                   <Calendar className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Member Since</p>
@@ -287,13 +287,13 @@ export default function ProfilePage() {
                 </div>
 
                 {locationError && isEditing && (
-                  <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <span>{locationError}</span>
                   </div>
                 )}
                 {locationSuccess && isEditing && (
-                  <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm text-green-700 dark:text-green-300">
+                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                     <span>Location detected — address fields updated.</span>
                   </div>

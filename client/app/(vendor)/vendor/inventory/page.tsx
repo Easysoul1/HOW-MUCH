@@ -58,9 +58,32 @@ export default function VendorInventoryPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({ ...EMPTY_FORM });
 
+  interface ProductDetail { available_sizes: Size[]; }
+
   // Product search within modal
   const [productSearch, setProductSearch] = useState("");
+
+  // Product sizes for the selected product in the modal
+  const [productSizes, setProductSizes] = useState<Size[]>([]);
+  const [loadingSizes, setLoadingSizes] = useState(false);
+
+  const loadProductSizes = async (product: Product) => {
+    setLoadingSizes(true);
+    setProductSizes([]);
+    try {
+      const detail = await productsApi.get(product.slug) as ProductDetail;
+      setProductSizes(detail.available_sizes ?? []);
+    } catch { setProductSizes([]); }
+    finally { setLoadingSizes(false); }
+  };
   const [togglingId, setTogglingId] = useState<number | null>(null);
+
+  // Filters
+  const [filterSize, setFilterSize] = useState("");
+  const [filterMinPrice, setFilterMinPrice] = useState("");
+  const [filterMaxPrice, setFilterMaxPrice] = useState("");
+  const [filterAvailable, setFilterAvailable] = useState<"all" | "yes" | "no">("all");
+  const [filterUpdated, setFilterUpdated] = useState<"all" | "today" | "week" | "month">("all");
 
   const isEditing = editingId !== null;
 
@@ -86,6 +109,7 @@ export default function VendorInventoryPage() {
   const openCreate = () => {
     setForm({ ...EMPTY_FORM });
     setProductSearch("");
+    setProductSizes([]);
     setEditingId(null);
     setError("");
     setShowModal(true);
@@ -104,6 +128,9 @@ export default function VendorInventoryPage() {
     setEditingId(l.id);
     setError("");
     setShowModal(true);
+    // Load sizes for the product being edited
+    const p = products.find(p => p.id === l.product);
+    if (p) loadProductSizes(p);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -152,11 +179,39 @@ export default function VendorInventoryPage() {
   };
 
   // Filtered listings
-  const filtered = listings.filter(l =>
-    l.product_name.toLowerCase().includes(search.toLowerCase()) ||
-    l.brand.toLowerCase().includes(search.toLowerCase()) ||
-    l.size_label.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = listings.filter(l => {
+    if (search && !(
+      l.product_name.toLowerCase().includes(search.toLowerCase()) ||
+      l.brand.toLowerCase().includes(search.toLowerCase()) ||
+      l.size_label.toLowerCase().includes(search.toLowerCase())
+    )) return false;
+
+    if (filterSize && l.size !== parseInt(filterSize)) return false;
+
+    if (filterMinPrice && parseFloat(l.price) < parseFloat(filterMinPrice)) return false;
+    if (filterMaxPrice && parseFloat(l.price) > parseFloat(filterMaxPrice)) return false;
+
+    if (filterAvailable === "yes" && !l.is_available) return false;
+    if (filterAvailable === "no" && l.is_available) return false;
+
+    if (filterUpdated !== "all") {
+      const now = Date.now();
+      const updated = new Date(l.updated_at).getTime();
+      const diff = now - updated;
+      if (filterUpdated === "today" && diff > 86400000) return false;
+      if (filterUpdated === "week" && diff > 604800000) return false;
+      if (filterUpdated === "month" && diff > 2592000000) return false;
+    }
+
+    return true;
+  });
+
+  const hasFilters = filterSize || filterMinPrice || filterMaxPrice || filterAvailable !== "all" || filterUpdated !== "all";
+
+  const clearFilters = () => {
+    setFilterSize(""); setFilterMinPrice(""); setFilterMaxPrice("");
+    setFilterAvailable("all"); setFilterUpdated("all");
+  };
 
   // Filtered products in modal
   const filteredProducts = products.filter(p =>
@@ -185,6 +240,79 @@ export default function VendorInventoryPage() {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Size */}
+        <select
+          value={filterSize}
+          onChange={e => setFilterSize(e.target.value)}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="">All sizes</option>
+          {sizes.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+        </select>
+
+        {/* Price range */}
+        <div className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-1.5 bg-white">
+          <span className="text-xs text-gray-400">₦</span>
+          <input
+            type="number"
+            min="0"
+            placeholder="Min"
+            value={filterMinPrice}
+            onChange={e => setFilterMinPrice(e.target.value)}
+            className="w-16 text-sm text-gray-700 bg-white focus:outline-none placeholder:text-gray-300"
+          />
+          <span className="text-gray-300">—</span>
+          <input
+            type="number"
+            min="0"
+            placeholder="Max"
+            value={filterMaxPrice}
+            onChange={e => setFilterMaxPrice(e.target.value)}
+            className="w-16 text-sm text-gray-700 bg-white focus:outline-none placeholder:text-gray-300"
+          />
+        </div>
+
+        {/* Availability */}
+        <select
+          value={filterAvailable}
+          onChange={e => setFilterAvailable(e.target.value as "all" | "yes" | "no")}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="all">All availability</option>
+          <option value="yes">In stock</option>
+          <option value="no">Out of stock</option>
+        </select>
+
+        {/* Updated */}
+        <select
+          value={filterUpdated}
+          onChange={e => setFilterUpdated(e.target.value as "all" | "today" | "week" | "month")}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="all">Any time</option>
+          <option value="today">Updated today</option>
+          <option value="week">Last 7 days</option>
+          <option value="month">Last 30 days</option>
+        </select>
+
+        {/* Clear */}
+        {hasFilters && (
+          <button
+            onClick={clearFilters}
+            className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg px-2.5 py-1.5 transition-colors"
+          >
+            <X className="w-3 h-3" /> Clear filters
+          </button>
+        )}
+
+        {/* Count */}
+        <span className="text-xs text-gray-400 ml-auto">
+          {filtered.length} of {listings.length} listing{listings.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       {/* Listings */}
@@ -307,7 +435,11 @@ export default function VendorInventoryPage() {
                         key={p.id}
                         type="button"
                         className="w-full text-left px-3 py-2.5 text-sm hover:bg-green-50 flex items-center gap-2 border-b border-gray-100 last:border-0"
-                        onClick={() => { setForm(f => ({ ...f, product: String(p.id) })); setProductSearch(p.name); }}
+                        onClick={() => {
+                          setForm(f => ({ ...f, product: String(p.id), size: "" }));
+                          setProductSearch(p.name);
+                          loadProductSizes(p);
+                        }}
                       >
                         {p.image && <img src={p.image} alt="" className="w-7 h-7 rounded object-cover" />}
                         <div>
@@ -321,7 +453,7 @@ export default function VendorInventoryPage() {
                 {form.product && (
                   <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 border border-green-200 px-3 py-1.5 rounded-lg">
                     <span>✓ {productSearch} selected</span>
-                    <button type="button" onClick={() => { setForm(f => ({ ...f, product: "" })); setProductSearch(""); }} className="ml-auto text-gray-400 hover:text-gray-600">
+                    <button type="button" onClick={() => { setForm(f => ({ ...f, product: "", size: "" })); setProductSearch(""); setProductSizes([]); }} className="ml-auto text-gray-400 hover:text-gray-600">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -332,14 +464,30 @@ export default function VendorInventoryPage() {
               <div className="space-y-1.5">
                 <Label className="text-gray-700 font-medium text-sm">Size *</Label>
                 <select
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-auto"
                   value={form.size}
                   onChange={e => setForm(f => ({ ...f, size: e.target.value }))}
                   required
+                  disabled={!!form.product && loadingSizes}
                 >
-                  <option value="">Select a size</option>
-                  {sizes.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                  {loadingSizes ? (
+                    <option>Loading sizes...</option>
+                  ) : form.product && productSizes.length === 0 ? (
+                    <option value="">No sizes defined for this product</option>
+                  ) : (
+                    <>
+                      <option value="" className="text-gray-400">
+                        {form.product ? "Select a size" : "Select a product first"}
+                      </option>
+                      {(form.product ? productSizes : sizes).map(s => (
+                        <option key={s.id} value={s.id} className="text-gray-800">{s.label}</option>
+                      ))}
+                    </>
+                  )}
                 </select>
+                {form.product && productSizes.length === 0 && !loadingSizes && (
+                  <p className="text-xs text-amber-600">This product has no sizes defined. Ask an admin to add sizes.</p>
+                )}
               </div>
 
               {/* Brand */}

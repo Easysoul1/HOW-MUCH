@@ -42,3 +42,35 @@ class VendorListing(models.Model):
     def __str__(self):
         brand_str = f" ({self.brand})" if self.brand else ""
         return f"{self.vendor.email} — {self.product.name}{brand_str} {self.size.label} @ ₦{self.price}"
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                old = VendorListing.objects.get(pk=self.pk)
+                if old.price != self.price:
+                    # Record the previous price before overwriting it
+                    PriceHistory.objects.create(listing=self, price=old.price)
+            except VendorListing.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+
+
+class PriceHistory(models.Model):
+    """
+    Immutable record of a previous price for a listing.
+    Created automatically whenever a vendor updates the price of a listing.
+    """
+    listing = models.ForeignKey(
+        VendorListing,
+        on_delete=models.CASCADE,
+        related_name='price_history',
+    )
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-recorded_at']
+
+    def __str__(self):
+        return f"{self.listing} — ₦{self.price} at {self.recorded_at:%Y-%m-%d %H:%M}"
+

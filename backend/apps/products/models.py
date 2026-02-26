@@ -163,3 +163,48 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - Image"
+
+
+class SizeRequest(models.Model):
+    """
+    A vendor's request to add a new size to a product.
+    Admin reviews and approves (which creates the ProductSize and links it).
+    """
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    )
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='size_requests'
+    )
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='size_requests',
+    )
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    unit = models.ForeignKey(
+        UnitOfMeasurement, on_delete=models.CASCADE, related_name='size_requests'
+    )
+    note = models.TextField(blank=True, help_text="Optional reason for the suggestion")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reviewed_size_requests',
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['product', 'value', 'unit', 'requested_by']
+
+    def __str__(self):
+        val = float(self.value)
+        formatted = str(int(val)) if val == int(val) else str(val)
+        return f"{formatted}{self.unit.abbreviation} for {self.product.name} (by {self.requested_by.email})"

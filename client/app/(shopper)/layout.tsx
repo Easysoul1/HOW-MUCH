@@ -7,13 +7,13 @@ export default function ShopperLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="dark min-h-screen bg-dark text-foreground">
-      <header className="border-b border-dark-border px-4 py-4 md:px-6">
+    <div className="min-h-screen bg-gray-50 text-foreground">
+      <header className="border-b border-light-border bg-white px-4 py-4 md:px-6">
         <div className="flex items-center justify-between">
-          <Link href="/shopper" className="font-display text-xl font-bold text-accent">
+          <Link href="/shopper" className="font-display text-xl font-bold text-green-700">
             {SITE.name} — Shopper
           </Link>
-          <nav className="flex gap-4 text-sm">
+          <nav className="hidden sm:flex gap-4 text-sm">
             <Link href="/shopper/dashboard" className="text-muted-foreground hover:text-foreground">Dashboard</Link>
             <Link href="/shopper/requests" className="text-muted-foreground hover:text-foreground">Requests</Link>
             <Link href="/shopper/earnings" className="text-muted-foreground hover:text-foreground">Earnings</Link>

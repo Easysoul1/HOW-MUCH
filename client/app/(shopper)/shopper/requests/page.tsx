@@ -15,7 +15,7 @@ export default function ActiveRequestsPage() {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display text-2xl font-bold">Active requests</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-gray-500">
           Accept and fulfill shopper requests.
         </p>
       </motion.div>
@@ -23,11 +23,11 @@ export default function ActiveRequestsPage() {
       <ul className="space-y-4">
         {MOCK_REQUESTS.map((r, i) => (
           <motion.li key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Card className="border-dark-border bg-dark-panel">
+            <Card className="border-gray-200 bg-white">
               <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
                 <div>
                   <p className="font-mono text-sm">{r.id}</p>
-                  <p className="text-sm text-muted-foreground">{r.items} items · {r.location}</p>
+                  <p className="text-sm text-gray-500">{r.items} items · {r.location}</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <p className="font-display font-semibold text-accent">{formatPrice(r.total)}</p>

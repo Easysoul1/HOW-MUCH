@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import VendorListing
-from apps.products.serializers import ProductListSerializer, ProductSizeSerializer
+from .models import VendorListing, PriceHistory
 
 
 class VendorListingSerializer(serializers.ModelSerializer):
@@ -27,10 +26,8 @@ class VendorListingSerializer(serializers.ModelSerializer):
         return product
 
     def validate_size(self, size):
-        # Validate that size belongs to the selected product (if product already validated)
         product = self.initial_data.get('product') or (self.instance.product_id if self.instance else None)
         if product and size.products.filter(id=product).exists() is False:
-            # Size doesn't have to be restricted to product — allow any size
             pass
         return size
 
@@ -43,13 +40,14 @@ class PublicListingSerializer(serializers.ModelSerializer):
     size_label = serializers.CharField(source='size.label', read_only=True)
     vendor_name = serializers.SerializerMethodField()
     updated_at = serializers.DateTimeField(read_only=True)
+    price_change_pct = serializers.SerializerMethodField()
 
     class Meta:
         model = VendorListing
         fields = (
             'id', 'product_name', 'product_slug', 'product_image',
             'size_label', 'brand', 'price', 'is_available',
-            'vendor_name', 'updated_at',
+            'vendor_name', 'updated_at', 'price_change_pct',
         )
 
     def get_vendor_name(self, obj):
@@ -57,3 +55,40 @@ class PublicListingSerializer(serializers.ModelSerializer):
         if profile and hasattr(profile, 'business_name'):
             return profile.business_name
         return obj.vendor.get_full_name() or obj.vendor.email.split('@')[0]
+
+    def get_price_change_pct(self, obj):
+        """
+        Returns % change from the previous price to current.
+        Positive = price went up, negative = price went down, None = no history.
+        """
+        last = obj.price_history.order_by('-recorded_at').first()
+        if not last:
+            return None
+        old = float(last.price)
+        current = float(obj.price)
+        if old == 0:
+            return None
+        return round((current - old) / old * 100, 1)
+
+
+class PriceHistorySerializer(serializers.ModelSerializer):
+    """Full history record — for export, graphs, ML training."""
+    listing_id = serializers.IntegerField(source='listing.id', read_only=True)
+    product_name = serializers.CharField(source='listing.product.name', read_only=True)
+    product_slug = serializers.CharField(source='listing.product.slug', read_only=True)
+    size_label = serializers.CharField(source='listing.size.label', read_only=True)
+    brand = serializers.CharField(source='listing.brand', read_only=True)
+    vendor_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PriceHistory
+        fields = (
+            'id', 'listing_id', 'product_name', 'product_slug',
+            'size_label', 'brand', 'vendor_name', 'price', 'recorded_at',
+        )
+
+    def get_vendor_name(self, obj):
+        profile = getattr(obj.listing.vendor, 'vendor_profile', None)
+        if profile and hasattr(profile, 'business_name'):
+            return profile.business_name
+        return obj.listing.vendor.get_full_name() or obj.listing.vendor.email.split('@')[0]

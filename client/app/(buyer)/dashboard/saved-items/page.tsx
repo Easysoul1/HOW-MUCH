@@ -30,7 +30,7 @@ export default function SavedItemsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className="border-dark-border bg-dark-panel">
+            <Card className="border-gray-200 bg-white">
               <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
                 <div>
                   <h3 className="font-display font-semibold">{item.name}</h3>

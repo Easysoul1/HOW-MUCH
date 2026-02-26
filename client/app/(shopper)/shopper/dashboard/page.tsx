@@ -12,33 +12,33 @@ export default function ShopperDashboardPage() {
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display text-2xl font-bold">Shopper dashboard</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-gray-500">
           Active requests, earnings, and performance.
         </p>
       </motion.div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground">Active requests</p>
+            <p className="text-sm text-gray-500">Active requests</p>
             <p className="font-display text-2xl font-bold text-accent">2</p>
           </CardContent>
         </Card>
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground">Completed (30d)</p>
+            <p className="text-sm text-gray-500">Completed (30d)</p>
             <p className="font-display text-2xl font-bold text-accent">14</p>
           </CardContent>
         </Card>
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground">Earnings (30d)</p>
+            <p className="text-sm text-gray-500">Earnings (30d)</p>
             <p className="font-display text-2xl font-bold text-accent">{formatPrice(21000)}</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-gray-200 bg-white">
         <CardContent className="p-5">
           <h3 className="font-display font-semibold">Quick actions</h3>
           <div className="mt-4 flex gap-3">

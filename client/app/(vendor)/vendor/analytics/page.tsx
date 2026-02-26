@@ -24,7 +24,7 @@ export default function VendorAnalyticsPage() {
         </p>
       </motion.div>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-gray-200 bg-white">
         <CardHeader>
           <CardTitle>Performance</CardTitle>
           <Tabs defaultValue="7d">

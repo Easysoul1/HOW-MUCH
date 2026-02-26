@@ -221,6 +221,7 @@ export const categoriesApi = {
 // Units API
 export const unitsApi = {
   list: () => apiClient.get('/products/units/', false),
+  create: (data: { name: string; abbreviation: string }) => apiClient.post('/products/units/', data),
 };
 
 // Sizes API
@@ -259,6 +260,15 @@ export const vendorProductsApi = {
   mySuggestions: () => apiClient.get('/products/my_suggestions/'),
   suggest: (formData: FormData) => apiClient.postFormData('/products/', formData),
   update: (slug: string, formData: FormData) => apiClient.patchFormData(`/products/${slug}/`, formData),
+  suggestSize: (slug: string, data: { product: number; value: string; unit: number; note?: string }) =>
+    apiClient.post(`/products/${slug}/suggest_size/`, data),
+};
+
+// Admin Size Requests API
+export const sizeRequestsApi = {
+  list: (status?: string) => apiClient.get(`/products/size-requests/${status ? `?status=${status}` : ''}`),
+  approve: (id: number) => apiClient.post(`/products/size-requests/${id}/approve/`),
+  reject: (id: number, reason: string) => apiClient.post(`/products/size-requests/${id}/reject/`, { reason }),
 };
 
 // Vendor Listings (Inventory) API
@@ -273,6 +283,35 @@ export const listingsApi = {
   create: (data: object) => apiClient.post('/pricing/listings/', data),
   update: (id: number, data: object) => apiClient.patch(`/pricing/listings/${id}/`, data),
   delete: (id: number) => apiClient.delete(`/pricing/listings/${id}/`),
+};
+
+// Public Listings API (for buyers)
+export const publicListingsApi = {
+  search: (params: { search?: string; product_slug?: string; size?: number; ordering?: string }) => {
+    const q = new URLSearchParams();
+    if (params.search) q.append('search', params.search);
+    if (params.product_slug) q.append('product_slug', params.product_slug);
+    if (params.size) q.append('size', String(params.size));
+    if (params.ordering) q.append('ordering', params.ordering);
+    return apiClient.get(`/pricing/public/?${q.toString()}`, false);
+  },
+};
+
+export const priceHistoryApi = {
+  /**
+   * Fetch price history records for graphs / ML training.
+   * ?product_slug=rice  — history for all listings of a product
+   * ?listing_id=42      — history for a specific listing
+   * ?include_current=1  — also include current prices as latest data points
+   */
+  get: (params: { product_slug?: string; listing_id?: number; include_current?: boolean; ordering?: string }) => {
+    const q = new URLSearchParams();
+    if (params.product_slug) q.append('product_slug', params.product_slug);
+    if (params.listing_id) q.append('listing_id', String(params.listing_id));
+    if (params.include_current) q.append('include_current', '1');
+    if (params.ordering) q.append('ordering', params.ordering);
+    return apiClient.get(`/pricing/history/?${q.toString()}`, false);
+  },
 };
 
 export default apiClient;

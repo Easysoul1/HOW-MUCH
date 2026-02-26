@@ -143,16 +143,16 @@ export default function SignupPage() {
               {/* Buyer Card */}
               <button
                 onClick={() => handleRoleSelect("buyer")}
-                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white dark:bg-dark-panel shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 dark:hover:border-white/10 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-black"
+                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-black"
               >
-                <div className="h-20 w-20 rounded-full bg-status-info/10 dark:bg-status-info/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="h-20 w-20 rounded-full bg-status-info/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <ShoppingBag className="w-10 h-10 text-status-info" />
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Buyer</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
                   Discover fair prices, track market trends, and make informed grocery decisions.
                 </p>
-                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel text-sm font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   Join as Buyer
                 </div>
               </button>
@@ -160,19 +160,19 @@ export default function SignupPage() {
               {/* Vendor Card */}
               <button
                 onClick={() => handleRoleSelect("vendor")}
-                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white dark:bg-dark-panel shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 dark:hover:border-white/10 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-brand"
+                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-brand"
               >
                 <div className="absolute top-4 right-4 px-3 py-1 bg-accent/15 text-accent text-xs font-bold rounded-full">
                   GROWTH
                 </div>
-                <div className="h-20 w-20 rounded-full bg-accent/10 dark:bg-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Store className="w-10 h-10 text-accent" />
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Vendor</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
                   List your products, reach more customers, and manage your store inventory.
                 </p>
-                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
+                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
                   Become a Vendor
                 </div>
               </button>
@@ -202,7 +202,7 @@ export default function SignupPage() {
               Change Role
             </Button>
 
-            <Card className="border-light-border shadow-depth-2 dark:border-dark-border dark:bg-dark-panel">
+            <Card className="border-light-border shadow-depth-2">
               <CardHeader className="space-y-1">
                 <div className="flex items-center gap-3 mb-2">
                    <div className={cn("p-2 rounded-lg", role === 'vendor' ? "bg-accent/15 text-accent" : "bg-status-info/15 text-status-info")}>
@@ -219,21 +219,21 @@ export default function SignupPage() {
               <CardContent>
                 {/* Location Status */}
                 {locationLoading && (
-                  <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center gap-2">
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <p className="text-sm text-blue-700">
                       Getting your location and address...
                     </p>
                   </div>
                 )}
                 {locationError && (
-                  <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-2">
+                  <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-600" />
                     <div className="flex-1">
-                      <p className="text-sm text-amber-700 dark:text-amber-300">{locationError}</p>
+                      <p className="text-sm text-amber-700">{locationError}</p>
                       <Button 
                         variant="link" 
-                        className="h-auto p-0 text-xs text-amber-700 dark:text-amber-300"
+                        className="h-auto p-0 text-xs text-amber-700"
                         onClick={requestLocation}
                       >
                         Try Again
@@ -242,11 +242,11 @@ export default function SignupPage() {
                   </div>
                 )}
                 {location && address && (
-                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-green-600 mt-0.5" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                        <p className="text-sm font-medium text-green-700">
                           Location Detected!
                         </p>
                         <p className="text-xs text-status-success mt-1">
@@ -290,7 +290,7 @@ export default function SignupPage() {
                         required
                         value={formData.businessName}
                         onChange={handleChange}
-                        className="border-status-success/30 focus:ring-status-success/80 dark:border-status-success/40"
+                        className="border-status-success/30 focus:ring-status-success/80"
                       />
                     </div>
                   )}
@@ -377,7 +377,7 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {error && <p className="text-sm text-status-danger text-center bg-status-danger/10 dark:bg-status-danger/20 py-2 rounded-lg border border-status-danger/20">{error}</p>}
+                  {error && <p className="text-sm text-status-danger text-center bg-status-danger/10 py-2 rounded-lg border border-status-danger/20">{error}</p>}
 
                   <Button 
                     type="submit" 

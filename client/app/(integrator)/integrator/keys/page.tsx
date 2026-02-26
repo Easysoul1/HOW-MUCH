@@ -17,7 +17,7 @@ export default function APIKeysPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-2xl font-bold">API keys</h1>
-            <p className="mt-1 text-muted-foreground">
+            <p className="mt-1 text-gray-500">
               Create and manage keys. Keep them secret.
             </p>
           </div>
@@ -27,12 +27,12 @@ export default function APIKeysPage() {
 
       <ul className="space-y-4">
         {MOCK_KEYS.map((k) => (
-          <Card key={k.id} className="border-dark-border bg-dark-panel">
+          <Card key={k.id} className="border-gray-200 bg-white">
             <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
               <div>
                 <p className="font-display font-semibold">{k.name}</p>
-                <p className="font-mono text-sm text-muted-foreground">{k.key}</p>
-                <p className="mt-1 text-xs text-muted-foreground">Last used: {k.lastUsed}</p>
+                <p className="font-mono text-sm text-gray-500">{k.key}</p>
+                <p className="mt-1 text-xs text-gray-500">Last used: {k.lastUsed}</p>
               </div>
               <Button variant="outline" size="sm">
                 <Copy className="mr-2 h-4 w-4" />

@@ -27,11 +27,11 @@ const footerLinks = {
 
 export function MarketingFooter() {
   return (
-    <footer className="section-divider bg-light-panel dark:bg-dark-panel">
+    <footer className="section-divider bg-light-panel">
       <div className="container py-12 md:py-14">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <Link href="/" className="font-display text-display-sm font-bold text-primary dark:text-accent">
+            <Link href="/" className="font-display text-display-sm font-bold text-primary">
               {SITE.name}
             </Link>
             <p className="mt-2 text-body-sm text-muted-foreground">{SITE.tagline}</p>
@@ -74,7 +74,7 @@ export function MarketingFooter() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-light-border pt-8 dark:border-dark-border sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-light-border pt-8 sm:flex-row">
           <p className="text-caption text-muted-foreground">
             © {new Date().getFullYear()} {SITE.name}. All rights reserved.
           </p>

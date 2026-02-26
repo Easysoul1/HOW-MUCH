@@ -12,13 +12,13 @@ export default function RewardTrackerPage() {
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display text-2xl font-bold">Reward tracker</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-gray-500">
           Earnings from approved submissions.
         </p>
       </motion.div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle>Total earned</CardTitle>
           </CardHeader>
@@ -26,7 +26,7 @@ export default function RewardTrackerPage() {
             <p className="font-display text-3xl font-bold text-accent">{formatPrice(totalEarned)}</p>
           </CardContent>
         </Card>
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle>Pending</CardTitle>
           </CardHeader>

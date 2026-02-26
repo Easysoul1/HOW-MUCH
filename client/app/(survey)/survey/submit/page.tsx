@@ -30,8 +30,8 @@ export default function SurveySubmissionPage() {
   return (
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="relative mb-8 overflow-hidden rounded-xl border border-dark-border">
-          <div className="relative aspect-[21/9] min-h-[140px] bg-dark-elevated">
+        <div className="relative mb-8 overflow-hidden rounded-xl border border-gray-200">
+          <div className="relative aspect-[21/9] min-h-[140px] bg-gray-50">
             <OptimizedImage
               src={IMAGES.marketSurvey}
               alt="Market survey"
@@ -42,7 +42,7 @@ export default function SurveySubmissionPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-dark-panel to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-4">
               <h1 className="font-display text-xl font-bold">Survey submission</h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-500">
                 Auto-detect location, add price, market. We show fraud detection and reward preview.
               </p>
             </div>
@@ -50,13 +50,13 @@ export default function SurveySubmissionPage() {
         </div>
       </motion.div>
 
-      <Card className="border-dark-border bg-dark-panel shadow-depth-1">
+      <Card className="border-gray-200 bg-white shadow-depth-1">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
             Location
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-500">
             Auto-detected. You can change it.
           </p>
         </CardHeader>
@@ -74,7 +74,7 @@ export default function SurveySubmissionPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-gray-200 bg-white">
         <CardHeader>
           <CardTitle>Price entry</CardTitle>
         </CardHeader>
@@ -101,7 +101,7 @@ export default function SurveySubmissionPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-gray-200 bg-white">
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-highlight" />
