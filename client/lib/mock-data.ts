@@ -27,8 +27,10 @@ export interface Order {
   id: string;
   customerName: string;
   total: number;
+  total_amount?: number;
   status: "pending" | "processing" | "shipped" | "delivered";
   date: string;
+  created_at?: string;
   items: number;
 }
 

@@ -16,6 +16,7 @@ interface User {
   address?: string;
   latitude?: number;
   longitude?: number;
+  business_name?: string;
   is_verified: boolean;
   date_joined?: string;
   created_at?: string;

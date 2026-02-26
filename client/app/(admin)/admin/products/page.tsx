@@ -229,7 +229,7 @@ export default function AdminProductsPage() {
         <div className="flex items-center gap-2 p-4 text-sm text-status-danger bg-status-danger/10 border border-status-danger/20 rounded-lg">
           <AlertCircle className="w-4 h-4" />
           <p>{error}</p>
-          <Button variant="link" className="ml-auto text-status-danger h-auto p-0" onClick={fetchProducts}>Retry</Button>
+          <Button variant="link" className="ml-auto text-status-danger h-auto p-0" onClick={() => fetchProducts()}>Retry</Button>
         </div>
       )}
 
