@@ -12,7 +12,7 @@ class MarketPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarketPrice
         fields = [
-            'id', 'product', 'product_details', 'crowdsourcer', 'crowdsourcer_name', 
+            'id', 'product', 'product_name', 'product_details', 'crowdsourcer', 'crowdsourcer_name',  
             'price', 'market_name', 'proof_image_1', 'proof_image_2', 'proof_image_3', 'proof_image_4', 'proof_image_5', 'status', 'notes', 
             'reviewed_by', 'reviewed_at', 'rejection_reason',
             'created_at', 'updated_at'
