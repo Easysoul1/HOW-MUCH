@@ -1,15 +1,44 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MOCK_ORDERS } from "@/lib/mock-data";
-import { Package, Truck } from "lucide-react";
+import { Package, Truck, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { ordersApi } from "@/lib/api";
 
 export default function BuyerDashboardPage() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data: any = await ordersApi.list();
+      setOrders(data.results || data);
+    } catch (err: any) {
+      console.error("Failed to fetch orders:", err);
+      setOrders(MOCK_ORDERS);
+      setError("Displaying standard mock orders due to error.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl text-black font-display font-bold">My Orders</h1>
-        <Button variant="outline">Browse Products</Button>
+        <h1 className="text-2xl text-black dark:text-white font-display font-bold">My Orders</h1>
+        <Button variant="outline" asChild>
+          <Link href="/shop">Browse Products</Link>
+        </Button>
       </div>
 
       <div className="grid gap-6">
@@ -26,9 +55,8 @@ export default function BuyerDashboardPage() {
                     <span className="text-xs uppercase">Total</span>
                     <span className="font-medium text-foreground">₦{order.total.toLocaleString()}</span>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs uppercase">Order ID</span>
-                    <span className="font-medium text-foreground">#{order.id}</span>
+                  <div className="flex items-center gap-2">
+                       <Button size="sm" variant="outline" className="h-8 text-xs">View Invoice</Button>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -50,16 +78,18 @@ export default function BuyerDashboardPage() {
                         <span>{order.status === 'delivered' ? 'Delivered' : 'On the way'}</span>
                     </div>
                   </div>
+                  <div className="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
+                      <Button className="flex-1 md:flex-none" disabled={(order.status || 'pending') === 'delivered'}>Track Package</Button>
+                      <Button variant="outline" className="flex-1 md:flex-none" asChild>
+                        <Link href="/shop">Buy Again</Link>
+                      </Button>
+                  </div>
                 </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <Button className="flex-1 md:flex-none">Track Package</Button>
-                    <Button variant="outline" className="flex-1 md:flex-none">Buy Again</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,15 +1,34 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowUpDown, MoreHorizontal, Search, UserPlus } from "lucide-react";
-
-const MOCK_BUYERS = [
-  { id: "b1", name: "Chinedu Okeke", email: "chinedu@example.com", status: "active", totalOrders: 15, totalSpent: 125000, joinedDate: "2025-08-12" },
-  { id: "b2", name: "Amina Yusuf", email: "amina@example.com", status: "active", totalOrders: 8, totalSpent: 45000, joinedDate: "2025-11-05" },
-  { id: "b3", name: "Tunde Bakare", email: "tunde@example.com", status: "inactive", totalOrders: 2, totalSpent: 12000, joinedDate: "2026-01-20" },
-  { id: "b4", name: "Ngozi Eze", email: "ngozi@example.com", status: "suspended", totalOrders: 0, totalSpent: 0, joinedDate: "2026-02-10" },
-];
+import { buyersApi } from "@/lib/api";
+import { ArrowUpDown, MoreHorizontal, Search, UserPlus, Loader2, AlertCircle } from "lucide-react";
 
 export default function BuyersPage() {
+  const [buyers, setBuyers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchBuyers();
+  }, []);
+
+  const fetchBuyers = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data: any = await buyersApi.list();
+      setBuyers(data.results || data);
+    } catch (err: any) {
+      console.error("Failed to fetch buyers:", err);
+      setError("Failed to load buyers. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -34,6 +53,35 @@ export default function BuyersPage() {
         <Button variant="outline" className="border-gray-200 text-gray-900 hover:bg-white">Filter</Button>
       </div>
 
+      {error && (
+        <div className="flex items-center gap-2 p-4 text-sm text-status-danger bg-status-danger/10 border border-status-danger/20 rounded-lg">
+          <AlertCircle className="w-4 h-4" />
+          <p>{error}</p>
+          <Button variant="link" className="ml-auto text-status-danger h-auto p-0" onClick={fetchBuyers}>Retry</Button>
+        </div>
+      )}
+
+      <div className="bg-dark-panel rounded-lg border border-dark-border overflow-hidden">
+        <div className="overflow-x-auto min-h-[300px]">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-[300px]">
+               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : buyers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+               <p>No buyers found.</p>
+            </div>
+          ) : (
+            <table className="w-full text-sm text-left">
+              <thead className="bg-dark-panel text-muted-foreground font-medium border-b border-dark-border">
+                <tr>
+                  <th className="px-6 py-4">Buyer Info</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 flex items-center gap-1 cursor-pointer hover:text-white">
+                    Total Spent <ArrowUpDown className="w-3 h-3" />
+                  </th>
+                  <th className="px-6 py-4">Joined</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
@@ -77,9 +125,39 @@ export default function BuyersPage() {
                     </Button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-dark-border">
+                {buyers.map((buyer) => (
+                  <tr key={buyer.id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-white">{buyer.first_name} {buyer.last_name}</div>
+                        <div className="text-xs text-muted-foreground">{buyer.email}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                        ${buyer.is_active ? 'bg-status-success/10 text-status-success border-status-success/20' : 
+                          'bg-status-danger/10 text-status-danger border-status-danger/20'}`}>
+                        {buyer.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-white font-mono">
+                      ₦{(buyer.totalSpent || 0).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground">
+                      {buyer.date_joined ? new Date(buyer.date_joined).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
