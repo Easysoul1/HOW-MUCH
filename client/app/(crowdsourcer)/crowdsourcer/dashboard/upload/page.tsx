@@ -205,6 +205,7 @@ export default function SubmitPricePage() {
                   step="0.01"
                   value={formData.price}
                   onChange={handleChange}
+                  className="bg-dark border-dark-border text-foreground"
                 />
               </div>
             </div>
@@ -217,6 +218,7 @@ export default function SubmitPricePage() {
                 required
                 value={formData.market_name}
                 onChange={handleChange}
+                className="bg-dark border-dark-border text-foreground"
               />
             </div>
 
@@ -287,7 +289,7 @@ export default function SubmitPricePage() {
             </div>
 
             <div className="pt-4 flex justify-end gap-4">
-              <Button type="button" variant="outline" asChild>
+              <Button type="button" variant="outline" asChild >
                 <Link href="/crowdsourcer/dashboard">Cancel</Link>
               </Button>
               <Button type="submit" className="bg-indigo-500 hover:bg-indigo-600 text-white" disabled={isLoading}>
