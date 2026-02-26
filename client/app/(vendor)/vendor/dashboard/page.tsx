@@ -130,7 +130,7 @@ export default function VendorDashboardPage() {
                          <div className="flex flex-col">
                              <span className="font-medium text-foreground">{order.customerName || `Order #${order.id}`}</span>
                              <span className="text-xs text-muted-foreground">
-                               {order.items?.length || order.items || 1} items • {order.created_at ? new Date(order.created_at).toLocaleDateString() : order.date}
+                               {(typeof order.items === 'number' ? order.items : 1)} items • {order.created_at ? new Date(order.created_at).toLocaleDateString() : order.date}
                              </span>
                          </div>
                          <div className="flex flex-col items-end gap-1">

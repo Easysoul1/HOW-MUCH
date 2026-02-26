@@ -59,7 +59,7 @@ export default function SavedItemsPage() {
       </motion.div>
 
       <ul className="space-y-4">
-        {MOCK_SAVED.map((item, i) => (
+        {items.map((item, i) => (
           <motion.li
             key={item.id}
             initial={{ opacity: 0, y: 10 }}
@@ -75,32 +75,24 @@ export default function SavedItemsPage() {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <p className="font-display text-lg font-semibold text-accent">
-                      {formatPrice(item.price)}
+                      {formatPrice(item.price || item.product_price || 0)}
                     </p>
-                    <p className="text-xs text-muted-foreground">{item.trend} vs last week</p>
+                    <p className="text-xs text-muted-foreground">{item.trend || '+0%'} vs last week</p>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <p className="font-display text-lg font-semibold text-accent">
-                        {formatPrice(item.price || item.product_price || 0)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{item.trend || '+0%'} vs last week</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" className="w-9 h-9" asChild>
-                        <Link href={`/product/${item.product || item.id}`}>View</Link>
-                      </Button>
-                      <Button variant="ghost" size="icon" className="w-9 h-9" aria-label="Remove" onClick={() => handleRemove(item.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" className="w-9 h-9" asChild>
+                      <Link href={`/product/${item.product || item.id}`}>View</Link>
+                    </Button>
+                    <Button variant="ghost" size="icon" className="w-9 h-9" aria-label="Remove" onClick={() => handleRemove(item.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.li>
-          ))}
-        </ul>
-      )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.li>
+        ))}
+      </ul>
     </div>
   );
 }

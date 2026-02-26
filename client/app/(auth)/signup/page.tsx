@@ -15,14 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Store, ShoppingBag, ArrowLeft, MapPin, AlertCircle, MailCheck } from "lucide-react";
-import {
-  Loader2,
-  Store,
-  ShoppingBag,
-  ArrowLeft,
-  MapPin,
-  AlertCircle,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "@/lib/location";
@@ -96,9 +88,6 @@ export default function SignupPage() {
   }, [formData.email]);
 
   const handleRoleSelect = (selectedRole: "buyer" | "vendor") => {
-  const handleRoleSelect = (
-    selectedRole: "buyer" | "vendor"
-  ) => {
     setRole(selectedRole);
     setStep("form");
   };
@@ -184,8 +173,6 @@ export default function SignupPage() {
         city: formData.city,
         state: formData.state,
         address: formData.address,
-        latitude: location?.latitude ? Number(location.latitude.toFixed(6)) : undefined,
-        longitude: location?.longitude ? Number(location.longitude.toFixed(6)) : undefined,
         // Round coordinates to 6 decimal places (backend constraint: max_digits=9, decimal_places=6)
         latitude: location?.latitude
           ? Number(location.latitude.toFixed(6))
