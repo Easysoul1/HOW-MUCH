@@ -91,7 +91,7 @@ export default function CrowdSourcerSignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark w-full max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background w-full max-w-4xl mx-auto px-4 py-8">
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -108,7 +108,7 @@ export default function CrowdSourcerSignupPage() {
           </Button>
         </div>
 
-        <Card className="border-dark-border shadow-depth-2 bg-dark-panel">
+        <Card className="border-light-border shadow-depth-2 bg-white">
           <CardHeader className="space-y-1">
             <div className="flex items-center gap-3 mb-2">
                <div className="p-2 rounded-lg bg-indigo-500/15 text-indigo-500">
@@ -169,7 +169,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -180,7 +180,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -207,7 +207,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.phone}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.city}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -232,7 +232,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.state}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
               </div>
@@ -245,7 +245,7 @@ export default function CrowdSourcerSignupPage() {
                   required
                   value={formData.address}
                   onChange={handleChange}
-                  className="bg-dark border-dark-border text-foreground"
+                  className="bg-white border-light-border text-foreground"
                 />
               </div>
 
@@ -258,7 +258,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -269,7 +269,7 @@ export default function CrowdSourcerSignupPage() {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="bg-dark border-dark-border text-foreground"
+                    className="bg-white border-light-border text-foreground"
                   />
                 </div>
               </div>

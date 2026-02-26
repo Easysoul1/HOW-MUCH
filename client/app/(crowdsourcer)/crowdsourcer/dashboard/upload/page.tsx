@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { crowdsourceApi, productsApi } from "@/lib/api";
 
 export default function SubmitPricePage() {
   const router = useRouter();
-  const { getToken } = useAuth();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -28,13 +29,28 @@ export default function SubmitPricePage() {
   const [images, setImages] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
 
-  // Mock products for the dropdown (In reality, fetch from API)
-  const products = [
-    { id: "1", name: "Milo (500g)" },
-    { id: "2", name: "Dangote Sugar (1kg)" },
-    { id: "3", name: "Peak Milk (380g)" },
-    { id: "4", name: "Golden Penny Spaghetti" },
-  ];
+  const [products, setProducts] = useState<any[]>([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data: any = await productsApi.list({ page: 1 });
+        if (data && Array.isArray(data.results)) {
+          setProducts(data.results);
+        } else if (Array.isArray(data)) {
+          setProducts(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setIsProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -90,7 +106,7 @@ export default function SubmitPricePage() {
     setSuccess(false);
 
     try {
-      const token = getToken();
+      const token = localStorage.getItem("access_token");
       if (!token) throw new Error("Authentication required");
 
       if (images.length < 4) {
@@ -107,19 +123,7 @@ export default function SubmitPricePage() {
         submissionData.append(`proof_image_${index + 1}`, file);
       });
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/crowdsource/prices/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Note: Do NOT set Content-Type to multipart/form-data manually with fetch when using FormData
-        },
-        body: submissionData,
-      });
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || "Failed to submit price. Please try again.");
-      }
+      await crowdsourceApi.submit(submissionData);
 
       setSuccess(true);
       setFormData({ product_id: "", price: "", market_name: "", notes: "" });
@@ -156,7 +160,7 @@ export default function SubmitPricePage() {
         </div>
       </div>
 
-      <Card className="bg-dark-panel border-dark-border">
+      <Card className="bg-white border-light-border">
         <CardHeader>
           <CardTitle>Price Details</CardTitle>
           <CardDescription>Fill in the item and market details carefully.</CardDescription>
@@ -180,13 +184,13 @@ export default function SubmitPricePage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2 flex flex-col">
                 <Label htmlFor="product">Product</Label>
-                <Select value={formData.product_id} onValueChange={handleSelectChange} required>
+                <Select value={formData.product_id} onValueChange={handleSelectChange} required disabled={isProductsLoading}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a product" />
+                    <SelectValue placeholder={isProductsLoading ? "Loading products..." : "Select a product"} />
                   </SelectTrigger>
                   <SelectContent>
                     {products.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
+                      <SelectItem key={p.slug || p.id} value={p.slug || String(p.id)}>
                         {p.name}
                       </SelectItem>
                     ))}
@@ -205,7 +209,7 @@ export default function SubmitPricePage() {
                   step="0.01"
                   value={formData.price}
                   onChange={handleChange}
-                  className="bg-dark border-dark-border text-foreground"
+                  className="bg-white border-light-border text-foreground"
                 />
               </div>
             </div>
@@ -218,7 +222,7 @@ export default function SubmitPricePage() {
                 required
                 value={formData.market_name}
                 onChange={handleChange}
-                className="bg-dark border-dark-border text-foreground"
+                className="bg-white border-light-border text-foreground"
               />
             </div>
 
@@ -226,7 +230,7 @@ export default function SubmitPricePage() {
               <Label>Proof Images (REQUIRED: 4 - 5 Angles)</Label>
               <div 
                 className={`relative border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center transition-colors cursor-pointer
-                  ${dragActive ? "border-indigo-500 bg-indigo-500/10" : "border-dark-border hover:bg-white/5"}
+                  ${dragActive ? "border-indigo-500 bg-indigo-500/10" : "border-light-border hover:bg-black/5"}
                 `}
                 onDragEnter={handleDrag}
                 onDragOver={handleDrag}
@@ -252,7 +256,7 @@ export default function SubmitPricePage() {
               {images.length > 0 && (
                 <div className="grid grid-cols-5 gap-3 mt-4">
                   {images.map((file, idx) => (
-                    <div key={idx} className="relative aspect-square rounded-lg border border-dark-border bg-dark-panel overflow-hidden">
+                    <div key={idx} className="relative aspect-square rounded-lg border border-light-border bg-white overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
                         src={URL.createObjectURL(file)} 
@@ -269,7 +273,7 @@ export default function SubmitPricePage() {
                     </div>
                   ))}
                   {Array.from({ length: 5 - images.length }).map((_, idx) => (
-                    <div key={`empty-${idx}`} className="aspect-square rounded-lg border border-dashed border-dark-border bg-dark-panel flex items-center justify-center">
+                    <div key={`empty-${idx}`} className="aspect-square rounded-lg border border-dashed border-light-border bg-white flex items-center justify-center">
                       <span className="text-xs text-muted-foreground opacity-50">Empty</span>
                     </div>
                   ))}

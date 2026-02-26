@@ -72,7 +72,7 @@ export default function HealthPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-md bg-white/5 font-mono text-sm text-gray-900">
+            <div className="flex items-center justify-between p-3 rounded-md bg-gray-50 font-mono text-sm text-gray-900">
               <span>[INFO] Successfully refreshed cache for popular products</span>
               <span className="text-gray-500">Just now</span>
             </div>
@@ -80,7 +80,7 @@ export default function HealthPage() {
               <span>[WARN] High memory usage detected on worker proxy-1</span>
               <span className="text-status-warning/70">5 minutes ago</span>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-md bg-white/5 font-mono text-sm text-gray-900">
+            <div className="flex items-center justify-between p-3 rounded-md bg-gray-50 font-mono text-sm text-gray-900">
               <span>[INFO] DB backup completed successfully (4.2GB)</span>
               <span className="text-gray-500">2 hours ago</span>
             </div>

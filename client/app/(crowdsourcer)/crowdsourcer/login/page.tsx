@@ -64,13 +64,13 @@ export default function CrowdSourcerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <Card className="bg-dark-panel border-dark-border shadow-depth-2">
+        <Card className="bg-white border-light-border shadow-depth-2">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center mb-4">
               <MapPin className="w-6 h-6 text-indigo-500" />
@@ -91,7 +91,7 @@ export default function CrowdSourcerLoginPage() {
                   required
                   disabled={isLoading}
                   autoComplete="username"
-                  className="bg-dark border-dark-border text-foreground focus-visible:ring-indigo-500"
+                  className="bg-white border-light-border text-foreground focus-visible:ring-indigo-500"
                 />
               </div>
               <div className="space-y-2">
@@ -106,7 +106,7 @@ export default function CrowdSourcerLoginPage() {
                   required
                   disabled={isLoading}
                   autoComplete="current-password"
-                  className="bg-dark border-dark-border text-foreground focus-visible:ring-indigo-500"
+                  className="bg-white border-light-border text-foreground focus-visible:ring-indigo-500"
                 />
               </div>
 

@@ -375,4 +375,10 @@ export const wishlistApi = {
   remove: (id: string | number) => apiClient.delete(`/wishlist/${id}/`, true),
 };
 
+// Crowdsource API
+export const crowdsourceApi = {
+  list: () => apiClient.get<any>('/crowdsource/prices/', true),
+  submit: (formData: FormData) => apiClient.postFormData('/crowdsource/prices/', formData, true),
+};
+
 export default apiClient;

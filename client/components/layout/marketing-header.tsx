@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Menu, Sun, Moon } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
 import { SITE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -23,7 +22,6 @@ const navLinks = [
 
 export function MarketingHeader() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -61,16 +59,6 @@ export function MarketingHeader() {
             <Link href="/search" aria-label="Search">
               <Search className="h-5 w-5" />
             </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
-            className="text-muted"
-          >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all" />
           </Button>
           <Button variant="ghost" size="icon" className="md:hidden text-muted" onClick={() => setMobileOpen(!mobileOpen)}>
             <Menu className="h-5 w-5" />
