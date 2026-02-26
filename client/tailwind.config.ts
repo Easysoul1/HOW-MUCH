@@ -42,10 +42,10 @@ const config: Config = {
           dim: "#E4E4E7",
         },
         dark: {
-          DEFAULT: "#0F172A",
-          panel: "#1E293B",
-          elevated: "#334155",
-          border: "#475569",
+          DEFAULT: "#0F0F0F",
+          panel: "#141718",
+          elevated: "#1A1A1A",
+          border: "#333333",
         },
         light: {
           DEFAULT: "#F8FAFC",

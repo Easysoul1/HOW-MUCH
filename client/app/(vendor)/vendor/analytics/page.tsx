@@ -54,15 +54,8 @@ export default function VendorAnalyticsPage() {
         </p>
       </motion.div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-status-warning bg-status-warning/10 border border-status-warning/20 rounded-lg">
-          <AlertCircle className="w-4 h-4 text-status-warning" />
-          <p>{error}</p>
-        </div>
-      )}
-
-      <Card className="border-dark-border bg-dark-panel">
-        <CardHeader className="flex flex-row items-center justify-between">
+      <Card className="border-gray-200 bg-white">
+        <CardHeader>
           <CardTitle>Performance</CardTitle>
           <Tabs defaultValue="7d">
             <TabsList>

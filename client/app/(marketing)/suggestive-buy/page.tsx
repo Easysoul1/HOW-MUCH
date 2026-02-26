@@ -20,7 +20,7 @@ function SuggestiveBuyLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <OptimizedImage src={IMAGES.routeMap} alt="" fill sizes="100vw" className="object-cover opacity-50 dark:opacity-30" />
+        <OptimizedImage src={IMAGES.routeMap} alt="" fill sizes="100vw" className="object-cover opacity-50" />
         <div className="absolute inset-0 bg-background/90 backdrop-blur-[2px]" />
       </div>
       <div className="container relative z-10 px-4 py-10 md:px-6 md:py-14">
@@ -49,7 +49,7 @@ export default function SuggestiveBuyPage() {
             Compare total cost (item + shipping) and see recommended option. Route intelligence included.
           </p>
 
-          <Card className="mt-8 shadow-depth-2 border-light-border dark:border-dark-border">
+          <Card className="mt-8 shadow-depth-2 border-light-border">
           <CardHeader>
             <CardTitle>Rice (Premium) 5kg — Lagos</CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -63,14 +63,14 @@ export default function SuggestiveBuyPage() {
                   layout
                   className={`cursor-pointer rounded-xl border-2 p-4 transition-colors ${
                     selected === i
-                      ? "border-accent bg-accent-muted dark:bg-accent-muted"
-                      : "border-light-border dark:border-dark-border hover:border-primary/30 dark:hover:border-accent/30"
+                      ? "border-accent bg-accent-muted"
+                      : "border-light-border hover:border-primary/30"
                   }`}
                   onClick={() => setSelected(i)}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent/20 dark:text-accent">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                         <MapPin className="h-5 w-5" />
                       </div>
                     <div>
@@ -104,7 +104,7 @@ export default function SuggestiveBuyPage() {
           </CardContent>
         </Card>
 
-        <Card className="mt-6 border-accent/50 bg-accent-muted/30 dark:bg-accent-muted/20">
+        <Card className="mt-6 border-accent/50 bg-accent-muted/30">
           <CardContent className="flex flex-wrap items-center justify-between gap-4 py-6">
             <div>
               <p className="text-sm text-muted-foreground">Recommended (lowest total)</p>

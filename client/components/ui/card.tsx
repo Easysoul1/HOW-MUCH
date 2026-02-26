@@ -11,9 +11,9 @@ const Card = React.forwardRef<
     <Comp
       ref={ref}
       className={cn(
-        "rounded-xl border border-light-border bg-white text-foreground shadow-depth-1 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-depth-1 dark:shadow-inner-soft",
+        "rounded-xl border border-gray-200 bg-white text-foreground shadow-depth-1",
         "transition-all duration-normal ease-out",
-        "hover:border-light-border/90 hover:shadow-card-hover dark:hover:border-dark-border/90 dark:hover:shadow-depth-2",
+        "hover:shadow-card-hover",
         className
       )}
       {...props}

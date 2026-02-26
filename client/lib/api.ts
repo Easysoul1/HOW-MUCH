@@ -107,6 +107,35 @@ class ApiClient {
     });
     return this.handleResponse<T>(response);
   }
+
+  async postFormData<T>(endpoint: string, formData: FormData, includeAuth = true): Promise<T> {
+    // Don't set Content-Type — browser sets it with correct boundary for multipart
+    const headers: HeadersInit = {};
+    if (includeAuth && typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    return this.handleResponse<T>(response);
+  }
+
+  async patchFormData<T>(endpoint: string, formData: FormData, includeAuth = true): Promise<T> {
+    const headers: HeadersInit = {};
+    if (includeAuth && typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'PATCH',
+      headers,
+      body: formData,
+    });
+    return this.handleResponse<T>(response);
+  }
 }
 
 const apiClient = new ApiClient(API_URL);
@@ -198,6 +227,7 @@ export const categoriesApi = {
 // Units API
 export const unitsApi = {
   list: () => apiClient.get('/products/units/', false),
+  create: (data: { name: string; abbreviation: string }) => apiClient.post('/products/units/', data),
 };
 
 // Sizes API
@@ -207,6 +237,89 @@ export const sizesApi = {
     if (params?.unit) queryParams.append('unit', params.unit.toString());
     const query = queryParams.toString();
     return apiClient.get(`/products/sizes/${query ? `?${query}` : ''}`, false);
+  },
+  create: (data: { value: number; unit_id: number; label?: string }) =>
+    apiClient.post('/products/sizes/', data),
+};
+
+// Admin Products API
+export const adminProductsApi = {
+  list: (params?: { search?: string; status?: string; page?: number }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    const query = queryParams.toString();
+    return apiClient.get(`/products/${query ? `?${query}` : ''}`);
+  },
+  get: (slug: string) => apiClient.get(`/products/${slug}/`),
+  create: (formData: FormData) => apiClient.postFormData('/products/', formData),
+  update: (slug: string, formData: FormData) => apiClient.patchFormData(`/products/${slug}/`, formData),
+  delete: (slug: string) => apiClient.delete(`/products/${slug}/`),
+  approve: (slug: string) => apiClient.post(`/products/${slug}/approve/`),
+  reject: (slug: string, reason: string) => apiClient.post(`/products/${slug}/reject/`, { reason }),
+  pending: () => apiClient.get('/products/pending/'),
+};
+
+// Vendor Products API
+export const vendorProductsApi = {
+  mySuggestions: () => apiClient.get('/products/my_suggestions/'),
+  suggest: (formData: FormData) => apiClient.postFormData('/products/', formData),
+  update: (slug: string, formData: FormData) => apiClient.patchFormData(`/products/${slug}/`, formData),
+  suggestSize: (slug: string, data: { product: number; value: string; unit: number; note?: string }) =>
+    apiClient.post(`/products/${slug}/suggest_size/`, data),
+};
+
+// Admin Size Requests API
+export const sizeRequestsApi = {
+  list: (status?: string) => apiClient.get(`/products/size-requests/${status ? `?status=${status}` : ''}`),
+  approve: (id: number) => apiClient.post(`/products/size-requests/${id}/approve/`),
+  reject: (id: number, reason: string) => apiClient.post(`/products/size-requests/${id}/reject/`, { reason }),
+};
+
+// Vendor Listings (Inventory) API
+export const listingsApi = {
+  list: (params?: { search?: string; is_available?: boolean }) => {
+    const q = new URLSearchParams();
+    if (params?.search) q.append('search', params.search);
+    if (params?.is_available !== undefined) q.append('is_available', String(params.is_available));
+    const qs = q.toString();
+    return apiClient.get(`/pricing/listings/${qs ? `?${qs}` : ''}`);
+  },
+  create: (data: object) => apiClient.post('/pricing/listings/', data),
+  update: (id: number, data: object) => apiClient.patch(`/pricing/listings/${id}/`, data),
+  delete: (id: number) => apiClient.delete(`/pricing/listings/${id}/`),
+};
+
+// Public Listings API (for buyers)
+export const publicListingsApi = {
+  search: (params: { search?: string; product_slug?: string; size?: number; ordering?: string; lat?: number; lng?: number; radius?: number }) => {
+    const q = new URLSearchParams();
+    if (params.search) q.append('search', params.search);
+    if (params.product_slug) q.append('product_slug', params.product_slug);
+    if (params.size) q.append('size', String(params.size));
+    if (params.ordering) q.append('ordering', params.ordering);
+    if (params.lat != null) q.append('lat', String(params.lat));
+    if (params.lng != null) q.append('lng', String(params.lng));
+    if (params.radius != null) q.append('radius', String(params.radius));
+    return apiClient.get(`/pricing/public/?${q.toString()}`, false);
+  },
+};
+
+export const priceHistoryApi = {
+  /**
+   * Fetch price history records for graphs / ML training.
+   * ?product_slug=rice  — history for all listings of a product
+   * ?listing_id=42      — history for a specific listing
+   * ?include_current=1  — also include current prices as latest data points
+   */
+  get: (params: { product_slug?: string; listing_id?: number; include_current?: boolean; ordering?: string }) => {
+    const q = new URLSearchParams();
+    if (params.product_slug) q.append('product_slug', params.product_slug);
+    if (params.listing_id) q.append('listing_id', String(params.listing_id));
+    if (params.include_current) q.append('include_current', '1');
+    if (params.ordering) q.append('ordering', params.ordering);
+    return apiClient.get(`/pricing/history/?${q.toString()}`, false);
   },
 };
 

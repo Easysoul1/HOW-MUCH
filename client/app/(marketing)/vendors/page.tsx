@@ -88,7 +88,7 @@ export default function VendorDirectoryPage() {
                 <Link href={`/vendors/${v.id}`}>
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent/20 dark:text-accent">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                         <Store className="h-6 w-6" />
                       </div>
                       {v.verified && <VerifiedBadge size="sm" />}

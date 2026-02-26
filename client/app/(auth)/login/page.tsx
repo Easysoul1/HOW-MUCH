@@ -74,16 +74,16 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle>Log in</CardTitle>
-          <CardDescription>Enter your username and password.</CardDescription>
+          <CardDescription>Enter your username or email and password.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Username or Email</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="johndoe123"
+                placeholder="johndoe123 or john@example.com"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="mt-1"
@@ -95,7 +95,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-muted hover:text-foreground dark:text-muted-foreground dark:hover:text-white">
+                <Link href="/forgot-password" className="text-xs text-gray-500 hover:text-gray-900">
                   Forgot?
                 </Link>
               </div>

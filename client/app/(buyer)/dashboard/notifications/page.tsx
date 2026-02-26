@@ -28,7 +28,7 @@ export default function NotificationsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className="border-dark-border bg-dark-panel">
+            <Card className="border-gray-200 bg-white">
               <CardContent className="flex items-start justify-between gap-4 p-5">
                 <div className="flex gap-3">
                   <Bell className="h-5 w-5 shrink-0 text-accent" />

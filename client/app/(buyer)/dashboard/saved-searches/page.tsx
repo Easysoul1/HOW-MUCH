@@ -29,7 +29,7 @@ export default function SavedSearchesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className="border-dark-border bg-dark-panel">
+            <Card className="border-gray-200 bg-white">
               <CardContent className="flex items-center justify-between p-5">
                 <div className="flex items-center gap-3">
                   <Search className="h-5 w-5 text-muted-foreground" />

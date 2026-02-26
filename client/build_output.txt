@@ -1,0 +1,142 @@
+
+> how-much@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.18
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/(admin)/admin/analytics/page.tsx:23:11
+Type error: Type '"+12.5% from last month"' is not assignable to type '"up" | "down" | "neutral" | undefined'.
+
+  21 |           title="Total Platform Revenue"
+  22 |           value={`Γéª${ANALYTICS_DATA.totalRevenue.toLocaleString()}`}
+> 23 |           trend="+12.5% from last month"
+     |           ^
+  24 |           trendUp={true}
+  25 |           icon={<CreditCard className="w-4 h-4" />}
+  26 |         />
+
+Failed to compile.
+
+./app/(admin)/admin/analytics/page.tsx
+2:26  Error: 'MOCK_ORDERS' is defined but never used.  @typescript-eslint/no-unused-vars
+4:10  Error: 'Card' is defined but never used.  @typescript-eslint/no-unused-vars
+4:16  Error: 'CardContent' is defined but never used.  @typescript-eslint/no-unused-vars
+4:29  Error: 'CardHeader' is defined but never used.  @typescript-eslint/no-unused-vars
+4:41  Error: 'CardTitle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(admin)/admin/approvals/page.tsx
+159:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/(admin)/admin/page.tsx
+3:21  Error: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+3:28  Error: 'Store' is defined but never used.  @typescript-eslint/no-unused-vars
+3:35  Error: 'DollarSign' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(admin)/admin/products/page.tsx
+91:6  Warning: React Hook useEffect has a missing dependency: 'fetchProducts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+250:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+420:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/(admin)/admin/social/page.tsx
+10:10  Error: 'Image' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(admin)/admin/vendors/page.tsx
+4:47  Error: 'UserMinus' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(auth)/login/page.tsx
+43:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/(buyer)/dashboard/orders/page.tsx
+2:41  Error: 'CardTitle' is defined but never used.  @typescript-eslint/no-unused-vars
+5:8  Error: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(buyer)/dashboard/page.tsx
+8:10  Error: 'formatPrice' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(buyer)/dashboard/profile/page.tsx
+17:11  Error: 'location' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+85:30  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+89:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+116:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/(crowdsourcer)/crowdsourcer/dashboard/upload/page.tsx
+85:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/(integrator)/integrator/keys/page.tsx
+4:29  Error: 'CardHeader' is defined but never used.  @typescript-eslint/no-unused-vars
+4:41  Error: 'CardTitle' is defined but never used.  @typescript-eslint/no-unused-vars
+6:10  Error: 'Input' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(marketing)/item/[id]/page.tsx
+78:9  Error: 'id' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(marketing)/price-history/page.tsx
+8:16  Error: 'TabsContent' is defined but never used.  @typescript-eslint/no-unused-vars
+9:10  Error: 'formatPrice' is defined but never used.  @typescript-eslint/no-unused-vars
+9:23  Error: 'formatPercent' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(marketing)/search/page.tsx
+10:10  Error: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+14:10  Error: 'formatPrice' is defined but never used.  @typescript-eslint/no-unused-vars
+15:10  Error: 'LOCATIONS' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(marketing)/vendors/page.tsx
+8:10  Error: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(marketing)/vendors/[id]/page.tsx
+31:9  Error: 'id' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(shopper)/shopper/dashboard/page.tsx
+8:10  Error: 'ShoppingBag' is defined but never used.  @typescript-eslint/no-unused-vars
+8:23  Error: 'TrendingUp' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(survey)/survey/page.tsx
+5:10  Error: 'Card' is defined but never used.  @typescript-eslint/no-unused-vars
+5:16  Error: 'CardContent' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(survey)/survey/submit/page.tsx
+27:26  Error: 'setFraudIndicator' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(vendor)/vendor/analytics/page.tsx
+5:16  Error: 'TabsContent' is defined but never used.  @typescript-eslint/no-unused-vars
+7:10  Error: 'formatNumber' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(vendor)/vendor/dashboard/page.tsx
+2:10  Error: 'ANALYTICS_DATA' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(vendor)/vendor/page.tsx
+7:10  Error: 'formatPrice' is defined but never used.  @typescript-eslint/no-unused-vars
+8:10  Error: 'Package' is defined but never used.  @typescript-eslint/no-unused-vars
+8:19  Error: 'TrendingUp' is defined but never used.  @typescript-eslint/no-unused-vars
+8:31  Error: 'Eye' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(vendor)/vendor/products/page.tsx
+143:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+258:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/ui/textarea.tsx
+5:18  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+
+./lib/api.ts
+76:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+85:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+94:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+163:13  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+177:25  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/auth.tsx
+28:20  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+68:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+76:33  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+78:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+87:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/location.tsx
+120:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

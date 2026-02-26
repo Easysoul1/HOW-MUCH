@@ -4,11 +4,25 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Store, ShoppingBag, ArrowLeft, MapPin, AlertCircle, MailCheck } from "lucide-react";
+import {
+  Loader2,
+  Store,
+  ShoppingBag,
+  ArrowLeft,
+  MapPin,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "@/lib/location";
@@ -19,8 +33,14 @@ type Role = "buyer" | "vendor" | null;
 export default function SignupPage() {
   const router = useRouter();
   const { register } = useAuth();
-  const { location, address, loading: locationLoading, error: locationError, requestLocation } = useLocation();
-  
+  const {
+    location,
+    address,
+    loading: locationLoading,
+    error: locationError,
+    requestLocation,
+  } = useLocation();
+
   const [role, setRole] = useState<Role>(null);
   const [step, setStep] = useState<"role-selection" | "form">("role-selection");
   const [isLoading, setIsLoading] = useState(false);
@@ -53,19 +73,19 @@ export default function SignupPage() {
     if (address && !formData.city && !formData.state && !formData.address) {
       setFormData((prev) => ({
         ...prev,
-        city: address.city || '',
-        state: address.state || '',
-        address: address.address || '',
+        city: address.city || "",
+        state: address.state || "",
+        address: address.address || "",
       }));
     }
-  }, [address]);
+  }, [address, formData.city, formData.state, formData.address]);
 
   // Request location when form step loads (optional)
   useEffect(() => {
     if (step === "form" && !location && !locationError) {
       requestLocation();
     }
-  }, [step]);
+  }, [step, location, locationError, requestLocation]);
 
   // Reset verification tracking if email changes
   useEffect(() => {
@@ -76,6 +96,9 @@ export default function SignupPage() {
   }, [formData.email]);
 
   const handleRoleSelect = (selectedRole: "buyer" | "vendor") => {
+  const handleRoleSelect = (
+    selectedRole: "buyer" | "vendor"
+  ) => {
     setRole(selectedRole);
     setStep("form");
   };
@@ -148,9 +171,9 @@ export default function SignupPage() {
     try {
       // Map role to backend user_type
       const userType = role === "vendor" ? "VENDOR" : "CUSTOMER";
-      
+
       const registrationData = {
-        username: formData.username,
+        username: formData.email,
         email: formData.email,
         password: formData.password,
         password_confirm: formData.confirmPassword,
@@ -163,10 +186,17 @@ export default function SignupPage() {
         address: formData.address,
         latitude: location?.latitude ? Number(location.latitude.toFixed(6)) : undefined,
         longitude: location?.longitude ? Number(location.longitude.toFixed(6)) : undefined,
+        // Round coordinates to 6 decimal places (backend constraint: max_digits=9, decimal_places=6)
+        latitude: location?.latitude
+          ? Number(location.latitude.toFixed(6))
+          : undefined,
+        longitude: location?.longitude
+          ? Number(location.longitude.toFixed(6))
+          : undefined,
       };
-      
-      console.log('Registration data:', registrationData);
-      
+
+      console.log("Registration data:", registrationData);
+
       await register(registrationData);
 
       // Redirect based on role
@@ -175,8 +205,12 @@ export default function SignupPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Registration failed. Please try again.");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
       setIsLoading(false);
     }
   };
@@ -193,24 +227,29 @@ export default function SignupPage() {
             className="flex flex-col items-center space-y-8"
           >
             <div className="text-center space-y-2">
-              <h1 className="text-3xl md:text-4xl font-display font-bold">Join HowMuch</h1>
-              <p className="text-muted-foreground text-lg">Choose how you want to use the platform.</p>
+              <h1 className="text-3xl md:text-4xl font-display font-bold">
+                Join HowMuch
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Choose how you want to use the platform.
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 w-full max-w-3xl">
               {/* Buyer Card */}
               <button
                 onClick={() => handleRoleSelect("buyer")}
-                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white dark:bg-dark-panel shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 dark:hover:border-white/10 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-black"
+                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-black"
               >
-                <div className="h-20 w-20 rounded-full bg-status-info/10 dark:bg-status-info/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="h-20 w-20 rounded-full bg-status-info/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <ShoppingBag className="w-10 h-10 text-status-info" />
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Buyer</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
-                  Discover fair prices, track market trends, and make informed grocery decisions.
+                  Discover fair prices, track market trends, and make informed
+                  grocery decisions.
                 </p>
-                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel text-sm font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   Join as Buyer
                 </div>
               </button>
@@ -218,27 +257,32 @@ export default function SignupPage() {
               {/* Vendor Card */}
               <button
                 onClick={() => handleRoleSelect("vendor")}
-                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white dark:bg-dark-panel shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 dark:hover:border-white/10 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-brand"
+                className="group relative flex flex-col items-center p-8 rounded-2xl border-2 border-transparent bg-white shadow-depth-1 hover:shadow-depth-3 hover:border-black/5 transition-all duration-300 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-brand"
               >
                 <div className="absolute top-4 right-4 px-3 py-1 bg-accent/15 text-accent text-xs font-bold rounded-full">
                   GROWTH
                 </div>
-                <div className="h-20 w-20 rounded-full bg-accent/10 dark:bg-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Store className="w-10 h-10 text-accent" />
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Vendor</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
-                  List your products, reach more customers, and manage your store inventory.
+                  List your products, reach more customers, and manage your
+                  store inventory.
                 </p>
-                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
+                <div className="mt-8 px-6 py-2 rounded-full bg-light-panel text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
                   Become a Vendor
                 </div>
               </button>
+
             </div>
-            
+
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="text-foreground font-medium hover:underline">
+              <Link
+                href="/login"
+                className="text-foreground font-medium hover:underline"
+              >
                 Log in
               </Link>
             </p>
@@ -251,8 +295,8 @@ export default function SignupPage() {
             exit={{ opacity: 0, x: 20 }}
             className="w-full max-w-xl mx-auto"
           >
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="mb-6 pl-0 hover:bg-transparent hover:text-primary"
               onClick={handleBack}
             >
@@ -260,15 +304,29 @@ export default function SignupPage() {
               Change Role
             </Button>
 
-            <Card className="border-light-border shadow-depth-2 dark:border-dark-border dark:bg-dark-panel">
+            <Card className="border-light-border shadow-depth-2">
               <CardHeader className="space-y-1">
                 <div className="flex items-center gap-3 mb-2">
-                   <div className={cn("p-2 rounded-lg", role === 'vendor' ? "bg-accent/15 text-accent" : "bg-status-info/15 text-status-info")}>
-                      {role === 'vendor' ? <Store className="w-5 h-5"/> : <ShoppingBag className="w-5 h-5"/>}
-                   </div>
-                   <CardTitle className="text-xl">
-                      Sign up as {role === 'vendor' ? 'Vendor' : 'Buyer'}
-                   </CardTitle>
+                  <div
+                    className={cn(
+                      "p-2 rounded-lg",
+                      role === "vendor"
+                        ? "bg-accent/15 text-accent"
+                        : "bg-status-info/15 text-status-info",
+                    )}
+                  >
+                    {role === "vendor" ? (
+                      <Store className="w-5 h-5" />
+                    ) : (
+                      <ShoppingBag className="w-5 h-5" />
+                    )}
+                  </div>
+                  <CardTitle className="text-xl">
+                    Sign up as{" "}
+                    {role === "vendor"
+                      ? "Vendor"
+                      : "Buyer"}
+                  </CardTitle>
                 </div>
                 <CardDescription>
                   Enter your details to create your {role} account.
@@ -277,21 +335,21 @@ export default function SignupPage() {
               <CardContent>
                 {/* Location Status */}
                 {locationLoading && (
-                  <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center gap-2">
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <p className="text-sm text-blue-700">
                       Getting your location and address...
                     </p>
                   </div>
                 )}
                 {locationError && (
-                  <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-2">
+                  <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-600" />
                     <div className="flex-1">
-                      <p className="text-sm text-amber-700 dark:text-amber-300">{locationError}</p>
+                      <p className="text-sm text-amber-700">{locationError}</p>
                       <Button 
                         variant="link" 
-                        className="h-auto p-0 text-xs text-amber-700 dark:text-amber-300"
+                        className="h-auto p-0 text-xs text-amber-700"
                         onClick={requestLocation}
                       >
                         Try Again
@@ -300,11 +358,11 @@ export default function SignupPage() {
                   </div>
                 )}
                 {location && address && (
-                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-green-600 mt-0.5" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                        <p className="text-sm font-medium text-green-700">
                           Location Detected!
                         </p>
                         <p className="text-xs text-status-success mt-1">
@@ -339,7 +397,7 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {role === 'vendor' && (
+                  {role === "vendor" && (
                     <div className="space-y-2">
                       <Label htmlFor="businessName">Business Name</Label>
                       <Input
@@ -348,23 +406,11 @@ export default function SignupPage() {
                         required
                         value={formData.businessName}
                         onChange={handleChange}
-                        className="border-status-success/30 focus:ring-status-success/80 dark:border-status-success/40"
+                        className="border-status-success/30 focus:ring-status-success/80"
                       />
                     </div>
                   )}
 
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      placeholder="johndoe123"
-                      required
-                      value={formData.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Email & Phone Verification Row */}
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
@@ -501,15 +547,17 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {error && <p className="text-sm text-status-danger text-center bg-status-danger/10 dark:bg-status-danger/20 py-2 rounded-lg border border-status-danger/20">{error}</p>}
+                  {error && <p className="text-sm text-status-danger text-center bg-status-danger/10 py-2 rounded-lg border border-status-danger/20">{error}</p>}
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className={cn(
-                      "w-full text-white", 
-                      role === 'vendor' ? "bg-brand hover:bg-brand/90" : "bg-black hover:bg-black/90"
-                    )} 
-                    disabled={isLoading || !emailVerified}
+                      "w-full text-white",
+                      role === "vendor"
+                        ? "bg-brand hover:bg-brand/90"
+                        : "bg-black hover:bg-black/90",
+                    )}
+                    disabled={isLoading}
                   >
                     {!emailVerified ? "Verify Email to Continue" : isLoading ? (
                       <>

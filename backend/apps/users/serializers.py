@@ -5,7 +5,7 @@ from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model"""
-    
+
     class Meta:
         model = User
         fields = (
@@ -13,7 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
             'user_type', 'phone_number', 'address', 'city', 'state',
             'latitude', 'longitude', 'is_verified', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'is_verified', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'username', 'user_type', 'is_verified', 'created_at', 'updated_at')
+
+
+# Types that can be self-registered via the public API
+ALLOWED_REGISTRATION_TYPES = {'CUSTOMER', 'VENDOR', 'CROWDSOURCER'}
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -22,7 +26,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         write_only=True, required=True, validators=[validate_password]
     )
     password_confirm = serializers.CharField(write_only=True, required=True)
-    
+
     class Meta:
         model = User
         fields = (
@@ -30,14 +34,21 @@ class RegisterSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'user_type', 'phone_number',
             'address', 'city', 'state', 'latitude', 'longitude'
         )
-        
+
+    def validate_user_type(self, value):
+        if value not in ALLOWED_REGISTRATION_TYPES:
+            raise serializers.ValidationError(
+                "Invalid user type. Registration is only open to customers, vendors, and crowdsourcers."
+            )
+        return value
+
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError(
                 {"password": "Password fields didn't match."}
             )
         return attrs
-    
+
     def create(self, validated_data):
         validated_data.pop('password_confirm')
         user = User.objects.create_user(

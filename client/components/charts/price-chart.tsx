@@ -39,7 +39,7 @@ export function PriceChart({
           <CartesianGrid
             strokeDasharray="3 3"
             stroke="currentColor"
-            className="stroke-muted-foreground/15 dark:stroke-muted-foreground/20"
+            className="stroke-muted-foreground/15"
             vertical={false}
           />
         )}
@@ -62,7 +62,7 @@ export function PriceChart({
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null;
             return (
-              <div className="rounded-lg border border-light-border bg-white px-3 py-2.5 shadow-depth-2 dark:border-dark-border dark:bg-dark-panel dark:shadow-depth-2">
+              <div className="rounded-lg border border-light-border bg-white px-3 py-2.5 shadow-depth-2">
                 <p className="text-caption text-muted-foreground">{payload[0].payload.label || payload[0].payload.date}</p>
                 <p className="font-numeric text-display-sm font-semibold text-accent mt-0.5">
                   {formatPrice(payload[0].value as number)}

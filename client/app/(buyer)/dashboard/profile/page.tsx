@@ -9,23 +9,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, Mail, Phone, MapPin, Calendar, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, User, Mail, Phone, MapPin, Calendar, AlertCircle, CheckCircle2, Navigation } from "lucide-react";
+import { useLocation } from "@/lib/location";
 
 export default function ProfilePage() {
   const { user, loading, updateUser } = useAuth();
+  const { location, address: detectedAddress, loading: locationLoading, error: locationError, requestLocation } = useLocation();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+  const [locationRequested, setLocationRequested] = useState(false);
+  const [locationSuccess, setLocationSuccess] = useState(false);
+
   const [formData, setFormData] = useState({
-    first_name: user?.first_name || '',
-    last_name: user?.last_name || '',
-    email: user?.email || '',
-    phone_number: user?.phone_number || '',
-    address: user?.address || '',
-    city: user?.city || '',
-    state: user?.state || '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone_number: '',
+    address: '',
+    city: '',
+    state: '',
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -42,6 +46,35 @@ export default function ProfilePage() {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
   };
 
+  // Sync formData when user loads (handles page refresh)
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+        phone_number: user.phone_number || '',
+        address: user.address || '',
+        city: user.city || '',
+        state: user.state || '',
+      });
+    }
+  }, [user]);
+
+  // Auto-fill address fields only when user explicitly clicked "Get Location"
+  useEffect(() => {
+    if (locationRequested && detectedAddress) {
+      setFormData((prev) => ({
+        ...prev,
+        city: detectedAddress.city || prev.city,
+        state: detectedAddress.state || prev.state,
+        address: detectedAddress.address || prev.address,
+      }));
+      setLocationRequested(false);
+      setLocationSuccess(true);
+    }
+  }, [detectedAddress, locationRequested]);
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -52,6 +85,7 @@ export default function ProfilePage() {
       updateUser(response as any);
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       setIsEditing(false);
+      setLocationSuccess(false);
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message || 'Failed to update profile' });
     } finally {
@@ -142,19 +176,19 @@ export default function ProfilePage() {
             <div className="space-y-6">
               {/* Account Info */}
               <div className="grid gap-4">
-                <div className="flex items-center gap-3 p-3 bg-light-panel dark:bg-dark-elevated rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-light-panel rounded-lg">
                   <User className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Username</p>
                     <p className="text-foreground font-medium">{user.username}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-light-panel dark:bg-dark-elevated rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-light-panel rounded-lg">
                   <Calendar className="w-5 h-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Member Since</p>
                     <p className="text-foreground">
-                      {user.date_joined ? new Date(user.date_joined).toLocaleDateString('en-US', { 
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
@@ -201,9 +235,8 @@ export default function ProfilePage() {
                     name="email"
                     type="email"
                     value={formData.email}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className={`pl-10 ${!isEditing ? "bg-gray-50" : ""}`}
+                    disabled
+                    className="pl-10 bg-gray-50 cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -216,9 +249,8 @@ export default function ProfilePage() {
                     id="phone_number"
                     name="phone_number"
                     value={formData.phone_number}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className={`pl-10 ${!isEditing ? "bg-gray-50" : ""}`}
+                    disabled
+                    className="pl-10 bg-gray-50 cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -226,10 +258,46 @@ export default function ProfilePage() {
               <Separator />
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-gray-500" />
-                  <h3 className="font-semibold text-gray-900">Location</h3>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-gray-500" />
+                    <h3 className="font-semibold text-gray-900">Location</h3>
+                  </div>
+                  {isEditing && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setLocationRequested(true); requestLocation(); }}
+                      disabled={locationLoading}
+                    >
+                      {locationLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Detecting...
+                        </>
+                      ) : (
+                        <>
+                          <Navigation className="mr-2 h-4 w-4" />
+                          Get Location
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
+
+                {locationError && isEditing && (
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{locationError}</span>
+                  </div>
+                )}
+                {locationSuccess && isEditing && (
+                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                    <span>Location detected — address fields updated.</span>
+                  </div>
+                )}
                 
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
@@ -286,6 +354,7 @@ export default function ProfilePage() {
                     variant="outline" 
                     onClick={() => {
                       setIsEditing(false);
+                      setLocationSuccess(false);
                       setFormData({
                         first_name: user?.first_name || '',
                         last_name: user?.last_name || '',

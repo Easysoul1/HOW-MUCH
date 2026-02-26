@@ -15,22 +15,22 @@ export default function FraudMonitoringPage() {
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display text-2xl font-bold">Fraud monitoring heatmap</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-gray-500">
           Flagged submissions and outlier activity by location.
         </p>
       </motion.div>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-gray-200 bg-white">
         <CardHeader>
           <CardTitle>Risk by location</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {MOCK_HEATMAP.map((row) => (
-              <div key={row.location} className="flex items-center justify-between rounded-lg border border-dark-border p-3">
+              <div key={row.location} className="flex items-center justify-between rounded-lg border border-gray-200 p-3">
                 <span className="font-medium">{row.location}</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">{row.count} flags</span>
+                  <span className="text-sm text-gray-500">{row.count} flags</span>
                   <Badge variant={row.level >= 3 ? "destructive" : row.level >= 2 ? "warning" : "secondary"}>
                     Level {row.level}
                   </Badge>

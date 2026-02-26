@@ -58,40 +58,26 @@ export default function SavedItemsPage() {
         </p>
       </motion.div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-status-warning bg-status-warning/10 border border-status-warning/20 rounded-lg">
-          <AlertCircle className="w-4 h-4 text-status-warning" />
-          <p>{error}</p>
-        </div>
-      )}
-
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Loading your saved items...</p>
-        </div>
-      ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg">
-          <HeartCrack className="w-12 h-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-4">You haven't saved any items yet.</p>
-          <Button asChild>
-            <Link href="/shop">Browse Products</Link>
-          </Button>
-        </div>
-      ) : (
-        <ul className="space-y-4">
-          {items.map((item, i) => (
-            <motion.li
-              key={item.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-            >
-              <Card className="border-dark-border bg-dark-panel">
-                <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
-                  <div>
-                    <h3 className="font-display font-semibold">{item.product_name || item.name}</h3>
-                    <p className="text-sm text-muted-foreground">{item.location || 'Nationwide'}</p>
+      <ul className="space-y-4">
+        {MOCK_SAVED.map((item, i) => (
+          <motion.li
+            key={item.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card className="border-gray-200 bg-white">
+              <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
+                <div>
+                  <h3 className="font-display font-semibold">{item.name}</h3>
+                  <p className="text-sm text-muted-foreground">{item.location}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="font-display text-lg font-semibold text-accent">
+                      {formatPrice(item.price)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{item.trend} vs last week</p>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">

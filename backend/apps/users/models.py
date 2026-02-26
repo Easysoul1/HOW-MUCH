@@ -14,6 +14,7 @@ class User(AbstractUser):
     USER_TYPE_CHOICES = (
         ('CUSTOMER', 'Customer'),
         ('VENDOR', 'Vendor'),
+        ('ADMIN', 'Admin'),
         ('SHOPPER', 'Personal Shopper'),
         ('CROWDSOURCER', 'Crowdsourcer'),
         ('INTEGRATOR', 'Integrator'),

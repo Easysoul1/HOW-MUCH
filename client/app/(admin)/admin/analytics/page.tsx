@@ -51,8 +51,8 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-medium text-white">Analytics</h1>
-          <p className="text-muted-foreground">Detailed system performance, traffic, and sales data.</p>
+          <h1 className="text-2xl sm:text-3xl font-display font-medium text-gray-900">Analytics</h1>
+          <p className="text-gray-500">Detailed system performance, traffic, and sales data.</p>
         </div>
       </div>
 
@@ -91,21 +91,21 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-7">
-        <div className="col-span-4 bg-dark-panel border border-dark-border rounded-xl p-6">
+        <div className="col-span-4 bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-lg font-medium text-white">Revenue Overview</h3>
-              <p className="text-sm text-muted-foreground">Weekly platform transaction volume.</p>
+              <h3 className="text-lg font-medium text-gray-900">Revenue Overview</h3>
+              <p className="text-sm text-gray-500">Weekly platform transaction volume.</p>
             </div>
           </div>
           <PriceChart data={revenueChartData} height={300} color="#00D084" />
         </div>
 
-        <div className="col-span-3 bg-dark-panel border border-dark-border rounded-xl p-6">
+        <div className="col-span-3 bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-medium text-white">Top Performing Categories</h3>
-              <p className="text-sm text-muted-foreground">Revenue by category breakdown.</p>
+              <h3 className="text-lg font-medium text-gray-900">Top Performing Categories</h3>
+              <p className="text-sm text-gray-500">Revenue by category breakdown.</p>
             </div>
           </div>
           

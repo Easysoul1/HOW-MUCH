@@ -32,7 +32,7 @@ export function VerifiedBadge({ size = "md", className, animated = true }: Verif
     <Badge
       variant="verified"
       className={cn(
-        "gap-1 font-medium shadow-[0_0_12px_-2px_rgba(0,208,132,0.4)] dark:shadow-[0_0_12px_-2px_rgba(0,208,132,0.3)]",
+        "gap-1 font-medium shadow-[0_0_12px_-2px_rgba(0,208,132,0.4)]",
         size === "sm" && "px-1.5 py-0 text-[10px]",
         className
       )}

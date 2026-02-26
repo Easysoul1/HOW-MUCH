@@ -92,7 +92,7 @@ export default function AIShoppingListPage() {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-lg border border-light-border p-3 dark:border-dark-border"
+                    className="flex items-center justify-between rounded-lg border border-light-border p-3"
                   >
                     <div>
                       <p className="font-medium">{item.name}</p>
@@ -193,7 +193,7 @@ export default function AIShoppingListPage() {
                   <span className="text-muted-foreground">Logistics</span>
                   <span className="font-display font-medium">{formatPrice(logistics)}</span>
                 </div>
-                <div className="border-t border-light-border pt-3 dark:border-dark-border">
+                <div className="border-t border-light-border pt-3">
                   <div className="flex justify-between">
                     <span className="font-medium">Total</span>
                     <span className="font-display text-xl font-bold text-accent">
@@ -201,7 +201,7 @@ export default function AIShoppingListPage() {
                     </span>
                   </div>
                 </div>
-                <div className="rounded-lg bg-accent-muted p-3 dark:bg-accent-muted">
+                <div className="rounded-lg bg-accent-muted p-3">
                   <p className="text-xs text-muted-foreground">Est. time</p>
                   <p className="font-display font-semibold">{timeEstimate}</p>
                 </div>

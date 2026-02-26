@@ -57,10 +57,10 @@ export default function LandingPage() {
             fill
             sizes="100vw"
             priority
-            className="object-cover opacity-100 dark:opacity-90"
+            className="object-cover opacity-100"
           />
-          <div className="absolute inset-0 bg-gradient-hero dark:bg-gradient-hero-dark opacity-80 dark:opacity-100" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.06),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.08),transparent)]" />
+          <div className="absolute inset-0 bg-gradient-hero opacity-80" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,208,132,0.06),transparent)]" />
         </div>
         <div className="container relative z-10 flex min-h-[85vh] flex-col justify-center px-4 md:px-6">
           <motion.div
@@ -70,15 +70,15 @@ export default function LandingPage() {
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             {/* Subtle backdrop for text readability - mainly for dark mode or if image shows through */}
-            <div className="absolute inset-0 -z-10 hidden dark:block bg-radial-gradient from-black/40 to-transparent blur-2xl" />
+            <div className="absolute inset-0 -z-10 hidden bg-radial-gradient from-black/40 to-transparent blur-2xl" />
             
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl dark:text-display-xl dark:md:text-4xl dark:lg:text-5xl dark:xl:text-display-xl text-black dark:text-white drop-shadow-sm dark:drop-shadow-lg font-bold tracking-tight break-words">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-black drop-shadow-sm font-bold tracking-tight break-words">
               {SITE.name}
             </h1>
-            <p className="mt-6 text-xl sm:text-2xl md:text-3xl dark:text-body-lg dark:md:text-display-sm text-black/90 dark:text-white/90 font-medium dark:font-normal drop-shadow-sm dark:drop-shadow-md px-2">
+            <p className="mt-6 text-xl sm:text-2xl md:text-3xl text-black/90 font-medium drop-shadow-sm px-2">
               {SITE.tagline}
             </p>
-            <p className="mt-4 text-lg sm:text-xl md:text-2xl dark:text-body-lg text-black/80 dark:text-white/80 drop-shadow-sm dark:drop-shadow-md max-w-2xl mx-auto px-2">
+            <p className="mt-4 text-lg sm:text-xl md:text-2xl text-black/80 drop-shadow-sm max-w-2xl mx-auto px-2">
               Nigeria&apos;s grocery intelligence engine. Not a marketplace — clarity on real prices, anywhere.
             </p>
             <div className="relative mx-auto mt-12 flex justify-center w-full px-4 sm:px-0">
@@ -89,7 +89,7 @@ export default function LandingPage() {
       </section>
 
       {/* Live price ticker */}
-      <section className="section-divider bg-light-panel/70 py-4 dark:bg-dark-panel/50">
+      <section className="section-divider bg-light-panel/70 py-4">
         <div className="flex overflow-hidden">
           <motion.div
             className="flex gap-10 whitespace-nowrap"
@@ -121,7 +121,7 @@ export default function LandingPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.28, delay: 0.05 * i }}
                 >
-                  <p className="font-numeric text-display-md font-bold text-primary dark:text-accent md:text-display-lg">
+                  <p className="font-numeric text-display-md font-bold text-primary md:text-display-lg">
                     {m.value}
                   </p>
                   <p className="mt-1.5 text-caption text-muted-foreground">{m.label}</p>
@@ -133,7 +133,7 @@ export default function LandingPage() {
       </section>
 
       {/* Markets: Mile 12, Bodija — real-world context */}
-      <section className="section-padding section-divider bg-light-panel/40 dark:bg-dark-panel/25">
+      <section className="section-padding section-divider bg-light-panel/40">
         <div className="container">
           <div className="mx-auto max-w-5xl">
             <ScrollFade className="text-center">
@@ -150,7 +150,7 @@ export default function LandingPage() {
                   <HoverLift>
                     <Link
                       href="/search?location=Lagos"
-                      className="group block overflow-hidden rounded-xl border border-light-border bg-white shadow-depth-2 shadow-inner-soft transition-all duration-normal hover:border-light-border/80 hover:shadow-depth-3 dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft"
+                      className="group block overflow-hidden rounded-xl border border-light-border bg-white shadow-depth-2 shadow-inner-soft transition-all duration-normal hover:border-light-border/80 hover:shadow-depth-3"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <OptimizedImage
@@ -237,7 +237,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it works — cards with hover lift */}
-      <section className="section-padding section-divider bg-light-panel/40 dark:bg-dark-panel/25">
+      <section className="section-padding section-divider bg-light-panel/40">
         <div className="container">
           <div className="mx-auto max-w-4xl">
             <ScrollFade className="text-center">
@@ -252,7 +252,7 @@ export default function LandingPage() {
               {HOW_IT_WORKS.map((item, i) => (
                 <ScrollFade key={item.step} delay={0.08 * i}>
                   <HoverLift y={-4}>
-                    <div className="rounded-xl border border-light-border bg-white p-6 shadow-depth-1 shadow-inner-soft transition-all duration-normal hover:border-light-border/80 hover:shadow-depth-2 dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft">
+                    <div className="rounded-xl border border-light-border bg-white p-6 shadow-depth-1 shadow-inner-soft transition-all duration-normal hover:border-light-border/80 hover:shadow-depth-2">
                       <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-accent/12 text-accent">
                         <item.icon className="h-5 w-5" />
                       </div>
@@ -282,8 +282,8 @@ export default function LandingPage() {
               </p>
             </ScrollFade>
             <ScrollFade delay={0.1}>
-              <div className="relative mt-12 overflow-hidden rounded-xl border border-light-border bg-white shadow-depth-3 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] to-transparent dark:from-accent/[0.04]" />
+              <div className="relative mt-12 overflow-hidden rounded-xl border border-light-border bg-white shadow-depth-3 shadow-inner-soft">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] to-transparent" />
                 <div className="relative aspect-[2/1] md:aspect-[21/9]">
                   <OptimizedImage
                     src={IMAGES.analyticsDashboard}
@@ -306,11 +306,11 @@ export default function LandingPage() {
       </section>
 
       {/* API teaser */}
-      <section className="section-padding section-divider bg-light-panel/40 dark:bg-dark-panel/25">
+      <section className="section-padding section-divider bg-light-panel/40">
         <div className="container">
           <div className="mx-auto max-w-2xl">
             <ScrollFade>
-              <div className="flex flex-col items-center rounded-xl border border-light-border bg-white p-10 text-center shadow-depth-1 shadow-inner-soft dark:border-dark-border dark:bg-dark-panel dark:shadow-inner-soft md:p-14">
+              <div className="flex flex-col items-center rounded-xl border border-light-border bg-white p-10 text-center shadow-depth-1 shadow-inner-soft md:p-14">
                 <Code2 className="h-12 w-12 text-accent" />
                 <h2 className="mt-6 text-display-md md:text-display-lg">
                   Build on HOW MUCH

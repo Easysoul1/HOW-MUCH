@@ -65,7 +65,7 @@ function ItemPageLayout({
 }) {
   return (
     <div className="relative min-h-screen">
-      <div className="absolute inset-0 bg-gradient-to-b from-light-panel/50 to-transparent dark:from-dark-panel/30 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-b from-light-panel/50 to-transparent pointer-events-none" aria-hidden />
       <div className="container relative px-4 py-8 md:px-6 md:py-10">
         {children}
       </div>
@@ -88,7 +88,7 @@ export default function ItemDetailPage() {
             ← Back to search
           </Link>
           <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
-            <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl bg-light-panel shadow-depth-2 dark:bg-dark-elevated sm:h-40 sm:w-56">
+            <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl bg-light-panel shadow-depth-2 sm:h-40 sm:w-56">
               <OptimizedImage
                 src={IMAGES.riceProduct}
                 alt={MOCK_PRODUCT.name}
@@ -125,18 +125,18 @@ export default function ItemDetailPage() {
                 </CardTitle>
               </CardHeader>
             <CardContent>
-              <div className="rounded-lg border border-light-border dark:border-dark-border overflow-hidden">
+              <div className="rounded-lg border border-light-border overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-light-border bg-light-panel dark:border-dark-border dark:bg-dark-elevated">
+                      <tr className="border-b border-light-border bg-light-panel">
                         <th className="p-3 text-left font-medium">Location</th>
                         <th className="p-3 text-right font-medium">Price</th>
                       </tr>
                     </thead>
                     <tbody>
                       {MOCK_PRODUCT.heatmap.map((row) => (
-                        <tr key={row.location} className="border-b border-light-border dark:border-dark-border">
+                        <tr key={row.location} className="border-b border-light-border">
                           <td className="p-3">{row.location}</td>
                           <td className="p-3 text-right font-display font-medium">
                             {formatPrice(row.price)}
@@ -188,7 +188,7 @@ export default function ItemDetailPage() {
               {MOCK_PRODUCT.vendors.map((v) => (
                 <div
                   key={v.name}
-                  className="flex items-center justify-between rounded-lg border border-light-border p-3 dark:border-dark-border"
+                  className="flex items-center justify-between rounded-lg border border-light-border p-3"
                 >
                   <div className="flex items-center gap-2">
                     {v.verified && <VerifiedBadge size="sm" />}
