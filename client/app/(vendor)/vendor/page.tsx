@@ -4,8 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/utils";
-import { Package, TrendingUp, Eye } from "lucide-react";
 
 export default function VendorApplicationPage() {
   return (
@@ -18,7 +16,7 @@ export default function VendorApplicationPage() {
       </motion.div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle>Already a vendor?</CardTitle>
           </CardHeader>
@@ -30,22 +28,22 @@ export default function VendorApplicationPage() {
         </Card>
       </div>
 
-      <Card className="border-dark-border bg-dark-panel">
+      <Card className="border-gray-200 bg-white">
         <CardHeader>
           <CardTitle>Apply now</CardTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-500">
             Submit your business details for verification. We&apos;ll review and get back to you.
           </p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Store name</label>
-              <input className="mt-1 w-full rounded-lg border border-dark-border bg-dark-elevated px-4 py-2" placeholder="Your store name" />
+              <label className="text-sm font-medium text-gray-700">Store name</label>
+              <input className="mt-1 w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500" placeholder="Your store name" />
             </div>
             <div>
-              <label className="text-sm font-medium">Market / Location</label>
-              <input className="mt-1 w-full rounded-lg border border-dark-border bg-dark-elevated px-4 py-2" placeholder="e.g. Oyingbo Market, Lagos" />
+              <label className="text-sm font-medium text-gray-700">Market / Location</label>
+              <input className="mt-1 w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500" placeholder="e.g. Oyingbo Market, Lagos" />
             </div>
             <Button type="submit">Submit application</Button>
           </form>

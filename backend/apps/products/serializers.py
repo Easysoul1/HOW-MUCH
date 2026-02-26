@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, UnitOfMeasurement, ProductSize, Product, ProductImage
+from .models import Category, UnitOfMeasurement, ProductSize, Product, ProductImage, SizeRequest
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -126,3 +126,26 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
         if qs.exists():
             raise serializers.ValidationError("Product with this SKU already exists.")
         return value
+
+
+class SizeRequestSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    product_slug = serializers.CharField(source='product.slug', read_only=True)
+    unit_label = serializers.CharField(source='unit.abbreviation', read_only=True)
+    requested_by_email = serializers.EmailField(source='requested_by.email', read_only=True)
+    size_label = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SizeRequest
+        fields = (
+            'id', 'product', 'product_name', 'product_slug',
+            'value', 'unit', 'unit_label', 'size_label',
+            'note', 'status', 'requested_by_email',
+            'rejection_reason', 'created_at',
+        )
+        read_only_fields = ('id', 'status', 'requested_by_email', 'rejection_reason', 'created_at')
+
+    def get_size_label(self, obj):
+        val = float(obj.value)
+        formatted = str(int(val)) if val == int(val) else str(val)
+        return f"{formatted}{obj.unit.abbreviation}"

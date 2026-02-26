@@ -14,8 +14,8 @@ export default function BuyerDashboardPage() {
 
       <div className="grid gap-6">
         {MOCK_ORDERS.map((order) => (
-          <Card key={order.id} className="overflow-hidden border-light-border dark:border-dark-border shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="bg-light-panel dark:bg-dark-elevated border-b border-light-border dark:border-dark-border py-3">
+          <Card key={order.id} className="overflow-hidden border-light-border shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-light-panel border-b border-light-border py-3">
               <div className="flex items-center justify-between">
                 <div className="flex gap-4 text-sm text-muted-foreground">
                   <div className="flex flex-col">
@@ -39,7 +39,7 @@ export default function BuyerDashboardPage() {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
                 <div className="flex gap-4">
-                  <div className="w-20 h-20 bg-light-panel dark:bg-dark-elevated rounded-lg flex-shrink-0 flex items-center justify-center">
+                  <div className="w-20 h-20 bg-light-panel rounded-lg flex-shrink-0 flex items-center justify-center">
                       <Package className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <div>

@@ -17,7 +17,7 @@ export function DashboardMobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-dark-border bg-dark-panel py-2 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-gray-200 bg-white py-2 md:hidden">
       {items.map((item) => (
         <Link
           key={item.href}

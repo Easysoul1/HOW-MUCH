@@ -7,11 +7,11 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
-from .models import Category, UnitOfMeasurement, ProductSize, Product, ProductImage
+from .models import Category, UnitOfMeasurement, ProductSize, Product, ProductImage, SizeRequest
 from .serializers import (
     CategorySerializer, UnitOfMeasurementSerializer, ProductSizeSerializer,
     ProductListSerializer, ProductDetailSerializer, ProductCreateUpdateSerializer,
-    ProductImageSerializer
+    ProductImageSerializer, SizeRequestSerializer
 )
 
 
@@ -61,13 +61,20 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class UnitOfMeasurementViewSet(viewsets.ModelViewSet):
     """
-    Admin manages units. Everyone can read.
+    Everyone can read. Authenticated users can create new units.
+    Only admins can update or delete.
     """
     queryset = UnitOfMeasurement.objects.all()
     serializer_class = UnitOfMeasurementSerializer
-    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'abbreviation']
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        if self.action in ('update', 'partial_update', 'destroy'):
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
 
 
 # --- Product Size ---
@@ -245,9 +252,74 @@ class ProductViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = ProductListSerializer(products, many=True)
         return Response(serializer.data)
+    @action(detail=True, methods=['post'], url_path='suggest_size',
+            permission_classes=[permissions.IsAuthenticated])
+    def suggest_size(self, request, slug=None):
+        """Vendors suggest a new size for a product. Goes to admin for approval."""
+        product = self.get_object()
+        serializer = SizeRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Check for duplicate pending request
+        exists = SizeRequest.objects.filter(
+            product=product,
+            value=serializer.validated_data['value'],
+            unit=serializer.validated_data['unit'],
+            requested_by=request.user,
+            status='PENDING',
+        ).exists()
+        if exists:
+            return Response({'detail': 'You already have a pending request for this size.'}, status=400)
+        serializer.save(product=product, requested_by=request.user)
+        return Response(serializer.data, status=201)
 
 
-# --- Product Image ---
+# --- Size Requests (Admin) ---
+
+class SizeRequestViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Admin view for size requests.
+    GET  /api/products/size-requests/          — list all pending
+    POST /api/products/size-requests/{id}/approve/
+    POST /api/products/size-requests/{id}/reject/
+    """
+    serializer_class = SizeRequestSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = SizeRequest.objects.select_related('product', 'unit', 'requested_by').all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        sr = self.get_object()
+        if sr.status != 'PENDING':
+            return Response({'detail': 'Already reviewed.'}, status=400)
+        # Get or create the ProductSize
+        size, _ = ProductSize.objects.get_or_create(
+            value=sr.value, unit=sr.unit,
+            defaults={'label': ''},
+        )
+        # Link it to the product
+        sr.product.available_sizes.add(size)
+        sr.status = 'APPROVED'
+        sr.reviewed_by = request.user
+        sr.reviewed_at = timezone.now()
+        sr.save()
+        return Response({'detail': f'Approved. Size {size.label} added to {sr.product.name}.'})
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        sr = self.get_object()
+        if sr.status != 'PENDING':
+            return Response({'detail': 'Already reviewed.'}, status=400)
+        sr.status = 'REJECTED'
+        sr.reviewed_by = request.user
+        sr.reviewed_at = timezone.now()
+        sr.rejection_reason = request.data.get('reason', '')
+        sr.save()
+        return Response({'detail': 'Rejected.'})
+
+
+
 
 class ProductImageViewSet(viewsets.ModelViewSet):
     """

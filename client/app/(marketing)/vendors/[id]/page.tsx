@@ -40,8 +40,8 @@ export default function VendorStorefrontPage() {
           ← Back to directory
         </Link>
 
-        <div className="mt-6 overflow-hidden rounded-2xl border border-light-border shadow-depth-2 dark:border-dark-border">
-          <div className="relative aspect-[21/9] min-h-[180px] bg-light-panel dark:bg-dark-elevated">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-light-border shadow-depth-2">
+          <div className="relative aspect-[21/9] min-h-[180px] bg-light-panel">
             <OptimizedImage
               src={MOCK_VENDOR.banner}
               alt={MOCK_VENDOR.name}
@@ -85,17 +85,17 @@ export default function VendorStorefrontPage() {
 
         <Card className="mt-8 shadow-depth-1">
           <CardContent className="p-0">
-            <div className="border-b border-light-border px-5 py-4 dark:border-dark-border">
+            <div className="border-b border-light-border px-5 py-4">
               <h2 className="font-display font-semibold">Items</h2>
               <p className="text-sm text-muted-foreground">Updated 1 hour ago</p>
             </div>
-            <ul className="divide-y divide-light-border dark:divide-dark-border">
+            <ul className="divide-y divide-light-border">
               {MOCK_VENDOR.items.map((item) => (
                 <li
                   key={item.name}
                   className="flex items-center gap-4 px-5 py-4"
                 >
-                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-light-panel dark:bg-dark-elevated">
+                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-light-panel">
                     <OptimizedImage
                       src={item.image}
                       alt={item.name}

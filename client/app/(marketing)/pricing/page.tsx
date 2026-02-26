@@ -90,7 +90,7 @@ export default function PricingPage() {
           ))}
         </div>
 
-        <div className="mx-auto mt-16 flex max-w-xl flex-col items-center rounded-2xl border border-light-border bg-light-panel p-8 text-center dark:border-dark-border dark:bg-dark-panel">
+        <div className="mx-auto mt-16 flex max-w-xl flex-col items-center rounded-2xl border border-light-border bg-light-panel p-8 text-center">
           <Code2 className="h-12 w-12 text-accent" />
           <h2 className="mt-4 font-display text-xl font-semibold">API for integrators</h2>
           <p className="mt-2 text-sm text-muted-foreground">

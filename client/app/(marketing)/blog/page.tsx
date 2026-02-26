@@ -37,7 +37,7 @@ export default function BlogPage() {
               transition={{ delay: i * 0.06 }}
             >
               <HoverLift y={-4}>
-                <Card className="overflow-hidden border border-light-border shadow-depth-1 transition-shadow hover:shadow-depth-2 dark:border-dark-border" asChild>
+                <Card className="overflow-hidden border border-light-border shadow-depth-1 transition-shadow hover:shadow-depth-2" asChild>
                   <Link href={`/blog/${post.id}`}>
                     <div className="flex flex-col sm:flex-row sm:items-stretch">
                       <div className="relative aspect-[16/10] w-full shrink-0 sm:w-80">

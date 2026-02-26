@@ -24,8 +24,8 @@ export default function PersonalShopperOverviewPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mx-auto max-w-4xl"
       >
-        <div className="relative mb-12 overflow-hidden rounded-2xl border border-light-border shadow-depth-2 dark:border-dark-border">
-          <div className="relative aspect-[21/9] min-h-[200px] bg-light-panel dark:bg-dark-elevated">
+        <div className="relative mb-12 overflow-hidden rounded-2xl border border-light-border shadow-depth-2">
+          <div className="relative aspect-[21/9] min-h-[200px] bg-light-panel">
             <OptimizedImage
               src={IMAGES.shopperMarket}
               alt="Shopper in market"
@@ -52,7 +52,7 @@ export default function PersonalShopperOverviewPage() {
               <HoverLift y={-4}>
                 <Card className="shadow-depth-1 transition-shadow hover:shadow-depth-2">
                   <CardContent className="flex items-start gap-4 p-6">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground font-display font-bold">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-display font-bold">
                   {i + 1}
                 </div>
                 <div>
@@ -67,15 +67,15 @@ export default function PersonalShopperOverviewPage() {
         </div>
 
         <ScrollFade delay={0.2}>
-          <div className="relative mt-12 overflow-hidden rounded-2xl border border-light-border dark:border-dark-border">
-            <div className="relative aspect-[2/1] bg-light-panel dark:bg-dark-elevated">
+          <div className="relative mt-12 overflow-hidden rounded-2xl border border-light-border">
+            <div className="relative aspect-[2/1] bg-light-panel">
               <OptimizedImage src={IMAGES.delivery} alt="Delivery" fill sizes="(max-width: 768px) 100vw, 1024px" className="object-cover opacity-90" />
-              <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30" />
+              <div className="absolute inset-0 bg-primary/20" />
             </div>
           </div>
         </ScrollFade>
 
-        <Card className="mt-10 border-accent/30 bg-accent-muted/20 shadow-depth-1 dark:bg-accent-muted/10">
+        <Card className="mt-10 border-accent/30 bg-accent-muted/20 shadow-depth-1">
           <CardContent className="flex flex-wrap items-center justify-between gap-6 p-6">
             <div className="flex items-center gap-3">
               <Shield className="h-10 w-10 text-accent" />

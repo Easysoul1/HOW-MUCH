@@ -16,13 +16,13 @@ export default function SocialMediaGeneratorPage() {
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display text-2xl font-bold">Social media auto generator</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-gray-500">
           Generate branded image post, auto headline, export image.
         </p>
       </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle>Content</CardTitle>
           </CardHeader>
@@ -42,13 +42,13 @@ export default function SocialMediaGeneratorPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle>Preview</CardTitle>
           </CardHeader>
           <CardContent>
             <div
-              className="flex aspect-[1.91/1] flex-col justify-between rounded-xl border border-dark-border bg-primary p-6 text-primary-foreground"
+              className="flex aspect-[1.91/1] flex-col justify-between rounded-xl border border-gray-200 bg-primary p-6 text-primary-foreground"
             >
               <div>
                 <p className="font-display text-sm font-semibold text-accent">{SITE.name}</p>

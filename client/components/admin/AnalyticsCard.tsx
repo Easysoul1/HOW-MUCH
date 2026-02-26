@@ -18,14 +18,14 @@ export function AnalyticsCard({
   prefix = "",
 }: AnalyticsCardProps) {
   return (
-    <Card className="bg-dark-panel border-dark-border">
+    <Card className="bg-white border-gray-200">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-sm font-medium text-gray-500">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-white">
+        <div className="text-2xl font-bold text-gray-900">
           {prefix}{value.toLocaleString()}
         </div>
         {change !== undefined && (
@@ -34,10 +34,10 @@ export function AnalyticsCard({
               className={cn(
                 "flex items-center",
                 trend === "up"
-                  ? "text-status-success"
+                  ? "text-green-600"
                   : trend === "down"
-                  ? "text-status-danger"
-                  : "text-muted-foreground"
+                  ? "text-red-500"
+                  : "text-gray-500"
               )}
             >
               {trend === "up" ? (
@@ -47,7 +47,7 @@ export function AnalyticsCard({
               ) : null}
               {Math.abs(change)}%
             </span>
-            <span className="text-muted-foreground ml-2">from last month</span>
+            <span className="text-gray-500 ml-2">from last month</span>
           </p>
         )}
       </CardContent>

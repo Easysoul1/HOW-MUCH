@@ -61,7 +61,7 @@ export default function VendorDashboardPage() {
           <CardContent>
              <div className="space-y-4">
                  {MOCK_ORDERS.map((order) => (
-                     <div key={order.id} className="flex items-center justify-between border-b border-light-border dark:border-dark-border pb-4 last:border-0 last:pb-0">
+                     <div key={order.id} className="flex items-center justify-between border-b border-light-border pb-4 last:border-0 last:pb-0">
                          <div className="flex flex-col">
                              <span className="font-medium text-foreground">{order.customerName}</span>
                              <span className="text-xs text-muted-foreground">{order.items} items • {order.date}</span>
@@ -85,13 +85,13 @@ export default function VendorDashboardPage() {
               <div className="space-y-4">
                   <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-light-panel dark:bg-dark-elevated rounded-lg"></div>
+                          <div className="w-10 h-10 bg-light-panel rounded-lg"></div>
                           <div>
                               <p className="text-sm font-medium">Palm Oil (5L)</p>
                               <p className="text-xs text-status-danger">Only 12 left</p>
                           </div>
                       </div>
-                      <button className="text-xs border border-light-border dark:border-dark-border px-3 py-1 rounded hover:bg-primary hover:text-primary-foreground dark:hover:bg-accent dark:hover:text-accent-foreground transition-colors">Restock</button>
+                      <button className="text-xs border border-light-border px-3 py-1 rounded hover:bg-primary hover:text-primary-foreground transition-colors">Restock</button>
                   </div>
               </div>
           </CardContent>

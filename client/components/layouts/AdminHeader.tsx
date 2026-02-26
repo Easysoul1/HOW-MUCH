@@ -6,27 +6,27 @@ import { MobileAdminNav } from "./MobileAdminNav";
 
 export function AdminHeader() {
   return (
-    <header className="h-16 border-b border-dark-border bg-dark/50 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-6">
-      <div className="flex items-center gap-4 flex-1">
+    <header className="h-14 sm:h-16 border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6">
+      <div className="flex items-center gap-3 flex-1">
         <MobileAdminNav />
         <div className="relative w-full max-w-sm hidden sm:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search vendors, products, or orders..."
-            className="w-full bg-dark-elevated border-none rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/80"
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-muted-foreground hover:text-white"
+          className="relative text-gray-500 hover:text-gray-900"
         >
           <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-status-danger rounded-full border-2 border-dark" />
+          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
         </Button>
       </div>
     </header>

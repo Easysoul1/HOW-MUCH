@@ -58,7 +58,7 @@ export default function ContactPage() {
                   <textarea
                     id="message"
                     rows={4}
-                    className="mt-1 w-full rounded-lg border border-light-border bg-white px-4 py-2 text-sm dark:border-dark-border dark:bg-dark-elevated"
+                    className="mt-1 w-full rounded-lg border border-light-border bg-white px-4 py-2 text-sm"
                     placeholder="Your message..."
                     required
                   />

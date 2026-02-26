@@ -22,7 +22,7 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle>Profile</CardTitle>
           </CardHeader>
@@ -45,7 +45,7 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <Card className="border-dark-border bg-dark-panel">
+        <Card className="border-gray-200 bg-white">
           <CardHeader>
             <CardTitle className="text-black">Notifications</CardTitle>
             <p className="text-sm text-black">

@@ -22,7 +22,7 @@ export default function BlogPostPage() {
           Market report #{id}
         </h1>
         <p className="mt-2 text-muted-foreground">Sample date and excerpt.</p>
-        <div className="prose prose-slate dark:prose-invert mt-8">
+        <div className="prose prose-slate mt-8">
           <p>
             This is a placeholder for the full blog post or market report. In production,
             content would be loaded by ID from a CMS or API. Price analysis, seasonal trends,

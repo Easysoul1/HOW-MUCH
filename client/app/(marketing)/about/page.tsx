@@ -22,7 +22,7 @@ export default function AboutPage() {
 
         <Card className="mt-10">
           <CardContent className="flex gap-4 p-6">
-            <Target className="h-10 w-10 shrink-0 text-primary dark:text-accent" />
+            <Target className="h-10 w-10 shrink-0 text-primary" />
             <div>
               <h2 className="font-display text-xl font-semibold">Mission</h2>
               <p className="mt-2 text-muted-foreground">
@@ -34,7 +34,7 @@ export default function AboutPage() {
 
         <Card className="mt-6">
           <CardContent className="flex gap-4 p-6">
-            <Database className="h-10 w-10 shrink-0 text-primary dark:text-accent" />
+            <Database className="h-10 w-10 shrink-0 text-primary" />
             <div>
               <h2 className="font-display text-xl font-semibold">Data methodology</h2>
               <p className="mt-2 text-muted-foreground">
@@ -46,7 +46,7 @@ export default function AboutPage() {
 
         <Card className="mt-6">
           <CardContent className="flex gap-4 p-6">
-            <ShieldCheck className="h-10 w-10 shrink-0 text-primary dark:text-accent" />
+            <ShieldCheck className="h-10 w-10 shrink-0 text-primary" />
             <div>
               <h2 className="font-display text-xl font-semibold">Verification process</h2>
               <p className="mt-2 text-muted-foreground">
