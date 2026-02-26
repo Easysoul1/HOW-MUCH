@@ -13,7 +13,8 @@ class MarketPrice(models.Model):
         ('REJECTED', 'Rejected'),
     )
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='market_prices')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='market_prices', null=True, blank=True)
+    product_name = models.CharField(max_length=255, help_text="Name of the product entered by crowdsourcer", default="")
     crowdsourcer = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
@@ -50,4 +51,5 @@ class MarketPrice(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.product.name} - ₦{self.price} at {self.market_name}"
+        name = self.product.name if self.product else self.product_name
+        return f"{name} - ₦{self.price} at {self.market_name}"

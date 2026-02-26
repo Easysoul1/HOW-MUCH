@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
-import { crowdsourceApi, productsApi } from "@/lib/api";
+import { crowdsourceApi } from "@/lib/api";
 
 export default function SubmitPricePage() {
   const router = useRouter();
@@ -21,7 +20,7 @@ export default function SubmitPricePage() {
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    product_id: "",
+    product_name: "",
     price: "",
     market_name: "",
     notes: "",
@@ -29,37 +28,14 @@ export default function SubmitPricePage() {
   const [images, setImages] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
 
-  const [products, setProducts] = useState<any[]>([]);
-  const [isProductsLoading, setIsProductsLoading] = useState(true);
 
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data: any = await productsApi.list({ page: 1 });
-        if (data && Array.isArray(data.results)) {
-          setProducts(data.results);
-        } else if (Array.isArray(data)) {
-          setProducts(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-      } finally {
-        setIsProductsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, product_id: value }));
-  };
+
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -114,7 +90,7 @@ export default function SubmitPricePage() {
       }
 
       const submissionData = new FormData();
-      submissionData.append("product", formData.product_id);
+      submissionData.append("product_name", formData.product_name);
       submissionData.append("price", formData.price.toString());
       submissionData.append("market_name", formData.market_name);
       submissionData.append("notes", formData.notes);
@@ -126,7 +102,7 @@ export default function SubmitPricePage() {
       await crowdsourceApi.submit(submissionData);
 
       setSuccess(true);
-      setFormData({ product_id: "", price: "", market_name: "", notes: "" });
+      setFormData({ product_name: "", price: "", market_name: "", notes: "" });
       setImages([]);
       
       // Redirect after showing success message shortly
@@ -183,19 +159,14 @@ export default function SubmitPricePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2 flex flex-col">
-                <Label htmlFor="product">Product</Label>
-                <Select value={formData.product_id} onValueChange={handleSelectChange} required disabled={isProductsLoading}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={isProductsLoading ? "Loading products..." : "Select a product"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((p) => (
-                      <SelectItem key={p.slug || p.id} value={p.slug || String(p.id)}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="product_name">Product Name</Label>
+                <Input 
+                  id="product_name"
+                  placeholder="e.g. 50kg Bag of Rice" 
+                  value={formData.product_name} 
+                  onChange={handleChange} 
+                  required 
+                />
               </div>
 
               <div className="space-y-2">
