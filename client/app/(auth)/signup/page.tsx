@@ -4,11 +4,24 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Store, ShoppingBag, ArrowLeft, MapPin, AlertCircle } from "lucide-react";
+import {
+  Loader2,
+  Store,
+  ShoppingBag,
+  ArrowLeft,
+  MapPin,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "@/lib/location";
@@ -18,12 +31,18 @@ type Role = "buyer" | "vendor" | null;
 export default function SignupPage() {
   const router = useRouter();
   const { register } = useAuth();
-  const { location, address, loading: locationLoading, error: locationError, requestLocation } = useLocation();
-  
+  const {
+    location,
+    address,
+    loading: locationLoading,
+    error: locationError,
+    requestLocation,
+  } = useLocation();
+
   const [role, setRole] = useState<Role>(null);
   const [step, setStep] = useState<"role-selection" | "form">("role-selection");
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -45,21 +64,23 @@ export default function SignupPage() {
     if (address && !formData.city && !formData.state && !formData.address) {
       setFormData((prev) => ({
         ...prev,
-        city: address.city || '',
-        state: address.state || '',
-        address: address.address || '',
+        city: address.city || "",
+        state: address.state || "",
+        address: address.address || "",
       }));
     }
-  }, [address]);
+  }, [address, formData.city, formData.state, formData.address]);
 
   // Request location when form step loads (optional)
   useEffect(() => {
     if (step === "form" && !location && !locationError) {
       requestLocation();
     }
-  }, [step]);
+  }, [step, location, locationError, requestLocation]);
 
-  const handleRoleSelect = (selectedRole: "buyer" | "vendor") => {
+  const handleRoleSelect = (
+    selectedRole: "buyer" | "vendor"
+  ) => {
     setRole(selectedRole);
     setStep("form");
   };
@@ -89,7 +110,7 @@ export default function SignupPage() {
     try {
       // Map role to backend user_type
       const userType = role === "vendor" ? "VENDOR" : "CUSTOMER";
-      
+
       const registrationData = {
         username: formData.email,
         email: formData.email,
@@ -103,12 +124,16 @@ export default function SignupPage() {
         state: formData.state,
         address: formData.address,
         // Round coordinates to 6 decimal places (backend constraint: max_digits=9, decimal_places=6)
-        latitude: location?.latitude ? Number(location.latitude.toFixed(6)) : undefined,
-        longitude: location?.longitude ? Number(location.longitude.toFixed(6)) : undefined,
+        latitude: location?.latitude
+          ? Number(location.latitude.toFixed(6))
+          : undefined,
+        longitude: location?.longitude
+          ? Number(location.longitude.toFixed(6))
+          : undefined,
       };
-      
-      console.log('Registration data:', registrationData);
-      
+
+      console.log("Registration data:", registrationData);
+
       await register(registrationData);
 
       // Redirect based on role
@@ -117,8 +142,12 @@ export default function SignupPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Registration failed. Please try again.");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
       setIsLoading(false);
     }
   };
@@ -135,8 +164,12 @@ export default function SignupPage() {
             className="flex flex-col items-center space-y-8"
           >
             <div className="text-center space-y-2">
-              <h1 className="text-3xl md:text-4xl font-display font-bold">Join HowMuch</h1>
-              <p className="text-muted-foreground text-lg">Choose how you want to use the platform.</p>
+              <h1 className="text-3xl md:text-4xl font-display font-bold">
+                Join HowMuch
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Choose how you want to use the platform.
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 w-full max-w-3xl">
@@ -150,7 +183,8 @@ export default function SignupPage() {
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Buyer</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
-                  Discover fair prices, track market trends, and make informed grocery decisions.
+                  Discover fair prices, track market trends, and make informed
+                  grocery decisions.
                 </p>
                 <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   Join as Buyer
@@ -170,17 +204,22 @@ export default function SignupPage() {
                 </div>
                 <h2 className="text-2xl font-bold mb-3">I am a Vendor</h2>
                 <p className="text-center text-muted-foreground leading-relaxed">
-                  List your products, reach more customers, and manage your store inventory.
+                  List your products, reach more customers, and manage your
+                  store inventory.
                 </p>
                 <div className="mt-8 px-6 py-2 rounded-full bg-light-panel dark:bg-dark-elevated text-sm font-medium group-hover:bg-brand group-hover:text-white transition-colors">
                   Become a Vendor
                 </div>
               </button>
+
             </div>
-            
+
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="text-foreground font-medium hover:underline">
+              <Link
+                href="/login"
+                className="text-foreground font-medium hover:underline"
+              >
                 Log in
               </Link>
             </p>
@@ -193,8 +232,8 @@ export default function SignupPage() {
             exit={{ opacity: 0, x: 20 }}
             className="w-full max-w-xl mx-auto"
           >
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="mb-6 pl-0 hover:bg-transparent hover:text-primary"
               onClick={handleBack}
             >
@@ -205,12 +244,26 @@ export default function SignupPage() {
             <Card className="border-light-border shadow-depth-2 dark:border-dark-border dark:bg-dark-panel">
               <CardHeader className="space-y-1">
                 <div className="flex items-center gap-3 mb-2">
-                   <div className={cn("p-2 rounded-lg", role === 'vendor' ? "bg-accent/15 text-accent" : "bg-status-info/15 text-status-info")}>
-                      {role === 'vendor' ? <Store className="w-5 h-5"/> : <ShoppingBag className="w-5 h-5"/>}
-                   </div>
-                   <CardTitle className="text-xl">
-                      Sign up as {role === 'vendor' ? 'Vendor' : 'Buyer'}
-                   </CardTitle>
+                  <div
+                    className={cn(
+                      "p-2 rounded-lg",
+                      role === "vendor"
+                        ? "bg-accent/15 text-accent"
+                        : "bg-status-info/15 text-status-info",
+                    )}
+                  >
+                    {role === "vendor" ? (
+                      <Store className="w-5 h-5" />
+                    ) : (
+                      <ShoppingBag className="w-5 h-5" />
+                    )}
+                  </div>
+                  <CardTitle className="text-xl">
+                    Sign up as{" "}
+                    {role === "vendor"
+                      ? "Vendor"
+                      : "Buyer"}
+                  </CardTitle>
                 </div>
                 <CardDescription>
                   Enter your details to create your {role} account.
@@ -230,9 +283,11 @@ export default function SignupPage() {
                   <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-600" />
                     <div className="flex-1">
-                      <p className="text-sm text-amber-700 dark:text-amber-300">{locationError}</p>
-                      <Button 
-                        variant="link" 
+                      <p className="text-sm text-amber-700 dark:text-amber-300">
+                        {locationError}
+                      </p>
+                      <Button
+                        variant="link"
                         className="h-auto p-0 text-xs text-amber-700 dark:text-amber-300"
                         onClick={requestLocation}
                       >
@@ -281,7 +336,7 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {role === 'vendor' && (
+                  {role === "vendor" && (
                     <div className="space-y-2">
                       <Label htmlFor="businessName">Business Name</Label>
                       <Input
@@ -377,14 +432,20 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  {error && <p className="text-sm text-status-danger text-center bg-status-danger/10 dark:bg-status-danger/20 py-2 rounded-lg border border-status-danger/20">{error}</p>}
+                  {error && (
+                    <p className="text-sm text-status-danger text-center bg-status-danger/10 dark:bg-status-danger/20 py-2 rounded-lg border border-status-danger/20">
+                      {error}
+                    </p>
+                  )}
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className={cn(
-                      "w-full text-white", 
-                      role === 'vendor' ? "bg-brand hover:bg-brand/90" : "bg-black hover:bg-black/90"
-                    )} 
+                      "w-full text-white",
+                      role === "vendor"
+                        ? "bg-brand hover:bg-brand/90"
+                        : "bg-black hover:bg-black/90",
+                    )}
                     disabled={isLoading}
                   >
                     {isLoading ? (

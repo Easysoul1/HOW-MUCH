@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 # Types that can be self-registered via the public API
-ALLOWED_REGISTRATION_TYPES = {'CUSTOMER', 'VENDOR'}
+ALLOWED_REGISTRATION_TYPES = {'CUSTOMER', 'VENDOR', 'CROWDSOURCER'}
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -38,7 +38,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_user_type(self, value):
         if value not in ALLOWED_REGISTRATION_TYPES:
             raise serializers.ValidationError(
-                "Invalid user type. Registration is only open to customers and vendors."
+                "Invalid user type. Registration is only open to customers, vendors, and crowdsourcers."
             )
         return value
 

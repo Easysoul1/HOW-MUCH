@@ -1,0 +1,7 @@
+{
+    "username": "test_crowdsourcer",
+    "email": "crowdsourcer@example.com",
+    "password": "Password123!",
+    "password_confirm": "Password123!",
+    "user_type": "CROWDSOURCER"
+}
