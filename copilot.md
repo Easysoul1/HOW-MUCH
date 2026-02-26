@@ -153,6 +153,8 @@ GET    /api/pricing/public/               — public: all available listings
 GET    /api/pricing/public/?product_slug=rice     — filter by product
 GET    /api/pricing/public/?search=gino+tomatoes  — free text (searches product name + brand + notes)
 GET    /api/pricing/public/?ordering=price        — sort (price, -price, updated_at)
+GET    /api/pricing/public/?lat=6.5&lng=3.4       — annotate distance_km from buyer
+GET    /api/pricing/public/?lat=6.5&lng=3.4&radius=10  — filter within 10km radius
 
 GET    /api/pricing/history/              — all price history (ML/graphs)
 GET    /api/pricing/history/?product_slug=rice    — for specific product
@@ -206,7 +208,7 @@ priceHistoryApi  — get({product_slug, listing_id, include_current, ordering})
 ### Buyer Dashboard (`/dashboard/`)
 | Page | Status | Notes |
 |---|---|---|
-| `/dashboard/` | ✅ Built | Hero search bar → free-text search on listings (brand + product name + notes), or autocomplete product select → all listings for that product. Cards show: price, vendor, brand, size, % price change trend. Filters: vendor, price range, size, sort |
+| `/dashboard/` | ✅ Built | Hero search bar → free-text search or autocomplete product select. Cards show: price, vendor, brand, size, % trend, vendor location + distance, "Compare" button. Filters: vendor, price range, size, distance radius, sort. Distance filter uses browser geolocation + Haversine API. Compare view: full-screen overlay with multi-line price history graph (SVG), add more items picker, side-by-side comparison table. |
 | `/dashboard/profile` | ✅ | Email/phone read-only, "Get Location" button triggers geolocation → auto-fills address fields |
 
 ---
@@ -263,6 +265,31 @@ Notification:  bg-red-500 dot (2px)
   1. Autocomplete: user selects from product suggestions → fetches listings by `product_slug`
   2. Free-text: press Enter or click Search → hits `?search=query` on listings (searches `product__name`, `brand`, `notes`)
 
+### Vendor Location & Distance
+- `PublicListingSerializer` includes `vendor_city`, `vendor_state`, `vendor_latitude`, `vendor_longitude`, `distance_km`
+- Distance computed server-side via Haversine formula (Python `math` — no PostGIS needed) when `?lat=&lng=` query params are provided
+- `?radius=` filters to vendors within that km radius; vendors without coordinates are excluded when radius is set
+- Frontend shows vendor city/state on listing cards, and "Xkm away" badge when buyer shares location
+- Distance filter: buyer clicks "Enable location" → browser geolocation → distance dropdown (5/10/25/50/100km) triggers re-fetch
+
+### Price History Sparkline
+- Removed from listing cards — price history now shown in Compare View only
+- Compare View renders a multi-line SVG chart (320×140px viewBox, responsive width)
+- Each compared listing gets its own colored line (6 color palette)
+- Y-axis shows ₦ labels, X-axis is time-based
+- Fetches `priceHistoryApi.get({ listing_id, include_current: true })` per item
+- No external charting library — pure inline SVG `<path>`
+
+### Compare View
+- User clicks "Compare" on listing cards → items added to comparison cart
+- Floating bar at bottom shows count + "Compare" button to open full-screen view
+- Compare view includes:
+  1. **Multi-line price history graph** — overlaid lines for all selected items
+  2. **Add another listing** — horizontal picker of remaining listings from search results
+  3. **Side-by-side comparison table** — product, price, size, brand, trend, location, distance, updated
+- Table is horizontally scrollable with sticky first column for mobile
+- Items can be removed individually from comparison
+
 ### Unit Creation
 - Any authenticated user can create units via `POST /api/products/units/`
 - Vendor size suggestion form has a toggle "Unit not listed? Add a new one" → creates the unit first, uses its ID for the size request
@@ -306,12 +333,10 @@ Notification:  bg-red-500 dot (2px)
 
 ## Pending / Next Steps
 
-1. **Buyer dashboard** — listing cards should show `price_change_pct` trend badge (↑3% / ↓5%) — backend sends it, frontend not rendering it yet
-2. **Admin approvals** — KYC and Vendor Registration tabs are placeholders
-3. **Vendor dashboard** — stats are mock data, not connected to real backend counts
-4. **Price history graph** — `priceHistoryApi` is ready; a chart component (e.g. recharts) could be added to the product detail or buyer search results
-5. **VendorProfile model** — `apps/vendors` is mostly empty; `vendor_name` in listings falls back to email prefix. A proper `VendorProfile` with `business_name`, `location`, `logo` would improve the buyer experience
-6. **Buyer saved items / saved searches** — pages exist but are placeholder/mock
+1. **Admin approvals** — KYC and Vendor Registration tabs are placeholders
+2. **Vendor dashboard** — stats are mock data, not connected to real backend counts
+3. **VendorProfile model** — `apps/vendors` is mostly empty; `vendor_name` in listings falls back to email prefix. A proper `VendorProfile` with `business_name`, `location`, `logo` would improve the buyer experience
+4. **Buyer saved items / saved searches** — pages exist but are placeholder/mock
 
 ---
 

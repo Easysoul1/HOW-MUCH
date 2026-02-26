@@ -287,12 +287,15 @@ export const listingsApi = {
 
 // Public Listings API (for buyers)
 export const publicListingsApi = {
-  search: (params: { search?: string; product_slug?: string; size?: number; ordering?: string }) => {
+  search: (params: { search?: string; product_slug?: string; size?: number; ordering?: string; lat?: number; lng?: number; radius?: number }) => {
     const q = new URLSearchParams();
     if (params.search) q.append('search', params.search);
     if (params.product_slug) q.append('product_slug', params.product_slug);
     if (params.size) q.append('size', String(params.size));
     if (params.ordering) q.append('ordering', params.ordering);
+    if (params.lat != null) q.append('lat', String(params.lat));
+    if (params.lng != null) q.append('lng', String(params.lng));
+    if (params.radius != null) q.append('radius', String(params.radius));
     return apiClient.get(`/pricing/public/?${q.toString()}`, false);
   },
 };

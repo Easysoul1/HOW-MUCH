@@ -4,8 +4,19 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
+import math
+
 from .models import VendorListing, PriceHistory
 from .serializers import VendorListingSerializer, PublicListingSerializer, PriceHistorySerializer
+
+
+def haversine_km(lat1, lon1, lat2, lon2):
+    """Great-circle distance between two points in km."""
+    R = 6371.0
+    dlat = math.radians(float(lat2) - float(lat1))
+    dlon = math.radians(float(lon2) - float(lon1))
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(float(lat1))) * math.cos(math.radians(float(lat2))) * math.sin(dlon / 2) ** 2
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
 class IsVendor(permissions.BasePermission):
@@ -53,6 +64,8 @@ class PublicListingViewSet(viewsets.ReadOnlyModelViewSet):
     GET /api/pricing/public/                        — all available listings
     GET /api/pricing/public/?product_slug=rice      — listings for a product
     GET /api/pricing/public/?search=gino+tomato     — search brand/product name/notes
+    GET /api/pricing/public/?lat=6.5&lng=3.4        — annotate distance from buyer
+    GET /api/pricing/public/?lat=6.5&lng=3.4&radius=10 — within 10km of buyer
     """
     serializer_class = PublicListingSerializer
     permission_classes = [permissions.AllowAny]
@@ -72,6 +85,44 @@ class PublicListingViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(product__slug=product_slug)
 
         return qs
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+
+        lat = request.query_params.get('lat')
+        lng = request.query_params.get('lng')
+        radius = request.query_params.get('radius')
+
+        if lat and lng:
+            try:
+                buyer_lat, buyer_lng = float(lat), float(lng)
+            except (ValueError, TypeError):
+                return response
+
+            results = response.data if isinstance(response.data, list) else response.data.get('results', response.data)
+            enriched = []
+            for item in results:
+                v_lat = item.get('vendor_latitude')
+                v_lng = item.get('vendor_longitude')
+                if v_lat is not None and v_lng is not None:
+                    dist = round(haversine_km(buyer_lat, buyer_lng, v_lat, v_lng), 1)
+                    item['distance_km'] = dist
+                else:
+                    item['distance_km'] = None
+
+            if radius:
+                try:
+                    radius_km = float(radius)
+                    results = [item for item in results if item.get('distance_km') is not None and item['distance_km'] <= radius_km]
+                    if isinstance(response.data, dict) and 'results' in response.data:
+                        response.data['results'] = results
+                        response.data['count'] = len(results)
+                    else:
+                        response.data = results
+                except (ValueError, TypeError):
+                    pass
+
+        return response
 
 
 class PriceHistoryViewSet(viewsets.ReadOnlyModelViewSet):

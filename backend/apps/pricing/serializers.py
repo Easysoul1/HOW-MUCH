@@ -39,6 +39,11 @@ class PublicListingSerializer(serializers.ModelSerializer):
     product_image = serializers.ImageField(source='product.image', read_only=True)
     size_label = serializers.CharField(source='size.label', read_only=True)
     vendor_name = serializers.SerializerMethodField()
+    vendor_city = serializers.CharField(source='vendor.city', read_only=True)
+    vendor_state = serializers.CharField(source='vendor.state', read_only=True)
+    vendor_latitude = serializers.DecimalField(source='vendor.latitude', max_digits=10, decimal_places=7, read_only=True)
+    vendor_longitude = serializers.DecimalField(source='vendor.longitude', max_digits=10, decimal_places=7, read_only=True)
+    distance_km = serializers.SerializerMethodField()
     updated_at = serializers.DateTimeField(read_only=True)
     price_change_pct = serializers.SerializerMethodField()
 
@@ -47,8 +52,17 @@ class PublicListingSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'product_name', 'product_slug', 'product_image',
             'size_label', 'brand', 'price', 'is_available',
-            'vendor_name', 'updated_at', 'price_change_pct',
+            'vendor_name', 'vendor_city', 'vendor_state',
+            'vendor_latitude', 'vendor_longitude', 'distance_km',
+            'updated_at', 'price_change_pct',
         )
+
+    def get_distance_km(self, obj):
+        """Return pre-computed distance if annotated by the view."""
+        dist = getattr(obj, '_distance_km', None)
+        if dist is not None:
+            return round(dist, 1)
+        return None
 
     def get_vendor_name(self, obj):
         profile = getattr(obj.vendor, 'vendor_profile', None)
