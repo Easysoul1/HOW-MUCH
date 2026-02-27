@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Loader2, ImageIcon, ArrowUpDown, X, SlidersHorizontal, Store, TrendingUp, TrendingDown, Minus, MapPin, Navigation, BarChart3, Plus, Trash2 } from "lucide-react";
+import { Search, Loader2, ImageIcon, ArrowUpDown, X, SlidersHorizontal, Store, TrendingUp, TrendingDown, Minus, MapPin, Navigation, BarChart3, Plus, Trash2, ShoppingCart } from "lucide-react";
 import { publicListingsApi, productsApi, sizesApi, priceHistoryApi } from "@/lib/api";
+import { useCart } from "@/lib/cart";
 
 interface Product { id: number; name: string; slug: string; category_name: string; image: string | null; }
 interface Size { id: number; label: string; }
@@ -246,6 +247,7 @@ function CompareView({ items, onRemove, onClose, allListings, onAdd }: {
 }
 
 export default function DashboardOverviewPage() {
+  const { addItem, items: cartItems } = useCart();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -622,8 +624,9 @@ export default function DashboardOverviewPage() {
                           <PriceTrendBadge pct={l.price_change_pct} />
                           <span className="text-xs text-gray-400">Updated {timeAgo(l.updated_at)}</span>
                         </div>
-                        {/* Compare button */}
-                        <div className="mt-2.5">
+                        {/* Action buttons */}
+                        <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+                          {/* Compare button */}
                           {compareItems.find(c => c.id === l.id) ? (
                             <button
                               onClick={() => setCompareItems(prev => prev.filter(c => c.id !== l.id))}
@@ -637,6 +640,41 @@ export default function DashboardOverviewPage() {
                               className="flex items-center gap-1.5 text-xs border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-colors font-medium"
                             >
                               <Plus className="w-3.5 h-3.5" /> Compare
+                            </button>
+                          )}
+
+                          {/* Add to Cart button */}
+                          {cartItems.find(c => c.listingId === l.id) ? (
+                            <button
+                              onClick={() => addItem({
+                                listingId: l.id,
+                                productName: l.product_name,
+                                productImage: l.product_image,
+                                vendorName: l.vendor_name,
+                                vendorCity: l.vendor_city,
+                                sizeLabel: l.size_label,
+                                brand: l.brand,
+                                price: parseFloat(l.price),
+                              })}
+                              className="flex items-center gap-1.5 text-xs border border-green-500 bg-green-600 text-white rounded-lg px-3 py-1.5 font-medium hover:bg-green-700 transition-colors"
+                            >
+                              <ShoppingCart className="w-3.5 h-3.5" /> In cart · Add more
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => addItem({
+                                listingId: l.id,
+                                productName: l.product_name,
+                                productImage: l.product_image,
+                                vendorName: l.vendor_name,
+                                vendorCity: l.vendor_city,
+                                sizeLabel: l.size_label,
+                                brand: l.brand,
+                                price: parseFloat(l.price),
+                              })}
+                              className="flex items-center gap-1.5 text-xs border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 hover:border-green-500 hover:bg-green-600 hover:text-white transition-colors font-medium"
+                            >
+                              <ShoppingCart className="w-3.5 h-3.5" /> Add to cart
                             </button>
                           )}
                         </div>
