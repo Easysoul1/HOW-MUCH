@@ -377,8 +377,51 @@ export const wishlistApi = {
 
 // Crowdsource API
 export const crowdsourceApi = {
-  list: () => apiClient.get<any>('/crowdsource/prices/', true),
-  submit: (formData: FormData) => apiClient.postFormData('/crowdsource/prices/', formData, true),
+  // Crowdsourcer: list own submissions
+  listSubmissions: () => apiClient.get<any>('/crowdsource/submissions/', true),
+  
+  // Crowdsourcer: get submission detail
+  getSubmission: (id: number) => apiClient.get<any>(`/crowdsource/submissions/${id}/`, true),
+  
+  // Crowdsourcer: submit prices with multiple items
+  submitPrices: (data: {
+    latitude?: number;
+    longitude?: number;
+    address: string;
+    city: string;
+    state: string;
+    photo_1?: string;  // Cloudinary URL
+    photo_2?: string;
+    photo_3?: string;
+    items: Array<{
+      product?: string;  // slug
+      product_name?: string;
+      size?: number;  // size ID
+      size_value?: number;
+      size_unit?: number;  // unit ID
+      price: number;
+      brand?: string;
+    }>;
+  }) => apiClient.post('/crowdsource/submissions/', data, true),
+};
+
+// Admin Crowdsource API
+export const adminCrowdsourceApi = {
+  // Admin: list all submissions
+  listSubmissions: (status?: string) => {
+    const query = status ? `?status=${status}` : '';
+    return apiClient.get<any>(`/crowdsource/submissions/${query}`, true);
+  },
+  
+  // Admin: get submission detail
+  getSubmission: (id: number) => apiClient.get<any>(`/crowdsource/submissions/${id}/`, true),
+  
+  // Admin: approve individual item
+  approveItem: (itemId: number) => apiClient.post(`/crowdsource/items/${itemId}/approve/`, {}, true),
+  
+  // Admin: reject individual item
+  rejectItem: (itemId: number, reason: string) => 
+    apiClient.post(`/crowdsource/items/${itemId}/reject/`, { reason }, true),
 };
 
 export default apiClient;

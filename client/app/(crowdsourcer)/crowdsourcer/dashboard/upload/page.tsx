@@ -1,16 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X, Plus, Trash2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
-import { crowdsourceApi } from "@/lib/api";
+import { crowdsourceApi, productsApi, sizesApi, unitsApi } from "@/lib/api";
+
+interface PriceItem {
+  id: string;
+  product?: string;  // slug
+  product_name?: string;
+  size?: number;  // size ID
+  size_value?: string;
+  size_unit?: number;  // unit ID
+  price: string;
+  brand: string;
+  isNewProduct: boolean;
+  isNewSize: boolean;
+}
+
+interface Product {
+  slug: string;
+  name: string;
+  available_sizes?: Array<{ id: number; label: string; }>;
+}
+
+interface Size {
+  id: number;
+  label: string;
+  value: number;
+  unit: { id: number; abbreviation: string; };
+}
+
+interface Unit {
+  id: number;
+  name: string;
+  abbreviation: string;
+}
 
 export default function SubmitPricePage() {
   const router = useRouter();
@@ -18,24 +50,143 @@ export default function SubmitPricePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-
-  const [formData, setFormData] = useState({
-    product_name: "",
-    price: "",
-    market_name: "",
-    notes: "",
+  
+  // Location state
+  const [location, setLocation] = useState({
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined,
+    address: "",
+    city: "",
+    state: "",
   });
-  const [images, setImages] = useState<File[]>([]);
+  const [locationLoading, setLocationLoading] = useState(false);
+  
+  // Price items
+  const [items, setItems] = useState<PriceItem[]>([{
+    id: crypto.randomUUID(),
+    price: "",
+    brand: "",
+    isNewProduct: false,
+    isNewSize: false,
+  }]);
+  
+  // Photo upload (store verification photos)
+  const [storePhotos, setStorePhotos] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  
+  // Data for dropdowns
+  const [products, setProducts] = useState<Product[]>([]);
+  const [allSizes, setAllSizes] = useState<Size[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
+  // Cloudinary config
+  const CLOUDINARY_UPLOAD_PRESET = "howmuch_preset";
+  const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dhkccnvyn";
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsData, unitsData] = await Promise.all([
+          productsApi.list(),
+          unitsApi.list()
+        ]);
+        
+        const productsList = (productsData as any).results || productsData || [];
+        const unitsList = (unitsData as any).results || unitsData || [];
+        
+        setProducts(productsList);
+        setUnits(unitsList);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
+  const requestLocation = () => {
+    setLocationLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation(prev => ({
+            ...prev,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          }));
+          setLocationLoading(false);
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+          setError("Unable to get your location. Please enter manually.");
+          setLocationLoading(false);
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by your browser.");
+      setLocationLoading(false);
+    }
   };
 
+  const addItem = () => {
+    setItems(prev => [...prev, {
+      id: crypto.randomUUID(),
+      price: "",
+      brand: "",
+      isNewProduct: false,
+      isNewSize: false,
+    }]);
+  };
 
+  const removeItem = (id: string) => {
+    if (items.length > 1) {
+      setItems(prev => prev.filter(item => item.id !== id));
+    }
+  };
+
+  const updateItem = (id: string, updates: Partial<PriceItem>) => {
+    setItems(prev => prev.map(item => 
+      item.id === id ? { ...item, ...updates } : item
+    ));
+  };
+
+  const handleProductChange = async (itemId: string, value: string) => {
+    if (value === "new") {
+      updateItem(itemId, { 
+        isNewProduct: true, 
+        product: undefined,
+        product_name: "",
+        size: undefined,
+        isNewSize: false 
+      });
+    } else {
+      const selectedProduct = products.find(p => p.slug === value);
+      updateItem(itemId, { 
+        isNewProduct: false, 
+        product: value,
+        product_name: undefined,
+        size: undefined,
+      });
+      
+      // Fetch product sizes
+      if (selectedProduct) {
+        try {
+          const productDetail: any = await productsApi.get(value);
+          if (productDetail.available_sizes) {
+            // Store sizes for this specific product in item state
+            updateItem(itemId, { 
+              product: value,
+              // We'll handle available sizes separately
+            });
+          }
+        } catch (err) {
+          console.error("Failed to fetch product sizes:", err);
+        }
+      }
+    }
+  };
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -54,9 +205,9 @@ export default function SubmitPricePage() {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFiles = Array.from(e.dataTransfer.files);
-      setImages((prev) => {
-        const newImages = [...prev, ...droppedFiles];
-        return newImages.slice(0, 5); // Limit to 5 images max
+      setStorePhotos((prev) => {
+        const newPhotos = [...prev, ...droppedFiles];
+        return newPhotos.slice(0, 3); // Limit to 3 photos
       });
     }
   };
@@ -64,15 +215,36 @@ export default function SubmitPricePage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setImages((prev) => {
-        const newImages = [...prev, ...selectedFiles];
-        return newImages.slice(0, 5); // Limit to 5 images max
+      setStorePhotos((prev) => {
+        const newPhotos = [...prev, ...selectedFiles];
+        return newPhotos.slice(0, 3);
       });
     }
   };
 
-  const removeImage = (indexToRemove: number) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+  const removePhoto = (indexToRemove: number) => {
+    setStorePhotos((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    const data = await response.json();
+    return data.secure_url;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,30 +254,69 @@ export default function SubmitPricePage() {
     setSuccess(false);
 
     try {
-      const token = localStorage.getItem("access_token");
-      if (!token) throw new Error("Authentication required");
-
-      if (images.length < 4) {
-        throw new Error("You must upload at least 4 proof images from different angles.");
+      // Validation
+      if (items.length === 0) {
+        throw new Error("Please add at least one item.");
       }
 
-      const submissionData = new FormData();
-      submissionData.append("product_name", formData.product_name);
-      submissionData.append("price", formData.price.toString());
-      submissionData.append("market_name", formData.market_name);
-      submissionData.append("notes", formData.notes);
+      if (storePhotos.length < 1) {
+        throw new Error("Please upload at least 1 store photo.");
+      }
 
-      images.forEach((file, index) => {
-        submissionData.append(`proof_image_${index + 1}`, file);
-      });
+      if (!location.city || !location.state) {
+        throw new Error("Please provide city and state.");
+      }
 
-      await crowdsourceApi.submit(submissionData);
+      // Validate each item
+      for (const item of items) {
+        if (!item.isNewProduct && !item.product) {
+          throw new Error("Please select a product for all items or choose 'New Product'.");
+        }
+        if (item.isNewProduct && !item.product_name) {
+          throw new Error("Please enter product name for new products.");
+        }
+        if (!item.isNewSize && !item.size) {
+          throw new Error("Please select a size for all items or choose 'New Size'.");
+        }
+        if (item.isNewSize && (!item.size_value || !item.size_unit)) {
+          throw new Error("Please enter size value and unit for new sizes.");
+        }
+        if (!item.price || parseFloat(item.price) <= 0) {
+          throw new Error("Please enter valid prices for all items.");
+        }
+      }
+
+      // Upload store photos to Cloudinary
+      const photoUrls = await Promise.all(
+        storePhotos.map(photo => uploadToCloudinary(photo))
+      );
+
+      // Prepare submission data
+      const submissionData = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        address: location.address,
+        city: location.city,
+        state: location.state,
+        photo_1: photoUrls[0],
+        photo_2: photoUrls[1] || undefined,
+        photo_3: photoUrls[2] || undefined,
+        items: items.map(item => ({
+          product: item.isNewProduct ? undefined : item.product,
+          product_name: item.isNewProduct ? item.product_name : undefined,
+          size: item.isNewSize ? undefined : item.size,
+          size_value: item.isNewSize ? parseFloat(item.size_value!) : undefined,
+          size_unit: item.isNewSize ? item.size_unit : undefined,
+          price: parseFloat(item.price),
+          brand: item.brand || undefined,
+        })),
+      };
+
+      await crowdsourceApi.submitPrices(submissionData);
 
       setSuccess(true);
-      setFormData({ product_name: "", price: "", market_name: "", notes: "" });
-      setImages([]);
       
-      // Redirect after showing success message shortly
+      // Redirect after showing success message
       setTimeout(() => {
         router.push("/crowdsourcer/dashboard");
       }, 2000);
@@ -122,8 +333,14 @@ export default function SubmitPricePage() {
     }
   };
 
+  const getProductSizes = (productSlug?: string): Size[] => {
+    if (!productSlug) return allSizes;
+    const product = products.find(p => p.slug === productSlug);
+    return product?.available_sizes || [];
+  };
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild className="rounded-full">
           <Link href="/crowdsourcer/dashboard">
@@ -131,156 +348,320 @@ export default function SubmitPricePage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Submit Market Price</h1>
-          <p className="text-muted-foreground">Help buyers find the best deals by sharing accurate prices from local markets.</p>
+          <h1 className="text-3xl font-display font-bold text-foreground">Submit Market Prices</h1>
+          <p className="text-muted-foreground">Submit multiple items from a store in one go.</p>
         </div>
       </div>
 
-      <Card className="bg-white border-light-border">
-        <CardHeader>
-          <CardTitle>Price Details</CardTitle>
-          <CardDescription>Fill in the item and market details carefully.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {success && (
-            <div className="mb-6 p-4 bg-status-success/10 border border-status-success/20 rounded-lg text-status-success flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-              <p>Price submitted successfully! It is now pending admin approval.</p>
-            </div>
-          )}
+      {success && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+          <p>Prices submitted successfully! Pending admin approval.</p>
+        </div>
+      )}
 
-          {error && (
-            <div className="mb-6 p-4 bg-status-danger/10 border border-status-danger/20 rounded-lg text-status-danger flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p>{error}</p>
-            </div>
-          )}
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <p>{error}</p>
+        </div>
+      )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2 flex flex-col">
-                <Label htmlFor="product_name">Product Name</Label>
-                <Input 
-                  id="product_name"
-                  placeholder="e.g. 50kg Bag of Rice" 
-                  value={formData.product_name} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="price">Price (₦)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  placeholder="2500"
-                  required
-                  min="0"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={handleChange}
-                  className="bg-white border-light-border text-foreground"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="market_name">Market / Store Name</Label>
-              <Input
-                id="market_name"
-                placeholder="e.g. Oyingbo Market, Tejuosho, Mama Nkechi Kiosk"
-                required
-                value={formData.market_name}
-                onChange={handleChange}
-                className="bg-white border-light-border text-foreground"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Proof Images (REQUIRED: 4 - 5 Angles)</Label>
-              <div 
-                className={`relative border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center transition-colors cursor-pointer
-                  ${dragActive ? "border-indigo-500 bg-indigo-500/10" : "border-light-border hover:bg-black/5"}
-                `}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById('image-upload')?.click()}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Location */}
+        <Card className="bg-white border-gray-200">
+          <CardHeader>
+            <CardTitle>Store Location</CardTitle>
+            <CardDescription>Where are you collecting these prices?</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-3">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={requestLocation}
+                disabled={locationLoading}
               >
-                <input 
-                  id="image-upload" 
-                  type="file" 
-                  multiple 
-                  accept="image/*" 
-                  className="hidden" 
-                  onChange={handleFileChange}
-                />
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${dragActive ? "bg-indigo-500/30" : "bg-indigo-500/20"}`}>
-                  <Upload className={`w-6 h-6 ${dragActive ? "text-indigo-400" : "text-indigo-500"}`} />
-                </div>
-                <p className="text-sm font-medium">Click to select files or drag and drop</p>
-                <p className="text-xs text-muted-foreground mt-1">Upload at least 4 clear photos of the item & price tag (Max 5 files).</p>
-              </div>
-
-              {images.length > 0 && (
-                <div className="grid grid-cols-5 gap-3 mt-4">
-                  {images.map((file, idx) => (
-                    <div key={idx} className="relative aspect-square rounded-lg border border-light-border bg-white overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={URL.createObjectURL(file)} 
-                        alt={`Preview ${idx + 1}`} 
-                        className="w-full h-full object-cover"
-                      />
-                      <button 
-                        type="button" 
-                        onClick={() => removeImage(idx)}
-                        className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-status-danger"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                  {Array.from({ length: 5 - images.length }).map((_, idx) => (
-                    <div key={`empty-${idx}`} className="aspect-square rounded-lg border border-dashed border-light-border bg-white flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground opacity-50">Empty</span>
-                    </div>
-                  ))}
-                </div>
+                {locationLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <MapPin className="w-4 h-4 mr-2" />
+                )}
+                Get My Location
+              </Button>
+              {location.latitude && (
+                <span className="text-sm text-gray-600 flex items-center">
+                  ✓ Location captured
+                </span>
               )}
             </div>
+            
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="address">Address/Market Name</Label>
+                <Input
+                  id="address"
+                  placeholder="e.g. Oyingbo Market"
+                  value={location.address}
+                  onChange={(e) => setLocation(prev => ({ ...prev, address: e.target.value }))}
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city">City *</Label>
+                <Input
+                  id="city"
+                  placeholder="Lagos"
+                  required
+                  value={location.city}
+                  onChange={(e) => setLocation(prev => ({ ...prev, city: e.target.value }))}
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="state">State *</Label>
+                <Input
+                  id="state"
+                  placeholder="Lagos"
+                  required
+                  value={location.state}
+                  onChange={(e) => setLocation(prev => ({ ...prev, state: e.target.value }))}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes</Label>
-              <Textarea
-                id="notes"
-                placeholder="Any variations? e.g. 'Price varies by size, this is for the medium one.'"
-                rows={3}
-                value={formData.notes}
-                onChange={handleChange}
+        {/* Price Items */}
+        <Card className="bg-white border-gray-200">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Price Items</CardTitle>
+              <CardDescription>Add all items you found at this store.</CardDescription>
+            </div>
+            <Button type="button" onClick={addItem} size="sm" variant="outline">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Item
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {items.map((item, index) => (
+              <div key={item.id} className="p-4 border border-gray-200 rounded-lg space-y-4 relative">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-gray-700">Item #{index + 1}</span>
+                  {items.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeItem(item.id)}
+                      className="h-8 w-8 text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Product */}
+                  <div className="space-y-2">
+                    <Label>Product *</Label>
+                    <Select
+                      value={item.isNewProduct ? "new" : item.product}
+                      onValueChange={(value) => handleProductChange(item.id, value)}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select product..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {productsLoading ? (
+                          <SelectItem value="loading" disabled>Loading...</SelectItem>
+                        ) : (
+                          <>
+                            <SelectItem value="new">➕ New Product</SelectItem>
+                            {products.map(product => (
+                              <SelectItem key={product.slug} value={product.slug}>
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {item.isNewProduct && (
+                      <Input
+                        placeholder="Enter new product name"
+                        value={item.product_name || ""}
+                        onChange={(e) => updateItem(item.id, { product_name: e.target.value })}
+                        className="bg-white mt-2"
+                      />
+                    )}
+                  </div>
+
+                  {/* Size */}
+                  <div className="space-y-2">
+                    <Label>Size *</Label>
+                    <Select
+                      value={item.isNewSize ? "new" : item.size?.toString()}
+                      onValueChange={(value) => {
+                        if (value === "new") {
+                          updateItem(item.id, { isNewSize: true, size: undefined });
+                        } else {
+                          updateItem(item.id, { isNewSize: false, size: parseInt(value) });
+                        }
+                      }}
+                      disabled={!item.product && !item.isNewProduct}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select size..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="new">➕ New Size</SelectItem>
+                        {getProductSizes(item.product).map((size: any) => (
+                          <SelectItem key={size.id} value={size.id.toString()}>
+                            {size.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {item.isNewSize && (
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <Input
+                          type="number"
+                          placeholder="Value (e.g. 5)"
+                          value={item.size_value || ""}
+                          onChange={(e) => updateItem(item.id, { size_value: e.target.value })}
+                          className="bg-white"
+                          step="0.01"
+                        />
+                        <Select
+                          value={item.size_unit?.toString()}
+                          onValueChange={(value) => updateItem(item.id, { size_unit: parseInt(value) })}
+                        >
+                          <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Unit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {units.map(unit => (
+                              <SelectItem key={unit.id} value={unit.id.toString()}>
+                                {unit.abbreviation}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Price */}
+                  <div className="space-y-2">
+                    <Label>Price (₦) *</Label>
+                    <Input
+                      type="number"
+                      placeholder="2500"
+                      required
+                      min="0"
+                      step="0.01"
+                      value={item.price}
+                      onChange={(e) => updateItem(item.id, { price: e.target.value })}
+                      className="bg-white"
+                    />
+                  </div>
+
+                  {/* Brand */}
+                  <div className="space-y-2">
+                    <Label>Brand (Optional)</Label>
+                    <Input
+                      placeholder="e.g. Golden Penny"
+                      value={item.brand}
+                      onChange={(e) => updateItem(item.id, { brand: e.target.value })}
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Store Photos */}
+        <Card className="bg-white border-gray-200">
+          <CardHeader>
+            <CardTitle>Store Verification Photos (1-3 Required)</CardTitle>
+            <CardDescription>Upload photos of yourself at the store. Not product photos.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div 
+              className={`relative border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center transition-colors cursor-pointer
+                ${dragActive ? "border-green-600 bg-green-50" : "border-gray-200 hover:bg-gray-50"}
+              `}
+              onDragEnter={handleDrag}
+              onDragOver={handleDrag}
+              onDragLeave={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => document.getElementById('store-photos')?.click()}
+            >
+              <input 
+                id="store-photos" 
+                type="file" 
+                multiple 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleFileChange}
               />
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${dragActive ? "bg-green-100" : "bg-green-50"}`}>
+                <Upload className={`w-6 h-6 ${dragActive ? "text-green-700" : "text-green-600"}`} />
+              </div>
+              <p className="text-sm font-medium">Click to upload or drag and drop</p>
+              <p className="text-xs text-gray-500 mt-1">1-3 photos showing you at the store (Max 3 files)</p>
             </div>
 
-            <div className="pt-4 flex justify-end gap-4">
-              <Button type="button" variant="outline" asChild >
-                <Link href="/crowdsourcer/dashboard">Cancel</Link>
-              </Button>
-              <Button type="submit" className="bg-indigo-500 hover:bg-indigo-600 text-white" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  "Submit Price"
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+            {storePhotos.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                {storePhotos.map((file, idx) => (
+                  <div key={idx} className="relative aspect-square rounded-lg border border-gray-200 bg-white overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={URL.createObjectURL(file)} 
+                      alt={`Store photo ${idx + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => removePhoto(idx)}
+                      className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Submit */}
+        <div className="flex justify-end gap-4">
+          <Button type="button" variant="outline" asChild>
+            <Link href="/crowdsourcer/dashboard">Cancel</Link>
+          </Button>
+          <Button 
+            type="submit" 
+            className="bg-green-600 hover:bg-green-700 text-white" 
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              <>Submit {items.length} {items.length === 1 ? "Item" : "Items"}</>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
