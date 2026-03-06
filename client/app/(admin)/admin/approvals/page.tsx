@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, X, Loader2, Search, ImageIcon, Package, ShieldCheck, Store, Ruler } from "lucide-react";
 import { adminProductsApi, sizeRequestsApi } from "@/lib/api";
+import { CrowdsourceTab } from "@/components/admin/crowdsource-tab";
 
 interface PendingProduct {
   id: number;
@@ -30,6 +31,7 @@ interface SizeRequest {
 const TABS = [
   { id: "products",      label: "Product Suggestions", icon: Package },
   { id: "sizes",         label: "Size Requests",        icon: Ruler },
+  { id: "crowdsource",   label: "Crowdsourced Prices",  icon: Store },
   { id: "kyc",           label: "KYC Verification",     icon: ShieldCheck },
   { id: "vendors",       label: "Vendor Registration",  icon: Store },
 ] as const;
@@ -282,6 +284,9 @@ export default function ApprovalsPage() {
           ))}
         </div>
       )}
+
+      {/* Crowdsource Tab */}
+      {tab === "crowdsource" && <CrowdsourceTab />}
 
       {/* KYC Tab */}
       {tab === "kyc" && (

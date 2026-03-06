@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X, Plus, Trash2, MapPin } from "lucide-react";
+import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { crowdsourceApi, productsApi, sizesApi, unitsApi } from "@/lib/api";
@@ -59,7 +59,6 @@ export default function SubmitPricePage() {
     city: "",
     state: "",
   });
-  const [locationLoading, setLocationLoading] = useState(false);
   
   // Price items
   const [items, setItems] = useState<PriceItem[]>([{
@@ -105,30 +104,6 @@ export default function SubmitPricePage() {
     };
     fetchData();
   }, []);
-
-  const requestLocation = () => {
-    setLocationLoading(true);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation(prev => ({
-            ...prev,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          }));
-          setLocationLoading(false);
-        },
-        (err) => {
-          console.error("Geolocation error:", err);
-          setError("Unable to get your location. Please enter manually.");
-          setLocationLoading(false);
-        }
-      );
-    } else {
-      setError("Geolocation is not supported by your browser.");
-      setLocationLoading(false);
-    }
-  };
 
   const addItem = () => {
     setItems(prev => [...prev, {
@@ -247,6 +222,28 @@ export default function SubmitPricePage() {
     return data.secure_url;
   };
 
+  const requestLocation = (): Promise<{ latitude: number; longitude: number }> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error("Geolocation is not supported by your browser."));
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+          reject(new Error("Unable to get your location. Please enable location access."));
+        }
+      );
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -254,7 +251,17 @@ export default function SubmitPricePage() {
     setSuccess(false);
 
     try {
-      // Validation
+      // Step 1: Request location first
+      const coords = await requestLocation();
+      
+      // Update location state with coordinates
+      setLocation(prev => ({
+        ...prev,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      }));
+
+      // Step 2: Validation
       if (items.length === 0) {
         throw new Error("Please add at least one item.");
       }
@@ -286,15 +293,15 @@ export default function SubmitPricePage() {
         }
       }
 
-      // Upload store photos to Cloudinary
+      // Step 3: Upload store photos to Cloudinary
       const photoUrls = await Promise.all(
         storePhotos.map(photo => uploadToCloudinary(photo))
       );
 
-      // Prepare submission data
+      // Step 4: Prepare submission data
       const submissionData = {
-        latitude: location.latitude,
-        longitude: location.longitude,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         address: location.address,
         city: location.city,
         state: location.state,
@@ -333,8 +340,8 @@ export default function SubmitPricePage() {
     }
   };
 
-  const getProductSizes = (productSlug?: string): Size[] => {
-    if (!productSlug) return allSizes;
+  const getProductSizes = (productSlug?: string): Array<{ id: number; label: string }> => {
+    if (!productSlug) return [];
     const product = products.find(p => p.slug === productSlug);
     return product?.available_sizes || [];
   };
@@ -372,30 +379,9 @@ export default function SubmitPricePage() {
         <Card className="bg-white border-gray-200">
           <CardHeader>
             <CardTitle>Store Location</CardTitle>
-            <CardDescription>Where are you collecting these prices?</CardDescription>
+            <CardDescription>Your location will be requested when you submit. Please provide city and state.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-3">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={requestLocation}
-                disabled={locationLoading}
-              >
-                {locationLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <MapPin className="w-4 h-4 mr-2" />
-                )}
-                Get My Location
-              </Button>
-              {location.latitude && (
-                <span className="text-sm text-gray-600 flex items-center">
-                  ✓ Location captured
-                </span>
-              )}
-            </div>
-            
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="address">Address/Market Name</Label>

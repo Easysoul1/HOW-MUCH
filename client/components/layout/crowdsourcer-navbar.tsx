@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SITE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 const navLinks = [
   { name: "Dashboard", href: "/crowdsourcer/dashboard" },
@@ -29,29 +30,35 @@ export function CrowdSourcerNavbar() {
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-6 text-sm font-medium">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={cn(
-                "hover:text-white transition-colors",
-                pathname === link.href ? "text-white" : "text-muted-foreground"
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </nav>
+        <div className="hidden md:flex items-center gap-6">
+          <nav className="flex gap-6 text-sm font-medium">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={cn(
+                  "hover:text-white transition-colors",
+                  pathname === link.href ? "text-white" : "text-muted-foreground"
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+          <NotificationBell />
+        </div>
 
         {/* Mobile Hamburger Icon */}
-        <button 
-          className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
-          onClick={toggleMenu}
-          aria-label="Toggle Menu"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <NotificationBell />
+          <button 
+            className="p-2 text-muted-foreground hover:text-white transition-colors"
+            onClick={toggleMenu}
+            aria-label="Toggle Menu"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu Overlay */}

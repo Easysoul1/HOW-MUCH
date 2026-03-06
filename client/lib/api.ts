@@ -424,4 +424,22 @@ export const adminCrowdsourceApi = {
     apiClient.post(`/crowdsource/items/${itemId}/reject/`, { reason }, true),
 };
 
+// Notifications API
+export const notificationsApi = {
+  // List notifications (unread by default)
+  list: (status?: 'unread' | 'read' | 'all') => {
+    const query = status ? `?status=${status}` : '?status=unread';
+    return apiClient.get<any>(`/notifications/${query}`, true);
+  },
+  
+  // Get unread count
+  count: () => apiClient.get<{ count: number }>('/notifications/count/', true),
+  
+  // Mark single notification as read
+  markRead: (id: number) => apiClient.post(`/notifications/${id}/mark-read/`, {}, true),
+  
+  // Mark all as read
+  markAllRead: () => apiClient.post('/notifications/mark-all-read/', {}, true),
+};
+
 export default apiClient;
