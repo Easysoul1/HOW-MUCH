@@ -37,6 +37,8 @@ export default function LoginPage() {
         router.push('/vendor/dashboard');
       } else if (user.user_type === 'ADMIN') {
         router.push('/admin');
+      } else if (user.user_type === 'INTEGRATOR') {
+        router.push('/integrator/keys');
       } else {
         router.push('/dashboard');
       }

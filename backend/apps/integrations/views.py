@@ -266,6 +266,42 @@ def my_usage_summary(request):
     })
 
 
+@api_view(['GET'])
+def preview_search(request):
+    """Integrator: free preview search — doesn't count against API quota."""
+    q = request.query_params.get('q', '').strip()
+    if not q or len(q) < 2:
+        return Response({'results': []})
+    
+    listings = VendorListing.objects.filter(
+        is_available=True,
+        product__status='APPROVED',
+    ).filter(
+        Q(product__name__icontains=q) |
+        Q(brand__icontains=q) |
+        Q(product__category__name__icontains=q)
+    ).select_related('product', 'size', 'vendor').order_by('price')[:20]
+    
+    results = []
+    for l in listings:
+        results.append({
+            'id': l.id,
+            'product': l.product.name,
+            'product_slug': l.product.slug,
+            'size': l.size.label,
+            'brand': l.brand,
+            'price': str(l.price),
+            'vendor_location': {
+                'city': l.vendor.city or '',
+                'state': l.vendor.state or '',
+            },
+            'is_available': l.is_available,
+            'updated_at': l.updated_at.isoformat(),
+        })
+    
+    return Response({'results': results, 'count': len(results)})
+
+
 # ============================================================
 # Public API v1 — Authenticated via X-API-Key
 # ============================================================

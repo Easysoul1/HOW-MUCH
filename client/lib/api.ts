@@ -456,6 +456,7 @@ export const integratorApi = {
   myKeys: () => apiClient.get<any>('/integrations/my-keys/'),
   createKey: (name: string) => apiClient.post<any>('/integrations/my-keys/create/', { name }),
   myUsage: () => apiClient.get<any>('/integrations/my-usage/'),
+  previewSearch: (q: string) => apiClient.get<any>(`/integrations/preview-search/?q=${encodeURIComponent(q)}`),
 };
 
 export default apiClient;
