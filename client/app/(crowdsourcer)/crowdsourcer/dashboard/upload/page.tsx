@@ -79,10 +79,6 @@ export default function SubmitPricePage() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
 
-  // Cloudinary config
-  const CLOUDINARY_UPLOAD_PRESET = "howmuch_preset";
-  const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dhkccnvyn";
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -201,27 +197,6 @@ export default function SubmitPricePage() {
     setStorePhotos((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const uploadToCloudinary = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
-    }
-
-    const data = await response.json();
-    return data.secure_url;
-  };
-
   const requestLocation = (): Promise<{ latitude: number; longitude: number }> => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -293,33 +268,36 @@ export default function SubmitPricePage() {
         }
       }
 
-      // Step 3: Upload store photos to Cloudinary
-      const photoUrls = await Promise.all(
-        storePhotos.map(photo => uploadToCloudinary(photo))
-      );
+      // Step 3: Prepare FormData for multipart upload to Django
+      const formData = new FormData();
+      
+      // Add location data
+      formData.append('latitude', coords.latitude.toString());
+      formData.append('longitude', coords.longitude.toString());
+      formData.append('address', location.address);
+      formData.append('city', location.city);
+      formData.append('state', location.state);
+      
+      // Add photos directly as files (Django will handle Cloudinary upload)
+      storePhotos.forEach((photo, index) => {
+        formData.append(`photo_${index + 1}`, photo);
+      });
+      
+      // Add items as JSON string
+      const itemsData = items.map(item => ({
+        product: item.isNewProduct ? undefined : item.product,
+        product_name: item.isNewProduct ? item.product_name : undefined,
+        size: item.isNewSize ? undefined : item.size,
+        size_value: item.isNewSize ? parseFloat(item.size_value!) : undefined,
+        size_unit: item.isNewSize ? item.size_unit : undefined,
+        price: parseFloat(item.price),
+        brand: item.brand || undefined,
+      }));
+      
+      formData.append('items', JSON.stringify(itemsData));
 
-      // Step 4: Prepare submission data
-      const submissionData = {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        address: location.address,
-        city: location.city,
-        state: location.state,
-        photo_1: photoUrls[0],
-        photo_2: photoUrls[1] || undefined,
-        photo_3: photoUrls[2] || undefined,
-        items: items.map(item => ({
-          product: item.isNewProduct ? undefined : item.product,
-          product_name: item.isNewProduct ? item.product_name : undefined,
-          size: item.isNewSize ? undefined : item.size,
-          size_value: item.isNewSize ? parseFloat(item.size_value!) : undefined,
-          size_unit: item.isNewSize ? item.size_unit : undefined,
-          price: parseFloat(item.price),
-          brand: item.brand || undefined,
-        })),
-      };
-
-      await crowdsourceApi.submitPrices(submissionData);
+      // Step 4: Submit to Django backend
+      await crowdsourceApi.submitPrices(formData);
 
       setSuccess(true);
       

@@ -1,8 +1,10 @@
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from drf_spectacular.utils import extend_schema
 from django.utils import timezone
+import json
 from .models import CrowdsourcedSubmission, CrowdsourcedItem
 from .serializers import (
     CrowdsourcedSubmissionCreateSerializer,
@@ -24,9 +26,10 @@ class IsCrowdsourcerOrAdmin(permissions.BasePermission):
 class SubmissionListCreateView(generics.ListCreateAPIView):
     """
     GET: List submissions (crowdsourcers see own, admins see all)
-    POST: Create new submission with multiple items
+    POST: Create new submission with multiple items (multipart/form-data)
     """
     permission_classes = [IsCrowdsourcerOrAdmin]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -38,8 +41,28 @@ class SubmissionListCreateView(generics.ListCreateAPIView):
             return CrowdsourcedSubmissionCreateSerializer
         return CrowdsourcedSubmissionListSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(crowdsourcer=self.request.user)
+    def create(self, request, *args, **kwargs):
+        # Handle multipart form data with JSON items field
+        data = request.data.copy()
+        
+        # Parse items JSON string if present
+        if 'items' in data and isinstance(data['items'], str):
+            try:
+                data['items'] = json.loads(data['items'])
+            except json.JSONDecodeError:
+                return Response(
+                    {'items': 'Invalid JSON format for items'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(crowdsourcer=request.user)
+        
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED
+        )
 
 
 class SubmissionDetailView(generics.RetrieveAPIView):

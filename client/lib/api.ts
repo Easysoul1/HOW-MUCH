@@ -383,16 +383,16 @@ export const crowdsourceApi = {
   // Crowdsourcer: get submission detail
   getSubmission: (id: number) => apiClient.get<any>(`/crowdsource/submissions/${id}/`, true),
   
-  // Crowdsourcer: submit prices with multiple items
-  submitPrices: (data: {
+  // Crowdsourcer: submit prices with multiple items (accepts FormData for file uploads)
+  submitPrices: (data: FormData | {
     latitude?: number;
     longitude?: number;
     address: string;
     city: string;
     state: string;
-    photo_1?: string;  // Cloudinary URL
-    photo_2?: string;
-    photo_3?: string;
+    photo_1?: string | File;
+    photo_2?: string | File;
+    photo_3?: string | File;
     items: Array<{
       product?: string;  // slug
       product_name?: string;
