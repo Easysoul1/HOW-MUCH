@@ -20,6 +20,7 @@ interface CrowdsourceSubmission {
   status: string;
   item_count: number;
   approved_item_count: number;
+  needs_location_verification: boolean;
   created_at: string;
 }
 
@@ -46,6 +47,7 @@ interface SubmissionDetail {
   photo_3: string | null;
   status: string;
   admin_notes: string;
+  needs_location_verification: boolean;
   items: CrowdsourceItem[];
   item_count: number;
   approved_item_count: number;
@@ -196,14 +198,26 @@ export function CrowdsourceTab() {
             <div className="space-y-6">
               {/* Location */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-sm text-gray-700 mb-2">Location</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-sm text-gray-700">Location</h3>
+                  {selectedSubmission.needs_location_verification && (
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                      ⚠️ Manual Verification Required
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-gray-900">
                   {selectedSubmission.address && `${selectedSubmission.address}, `}
                   {selectedSubmission.city}, {selectedSubmission.state}
                 </p>
                 {selectedSubmission.latitude && selectedSubmission.longitude && (
                   <p className="text-xs text-gray-500 mt-1">
-                    Coordinates: {selectedSubmission.latitude}, {selectedSubmission.longitude}
+                    GPS Coordinates: {selectedSubmission.latitude}, {selectedSubmission.longitude}
+                  </p>
+                )}
+                {selectedSubmission.needs_location_verification && (
+                  <p className="text-xs text-yellow-600 mt-2">
+                    No GPS coordinates available. Verify location manually using store photos and address.
                   </p>
                 )}
               </div>

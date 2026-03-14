@@ -58,6 +58,12 @@ class CrowdsourcedSubmission(models.Model):
     @property
     def approved_item_count(self):
         return self.items.filter(status='APPROVED').count()
+    
+    @property
+    def needs_location_verification(self):
+        """Flag submissions without GPS coordinates"""
+        return (not self.latitude or not self.longitude or 
+                (self.latitude == 0 and self.longitude == 0))
 
 
 class CrowdsourcedItem(models.Model):
