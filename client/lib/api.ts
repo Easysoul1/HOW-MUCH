@@ -9,8 +9,6 @@ interface ApiError {
 
 class ApiClient {
   private baseUrl: string;
-  private isRefreshing = false;
-  private refreshPromise: Promise<any> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -31,74 +29,13 @@ class ApiClient {
     return headers;
   }
 
-  private async refreshAccessToken(): Promise<string | null> {
-    if (typeof window === 'undefined') return null;
-    
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-      return null;
-    }
-
-    try {
-      const response = await fetch(`${this.baseUrl}/users/token/refresh/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh: refreshToken }),
-      });
-
-      if (!response.ok) {
-        // Refresh token is invalid, clear everything
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-        return null;
-      }
-
-      const data = await response.json();
-      localStorage.setItem('access_token', data.access);
-      return data.access;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-      return null;
-    }
-  }
-
-  private async handleResponse<T>(response: Response, retryRequest?: () => Promise<Response>): Promise<T> {
-    // Handle 401 - try to refresh token
-    if (response.status === 401 && retryRequest && !this.isRefreshing) {
-      this.isRefreshing = true;
-      
-      try {
-        // Refresh the token
-        const newToken = await this.refreshAccessToken();
-        
-        if (newToken) {
-          // Retry the original request with new token
-          const retryResponse = await retryRequest();
-          this.isRefreshing = false;
-          
-          if (retryResponse.ok) {
-            return retryResponse.json();
-          }
-        }
-      } catch (error) {
-        console.error('Token refresh failed:', error);
-      } finally {
-        this.isRefreshing = false;
-      }
-    }
-    
+  private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
       
       // Handle authentication errors (401 status)
-      if (response.status === 401) {
-        const errorMessage = errorData?.error || errorData?.detail || 'Session expired. Please login again.';
+      if (response.status === 401 && errorData) {
+        const errorMessage = errorData.error || errorData.detail || 'Authentication failed';
         throw new Error(errorMessage);
       }
       
@@ -129,93 +66,75 @@ class ApiClient {
   }
 
   async get<T>(endpoint: string, includeAuth = true): Promise<T> {
-    const makeRequest = () => fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'GET',
       headers: this.getHeaders(includeAuth),
     });
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    return this.handleResponse<T>(response);
   }
 
   async post<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
-    const makeRequest = () => fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
       headers: this.getHeaders(includeAuth),
       body: JSON.stringify(data),
     });
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    return this.handleResponse<T>(response);
   }
 
   async put<T>(endpoint: string, data: any, includeAuth = true): Promise<T> {
-    const makeRequest = () => fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',
       headers: this.getHeaders(includeAuth),
       body: JSON.stringify(data),
     });
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    return this.handleResponse<T>(response);
   }
 
   async patch<T>(endpoint: string, data: any, includeAuth = true): Promise<T> {
-    const makeRequest = () => fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PATCH',
       headers: this.getHeaders(includeAuth),
       body: JSON.stringify(data),
     });
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    return this.handleResponse<T>(response);
   }
 
   async delete<T>(endpoint: string, includeAuth = true): Promise<T> {
-    const makeRequest = () => fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'DELETE',
       headers: this.getHeaders(includeAuth),
     });
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    return this.handleResponse<T>(response);
   }
 
   async postFormData<T>(endpoint: string, formData: FormData, includeAuth = true): Promise<T> {
     // Don't set Content-Type — browser sets it with correct boundary for multipart
-    const makeRequest = () => {
-      const headers: HeadersInit = {};
-      if (includeAuth && typeof window !== 'undefined') {
-        const token = localStorage.getItem('access_token');
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-      }
-      return fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'POST',
-        headers,
-        body: formData,
-      });
-    };
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    const headers: HeadersInit = {};
+    if (includeAuth && typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    return this.handleResponse<T>(response);
   }
 
   async patchFormData<T>(endpoint: string, formData: FormData, includeAuth = true): Promise<T> {
-    const makeRequest = () => {
-      const headers: HeadersInit = {};
-      if (includeAuth && typeof window !== 'undefined') {
-        const token = localStorage.getItem('access_token');
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-      }
-      return fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'PATCH',
-        headers,
-        body: formData,
-      });
-    };
-    
-    const response = await makeRequest();
-    return this.handleResponse<T>(response, includeAuth ? makeRequest : undefined);
+    const headers: HeadersInit = {};
+    if (includeAuth && typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'PATCH',
+      headers,
+      body: formData,
+    });
+    return this.handleResponse<T>(response);
   }
 }
 

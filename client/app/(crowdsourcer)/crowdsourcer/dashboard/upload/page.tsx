@@ -59,8 +59,6 @@ export default function SubmitPricePage() {
     city: "",
     state: "",
   });
-  const [locationStatus, setLocationStatus] = useState<"not_requested" | "requesting" | "granted" | "denied">("not_requested");
-  const [locationError, setLocationError] = useState<string | null>(null);
   
   // Price items
   const [items, setItems] = useState<PriceItem[]>([{
@@ -199,22 +197,15 @@ export default function SubmitPricePage() {
     setStorePhotos((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const requestLocation = (): Promise<{ latitude: number; longitude: number } | null> => {
-    return new Promise((resolve) => {
-      setLocationStatus("requesting");
-      
+  const requestLocation = (): Promise<{ latitude: number; longitude: number }> => {
+    return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        const msg = "Geolocation is not supported by your browser.";
-        setLocationStatus("denied");
-        setLocationError(msg);
-        resolve(null);
+        reject(new Error("Geolocation is not supported by your browser."));
         return;
       }
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocationStatus("granted");
-          setLocationError(null);
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -226,21 +217,19 @@ export default function SubmitPricePage() {
           
           switch (err.code) {
             case err.PERMISSION_DENIED:
-              errorMessage = "Location access denied. You can proceed without automatic location.";
+              errorMessage = "Location access denied. Please enable location permissions in your browser settings.";
               break;
             case err.POSITION_UNAVAILABLE:
-              errorMessage = "Location information unavailable. You can proceed without automatic location.";
+              errorMessage = "Location information unavailable. Please check your device's location settings.";
               break;
             case err.TIMEOUT:
-              errorMessage = "Location request timed out. You can proceed without automatic location.";
+              errorMessage = "Location request timed out. Please try again.";
               break;
             default:
-              errorMessage = "Unable to get your location. You can proceed without automatic location.";
+              errorMessage = "Unable to get your location. Please try again.";
           }
           
-          setLocationStatus("denied");
-          setLocationError(errorMessage);
-          resolve(null);
+          reject(new Error(errorMessage));
         },
         {
           enableHighAccuracy: true,
@@ -258,17 +247,15 @@ export default function SubmitPricePage() {
     setSuccess(false);
 
     try {
-      // Step 1: Request location first (optional - won't fail if denied)
+      // Step 1: Request location first
       const coords = await requestLocation();
       
-      // Update location state with coordinates if available
-      if (coords) {
-        setLocation(prev => ({
-          ...prev,
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        }));
-      }
+      // Update location state with coordinates
+      setLocation(prev => ({
+        ...prev,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      }));
 
       // Step 2: Validation
       if (items.length === 0) {
@@ -305,10 +292,9 @@ export default function SubmitPricePage() {
       // Step 3: Prepare FormData for multipart upload to Django
       const formData = new FormData();
       
-      // Add location data (use coords if available, otherwise use 0,0 as placeholder)
-      const finalCoords = coords || location;
-      formData.append('latitude', (finalCoords.latitude || 0).toString());
-      formData.append('longitude', (finalCoords.longitude || 0).toString());
+      // Add location data
+      formData.append('latitude', coords.latitude.toString());
+      formData.append('longitude', coords.longitude.toString());
       formData.append('address', location.address);
       formData.append('city', location.city);
       formData.append('state', location.state);
@@ -387,52 +373,23 @@ export default function SubmitPricePage() {
         </div>
       )}
 
-      {locationStatus === "denied" && locationError && (
-        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-medium">Location Not Available</p>
-            <p className="text-sm text-yellow-600">
-              {locationError} Your submission will be flagged for manual location verification.
-            </p>
-          </div>
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 flex items-start gap-3">
+        <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <p className="font-medium">Location Required</p>
+          <p className="text-sm text-blue-600">
+            When you submit, you'll be asked to allow location access. Make sure location services are enabled on your device and browser permissions are granted.
+          </p>
         </div>
-      )}
-
-      {locationStatus === "granted" && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-          <p>Location captured successfully! ({location.latitude?.toFixed(6)}, {location.longitude?.toFixed(6)})</p>
-        </div>
-      )}
-
-      {locationStatus === "not_requested" && (
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 flex items-start gap-3">
-          <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-medium">Location Will Be Requested</p>
-            <p className="text-sm text-blue-600">
-              When you submit, you'll be asked to allow location access. If not available, you can still submit and it will be flagged for verification.
-            </p>
-          </div>
-        </div>
-      )}
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Location */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              Store Location
-              {locationStatus === "denied" && (
-                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Manual Verification Required</span>
-              )}
-              {locationStatus === "granted" && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">GPS Verified</span>
-              )}
-            </CardTitle>
+            <CardTitle>Store Location</CardTitle>
             <CardDescription>
-              Provide the store address, city, and state. GPS coordinates will be captured automatically when you submit.
+              Your device location will be requested when you submit. Please allow location access when prompted and provide city and state details.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

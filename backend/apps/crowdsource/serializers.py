@@ -97,14 +97,12 @@ class CrowdsourcedSubmissionCreateSerializer(serializers.ModelSerializer):
 class CrowdsourcedSubmissionListSerializer(serializers.ModelSerializer):
     """Serializer for listing submissions"""
     crowdsourcer_email = serializers.CharField(source='crowdsourcer.email', read_only=True)
-    needs_location_verification = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = CrowdsourcedSubmission
         fields = [
             'id', 'crowdsourcer_email', 'city', 'state',
             'status', 'item_count', 'approved_item_count',
-            'needs_location_verification',
             'created_at', 'reviewed_at'
         ]
         read_only_fields = fields
@@ -115,7 +113,6 @@ class CrowdsourcedSubmissionDetailSerializer(serializers.ModelSerializer):
     items = CrowdsourcedItemSerializer(many=True, read_only=True)
     crowdsourcer_email = serializers.CharField(source='crowdsourcer.email', read_only=True)
     reviewed_by_email = serializers.CharField(source='reviewed_by.email', read_only=True)
-    needs_location_verification = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = CrowdsourcedSubmission
@@ -123,7 +120,7 @@ class CrowdsourcedSubmissionDetailSerializer(serializers.ModelSerializer):
             'id', 'crowdsourcer_email', 'crowdsourcer',
             'latitude', 'longitude', 'address', 'city', 'state',
             'photo_1', 'photo_2', 'photo_3',
-            'status', 'admin_notes', 'needs_location_verification',
+            'status', 'admin_notes',
             'items', 'item_count', 'approved_item_count',
             'created_at', 'updated_at', 'reviewed_at', 'reviewed_by_email'
         ]
