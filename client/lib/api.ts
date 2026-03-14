@@ -445,7 +445,7 @@ export const notificationsApi = {
 // API Keys Management (Admin)
 export const apiKeysApi = {
   list: () => apiClient.get<any>('/integrations/keys/'),
-  create: (data: { name: string; owner_id: number; plan?: string; daily_limit?: number }) =>
+  create: (data: { name: string; email: string; password: string; company_name?: string; plan?: string; daily_limit?: number }) =>
     apiClient.post<any>('/integrations/keys/create/', data),
   revoke: (keyId: number) => apiClient.post<any>(`/integrations/keys/${keyId}/revoke/`),
   usage: (keyId: number) => apiClient.get<any>(`/integrations/keys/${keyId}/usage/`),
@@ -454,6 +454,7 @@ export const apiKeysApi = {
 // Integrator self-service
 export const integratorApi = {
   myKeys: () => apiClient.get<any>('/integrations/my-keys/'),
+  createKey: (name: string) => apiClient.post<any>('/integrations/my-keys/create/', { name }),
   myUsage: () => apiClient.get<any>('/integrations/my-usage/'),
 };
 

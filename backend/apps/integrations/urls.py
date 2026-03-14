@@ -12,6 +12,7 @@ urlpatterns = [
     
     # Integrator self-service
     path('my-keys/', views.MyApiKeysView.as_view(), name='my-keys'),
+    path('my-keys/create/', views.create_my_key, name='my-key-create'),
     path('my-usage/', views.my_usage_summary, name='my-usage'),
 ]
 

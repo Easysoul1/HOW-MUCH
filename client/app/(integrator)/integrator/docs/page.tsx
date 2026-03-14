@@ -59,6 +59,7 @@ export default function APIDocumentationPage() {
             <a href="#product-prices" className="block py-1 text-gray-600 hover:text-green-600">Product Prices</a>
             <a href="#search" className="block py-1 text-gray-600 hover:text-green-600">Search</a>
             <a href="#price-history" className="block py-1 text-gray-600 hover:text-green-600">Price History</a>
+            <a href="#location-filtering" className="block py-1 text-gray-600 hover:text-green-600">Location Filtering</a>
 
             <div className="pt-4 pb-2 mb-2 border-b border-gray-200 mt-4">
               <h3 className="font-semibold text-gray-900">Resources</h3>
@@ -109,9 +110,10 @@ export default function APIDocumentationPage() {
               />
               <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-sm text-yellow-800">
-                  <strong>Getting an API key:</strong> Contact our sales team at{" "}
+                  <strong>Getting an API key:</strong> Once your organization has an account, log in to the{" "}
+                  <a href="/integrator/login" className="underline">API Console</a> to generate and manage your keys.
+                  To get started, contact our sales team at{" "}
                   <a href="mailto:sales@howmuch.ng" className="underline">sales@howmuch.ng</a>.
-                  After payment confirmation, we'll generate a key for your organization.
                 </p>
               </div>
             </CardContent>
@@ -287,18 +289,39 @@ X-RateLimit-Remaining: 9847`}
               </div>
               <p className="mt-3 text-gray-700">
                 Get current prices for a product from all vendors. Results sorted by price (lowest first).
+                Supports location-based filtering to find vendors near you.
               </p>
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-900">Query Parameters</h4>
                 <div className="mt-2 text-sm space-y-2 text-gray-600">
-                  <p><code className="bg-gray-100 px-1.5 rounded">size</code> — Filter by size label (e.g. "5kg")</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">size</code> — Filter by size label (e.g. &quot;5kg&quot;)</p>
                   <p><code className="bg-gray-100 px-1.5 rounded">brand</code> — Filter by brand name</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">city</code> — Filter by vendor city (e.g. &quot;Lagos&quot;, &quot;Ibadan&quot;, &quot;Abuja&quot;)</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">latitude</code> — Your latitude (for distance filtering)</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">longitude</code> — Your longitude (for distance filtering)</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">max_distance</code> — Maximum distance in km from lat/lon</p>
                 </div>
+              </div>
+              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Location filtering:</strong> Pass <code>latitude</code>, <code>longitude</code>, and <code>max_distance</code> together
+                  to get only vendors within that radius. The response includes a <code>distance_km</code> field when coordinates are provided.
+                  Alternatively, use <code>city</code> to filter by city name (case-insensitive partial match).
+                </p>
               </div>
               <CodeBlock
                 id="product-prices"
-                code={`curl -H "X-API-Key: hm_live_your_key" \\
+                code={`# Basic: get all prices for rice 5kg
+curl -H "X-API-Key: hm_live_your_key" \\
   "https://api.howmuch.ng/api/v1/products/rice/prices/?size=5kg"
+
+# With location: vendors within 10km of Ikeja, Lagos
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/prices/?size=5kg&latitude=6.6018&longitude=3.3515&max_distance=10"
+
+# By city name
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/prices/?city=ibadan"
 
 # Response
 {
@@ -313,8 +336,11 @@ X-RateLimit-Remaining: 9847`}
       "price": "4500.00",
       "vendor_location": {
         "city": "Lagos",
-        "state": "Lagos"
+        "state": "Lagos",
+        "latitude": 6.6018,
+        "longitude": 3.3515
       },
+      "distance_km": 2.4,
       "is_available": true,
       "updated_at": "2026-03-14T10:30:00Z"
     }
@@ -333,17 +359,27 @@ X-RateLimit-Remaining: 9847`}
               </div>
               <p className="mt-3 text-gray-700">
                 Search across products, brands, and categories. Returns matching price listings.
+                Supports location-based filtering just like the prices endpoint.
               </p>
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-900">Query Parameters</h4>
                 <div className="mt-2 text-sm space-y-2 text-gray-600">
                   <p><code className="bg-gray-100 px-1.5 rounded">q</code> — Search query (required)</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">city</code> — Filter by vendor city</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">latitude</code> — Your latitude</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">longitude</code> — Your longitude</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">max_distance</code> — Maximum distance in km</p>
                 </div>
               </div>
               <CodeBlock
                 id="search"
-                code={`curl -H "X-API-Key: hm_live_your_key" \\
-  "https://api.howmuch.ng/api/v1/search/?q=tomato"
+                code={`# Search for tomato in Lagos
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/search/?q=tomato&city=lagos"
+
+# Search with geo-radius (5km around Ibadan)
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/search/?q=rice&latitude=7.3775&longitude=3.9470&max_distance=5"
 
 # Response
 {
@@ -356,7 +392,13 @@ X-RateLimit-Remaining: 9847`}
       "size": "70g",
       "brand": "Gino",
       "price": "500.00",
-      "vendor_location": {"city": "Lagos", "state": "Lagos"},
+      "vendor_location": {
+        "city": "Lagos",
+        "state": "Lagos",
+        "latitude": 6.5244,
+        "longitude": 3.3792
+      },
+      "distance_km": 3.1,
       "is_available": true,
       "updated_at": "2026-03-14T08:15:00Z"
     }
@@ -403,6 +445,79 @@ X-RateLimit-Remaining: 9847`}
   ]
 }`}
               />
+            </CardContent>
+          </Card>
+
+          {/* Location Filtering Guide */}
+          <Card id="location-filtering" className="border-gray-200 bg-white">
+            <CardContent className="p-8">
+              <h2 className="font-display text-2xl font-semibold text-gray-900">Location Filtering</h2>
+              <p className="mt-3 text-gray-700">
+                The prices and search endpoints support two types of location filtering,
+                which can be combined for precise results.
+              </p>
+
+              <h3 className="mt-6 font-medium text-gray-900">1. Filter by City</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Use the <code className="bg-gray-100 px-1.5 rounded">city</code> parameter to filter vendors
+                by their city. This is a case-insensitive partial match, so &quot;lagos&quot;, &quot;Lagos&quot;,
+                and &quot;LAGOS&quot; all work. You can also use partial names like &quot;iba&quot; for Ibadan.
+              </p>
+              <CodeBlock
+                id="city-filter"
+                code={`# Vendors in Ibadan
+GET /api/v1/products/rice/prices/?city=ibadan
+
+# Vendors in Lagos
+GET /api/v1/search/?q=garri&city=lagos`}
+              />
+
+              <h3 className="mt-6 font-medium text-gray-900">2. Geo-Radius Filter</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Pass <code className="bg-gray-100 px-1.5 rounded">latitude</code>,{" "}
+                <code className="bg-gray-100 px-1.5 rounded">longitude</code>, and{" "}
+                <code className="bg-gray-100 px-1.5 rounded">max_distance</code> (in km) to find
+                vendors within a radius. The response includes <code className="bg-gray-100 px-1.5 rounded">distance_km</code> showing
+                how far each vendor is from your coordinates.
+              </p>
+              <CodeBlock
+                id="geo-filter"
+                code={`# Vendors within 15km of University of Ibadan
+GET /api/v1/products/rice/prices/?latitude=7.3775&longitude=3.9470&max_distance=15
+
+# Response includes distance
+{
+  "results": [{
+    "price": "4500.00",
+    "vendor_location": {
+      "city": "Ibadan",
+      "state": "Oyo",
+      "latitude": 7.3965,
+      "longitude": 3.9167
+    },
+    "distance_km": 4.2
+  }]
+}`}
+              />
+
+              <h3 className="mt-6 font-medium text-gray-900">3. Combined Filters</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                You can combine city and geo-radius for more specific results.
+              </p>
+              <CodeBlock
+                id="combined-filter"
+                code={`# Lagos vendors within 5km of Victoria Island
+GET /api/v1/search/?q=bread&city=lagos&latitude=6.4281&longitude=3.4219&max_distance=5`}
+              />
+
+              <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700">
+                  <strong>Note:</strong> If <code>latitude</code>/<code>longitude</code> are provided without
+                  <code> max_distance</code>, the <code>distance_km</code> field will still be calculated
+                  in the response, but no distance filtering is applied. Only vendors with registered
+                  coordinates participate in geo-filtering.
+                </p>
+              </div>
             </CardContent>
           </Card>
 

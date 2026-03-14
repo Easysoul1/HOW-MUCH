@@ -24,25 +24,14 @@ class ApiKeySerializer(serializers.ModelSerializer):
 
 
 class ApiKeyCreateSerializer(serializers.Serializer):
-    """For admin creating API keys."""
+    """For admin creating integrator accounts + API keys."""
+    email = serializers.EmailField()
+    password = serializers.CharField(min_length=8, write_only=True)
+    company_name = serializers.CharField(max_length=150, required=False, default='')
     name = serializers.CharField(max_length=100)
-    owner_id = serializers.IntegerField()
     plan = serializers.ChoiceField(choices=ApiKey.PLAN_CHOICES, default='BASIC')
     daily_limit = serializers.IntegerField(default=10000, min_value=100)
     expires_at = serializers.DateTimeField(required=False, allow_null=True)
-    
-    def create(self, validated_data):
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        
-        owner = User.objects.get(pk=validated_data['owner_id'])
-        return ApiKey.objects.create(
-            name=validated_data['name'],
-            owner=owner,
-            plan=validated_data.get('plan', 'BASIC'),
-            daily_limit=validated_data.get('daily_limit', 10000),
-            expires_at=validated_data.get('expires_at'),
-        )
 
 
 class ApiUsageLogSerializer(serializers.ModelSerializer):
@@ -97,14 +86,37 @@ class PublicPriceSerializer(serializers.Serializer):
     brand = serializers.CharField()
     price = serializers.DecimalField(max_digits=12, decimal_places=2)
     vendor_location = serializers.SerializerMethodField()
+    distance_km = serializers.SerializerMethodField()
     is_available = serializers.BooleanField()
     updated_at = serializers.DateTimeField()
     
     def get_vendor_location(self, obj):
-        return {
+        result = {
             'city': obj.vendor.city or '',
             'state': obj.vendor.state or '',
         }
+        if obj.vendor.latitude and obj.vendor.longitude:
+            result['latitude'] = float(obj.vendor.latitude)
+            result['longitude'] = float(obj.vendor.longitude)
+        return result
+    
+    def get_distance_km(self, obj):
+        query_lat = self.context.get('query_lat')
+        query_lon = self.context.get('query_lon')
+        if query_lat is None or query_lon is None:
+            return None
+        v_lat = float(obj.vendor.latitude) if obj.vendor.latitude else None
+        v_lon = float(obj.vendor.longitude) if obj.vendor.longitude else None
+        if v_lat is None or v_lon is None:
+            return None
+        import math
+        R = 6371
+        dlat = math.radians(v_lat - query_lat)
+        dlon = math.radians(v_lon - query_lon)
+        a = (math.sin(dlat / 2) ** 2 +
+             math.cos(math.radians(query_lat)) * math.cos(math.radians(v_lat)) *
+             math.sin(dlon / 2) ** 2)
+        return round(R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a)), 2)
 
 
 class PublicPriceHistorySerializer(serializers.Serializer):

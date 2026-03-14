@@ -42,9 +42,12 @@ export default function AdminApiKeysPage() {
 
   // Create form state
   const [formName, setFormName] = useState("");
-  const [formOwnerId, setFormOwnerId] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [formCompany, setFormCompany] = useState("");
   const [formPlan, setFormPlan] = useState("BASIC");
   const [formDailyLimit, setFormDailyLimit] = useState("10000");
+  const [showPassword, setShowPassword] = useState(false);
 
   // Usage modal
   const [usageOpen, setUsageOpen] = useState(false);
@@ -78,14 +81,18 @@ export default function AdminApiKeysPage() {
     try {
       const result = await apiKeysApi.create({
         name: formName,
-        owner_id: parseInt(formOwnerId),
+        email: formEmail,
+        password: formPassword,
+        company_name: formCompany,
         plan: formPlan,
         daily_limit: parseInt(formDailyLimit),
       });
       setNewKeyRevealed(result.key);
       fetchKeys();
       setFormName("");
-      setFormOwnerId("");
+      setFormEmail("");
+      setFormPassword("");
+      setFormCompany("");
       setFormPlan("BASIC");
       setFormDailyLimit("10000");
     } catch (err: any) {
@@ -226,12 +233,26 @@ export default function AdminApiKeysPage() {
           <form onSubmit={handleCreate} className="space-y-4">
             {error && <p className="text-sm text-red-600">{error}</p>}
             <div className="space-y-2">
-              <Label>Key Name</Label>
-              <Input placeholder="e.g. Production, Staging" value={formName} onChange={(e) => setFormName(e.target.value)} required />
+              <Label>Email</Label>
+              <Input type="email" placeholder="integrator@company.com" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required />
+              <p className="text-xs text-gray-400">If an integrator with this email already exists, the key will be added to their account.</p>
             </div>
             <div className="space-y-2">
-              <Label>Owner User ID</Label>
-              <Input type="number" placeholder="User ID of the integrator" value={formOwnerId} onChange={(e) => setFormOwnerId(e.target.value)} required />
+              <Label>Password</Label>
+              <div className="relative">
+                <Input type={showPassword ? "text" : "password"} placeholder="Min 8 characters" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} required minLength={8} />
+                <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Company Name</Label>
+              <Input placeholder="Company or organization name" value={formCompany} onChange={(e) => setFormCompany(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Key Name</Label>
+              <Input placeholder="e.g. Production, Staging" value={formName} onChange={(e) => setFormName(e.target.value)} required />
             </div>
             <div className="space-y-2">
               <Label>Plan</Label>
