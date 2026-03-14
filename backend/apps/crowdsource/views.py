@@ -42,8 +42,11 @@ class SubmissionListCreateView(generics.ListCreateAPIView):
         return CrowdsourcedSubmissionListSerializer
 
     def create(self, request, *args, **kwargs):
-        # Handle multipart form data with JSON items field
-        data = request.data.copy()
+        # Convert QueryDict to a plain dict so nested JSON items work
+        if hasattr(request.data, 'dict'):
+            data = request.data.dict()
+        else:
+            data = request.data.copy()
         
         # Parse items JSON string if present
         if 'items' in data and isinstance(data['items'], str):
@@ -54,6 +57,10 @@ class SubmissionListCreateView(generics.ListCreateAPIView):
                     {'items': 'Invalid JSON format for items'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+        
+        # Re-attach file fields from request.FILES
+        for key in request.FILES:
+            data[key] = request.FILES[key]
         
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
