@@ -402,7 +402,9 @@ export const crowdsourceApi = {
       price: number;
       brand?: string;
     }>;
-  }) => apiClient.post('/crowdsource/submissions/', data, true),
+  }) => data instanceof FormData
+    ? apiClient.postFormData('/crowdsource/submissions/', data, true)
+    : apiClient.post('/crowdsource/submissions/', data, true),
 };
 
 // Admin Crowdsource API
