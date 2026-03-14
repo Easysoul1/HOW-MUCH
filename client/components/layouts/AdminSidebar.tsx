@@ -17,6 +17,7 @@ import {
   Package,
   LogOut,
   UserPlus,
+  Key,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -50,6 +51,11 @@ export const sidebarItems = [
     href: "/admin/approvals",
     icon: ShieldCheck,
     badgeKey: "approvals" as const,
+  },
+  {
+    title: "API Keys",
+    href: "/admin/api-keys",
+    icon: Key,
   },
   {
     title: "Analytics",

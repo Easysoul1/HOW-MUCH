@@ -442,4 +442,19 @@ export const notificationsApi = {
   markAllRead: () => apiClient.post('/notifications/mark-all-read/', {}, true),
 };
 
+// API Keys Management (Admin)
+export const apiKeysApi = {
+  list: () => apiClient.get<any>('/integrations/keys/'),
+  create: (data: { name: string; owner_id: number; plan?: string; daily_limit?: number }) =>
+    apiClient.post<any>('/integrations/keys/create/', data),
+  revoke: (keyId: number) => apiClient.post<any>(`/integrations/keys/${keyId}/revoke/`),
+  usage: (keyId: number) => apiClient.get<any>(`/integrations/keys/${keyId}/usage/`),
+};
+
+// Integrator self-service
+export const integratorApi = {
+  myKeys: () => apiClient.get<any>('/integrations/my-keys/'),
+  myUsage: () => apiClient.get<any>('/integrations/my-usage/'),
+};
+
 export default apiClient;

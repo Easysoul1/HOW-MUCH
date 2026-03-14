@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, ExternalLink } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 
 export default function APIDocumentationPage() {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
@@ -15,536 +14,468 @@ export default function APIDocumentationPage() {
     setTimeout(() => setCopiedSection(null), 2000);
   };
 
+  const CodeBlock = ({ code, id }: { code: string; id: string }) => (
+    <div className="relative mt-4">
+      <pre className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-sm leading-relaxed">
+        <code>{code}</code>
+      </pre>
+      <button
+        onClick={() => copyCode(code, id)}
+        className="absolute top-3 right-3 p-1.5 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+      >
+        {copiedSection === id ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+      </button>
+    </div>
+  );
+
   return (
     <div className="space-y-8">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <div>
         <h1 className="font-display text-3xl font-bold text-gray-900">API Documentation</h1>
         <p className="mt-2 text-gray-600">
-          Access real-time Nigerian price data through our RESTful API. Perfect for fintech apps, 
+          Access real-time Nigerian price data through our RESTful API. Perfect for fintech apps,
           research platforms, and supply chain analytics.
         </p>
-      </motion.div>
+      </div>
 
-      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        {/* Sidebar Navigation */}
+      <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
+        {/* Sidebar */}
         <aside className="hidden lg:block">
           <nav className="sticky top-24 space-y-1 text-sm">
             <div className="pb-2 mb-2 border-b border-gray-200">
               <h3 className="font-semibold text-gray-900">Getting Started</h3>
             </div>
-            <a href="#overview" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Overview</a>
-            <a href="#authentication" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Authentication</a>
-            <a href="#rate-limits" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Rate Limits</a>
-            <a href="#errors" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Error Handling</a>
-            
+            <a href="#overview" className="block py-1 text-gray-600 hover:text-green-600">Overview</a>
+            <a href="#authentication" className="block py-1 text-gray-600 hover:text-green-600">Authentication</a>
+            <a href="#rate-limits" className="block py-1 text-gray-600 hover:text-green-600">Rate Limits</a>
+            <a href="#errors" className="block py-1 text-gray-600 hover:text-green-600">Error Handling</a>
+            <a href="#pagination" className="block py-1 text-gray-600 hover:text-green-600">Pagination</a>
+
             <div className="pt-4 pb-2 mb-2 border-b border-gray-200 mt-4">
               <h3 className="font-semibold text-gray-900">Endpoints</h3>
             </div>
-            <a href="#list-products" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">List Products</a>
-            <a href="#get-product" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Get Product</a>
-            <a href="#get-prices" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Get Prices</a>
-            <a href="#search" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Search</a>
-            
+            <a href="#list-products" className="block py-1 text-gray-600 hover:text-green-600">List Products</a>
+            <a href="#get-product" className="block py-1 text-gray-600 hover:text-green-600">Get Product</a>
+            <a href="#product-prices" className="block py-1 text-gray-600 hover:text-green-600">Product Prices</a>
+            <a href="#search" className="block py-1 text-gray-600 hover:text-green-600">Search</a>
+            <a href="#price-history" className="block py-1 text-gray-600 hover:text-green-600">Price History</a>
+
             <div className="pt-4 pb-2 mb-2 border-b border-gray-200 mt-4">
               <h3 className="font-semibold text-gray-900">Resources</h3>
             </div>
-            <a href="#code-examples" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Code Examples</a>
-            <a href="#webhooks" className="block py-1 text-gray-600 hover:text-green-600 transition-colors">Webhooks</a>
+            <a href="#code-examples" className="block py-1 text-gray-600 hover:text-green-600">Code Examples</a>
           </nav>
         </aside>
 
         <div className="space-y-8">
           {/* Overview */}
-          <Card id="overview" className="border-gray-200 bg-white shadow-sm">
+          <Card id="overview" className="border-gray-200 bg-white">
             <CardContent className="p-8">
               <h2 className="font-display text-2xl font-semibold text-gray-900">Overview</h2>
               <p className="mt-3 text-gray-700 leading-relaxed">
-                The HowMuch API provides programmatic access to real-time grocery and commodity prices 
-                across Nigeria. All endpoints return JSON responses and use standard HTTP methods.
+                The HowMuch API provides programmatic access to real-time grocery and commodity prices
+                across Nigeria. All endpoints return JSON and use standard HTTP methods.
               </p>
               <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-sm text-green-800">
-                  <strong>Base URL:</strong> <code className="bg-white px-2 py-1 rounded">https://api.howmuch.ng/v1</code>
+                  <strong>Base URL:</strong>{" "}
+                  <code className="bg-white px-2 py-1 rounded text-green-700">https://api.howmuch.ng/api/v1</code>
                 </p>
+              </div>
+              <div className="mt-4 text-sm text-gray-600">
+                <p><strong>Available Endpoints:</strong></p>
+                <ul className="mt-2 space-y-1 list-disc list-inside text-gray-600">
+                  <li><code>GET /products/</code> — List all products</li>
+                  <li><code>GET /products/&#123;slug&#125;/</code> — Get product details</li>
+                  <li><code>GET /products/&#123;slug&#125;/prices/</code> — Get current prices</li>
+                  <li><code>GET /search/?q=</code> — Search products &amp; prices</li>
+                  <li><code>GET /prices/history/</code> — Historical price data</li>
+                </ul>
               </div>
             </CardContent>
           </Card>
 
           {/* Authentication */}
-          <Card id="authentication" className="border-gray-200 bg-white shadow-sm">
+          <Card id="authentication" className="border-gray-200 bg-white">
             <CardContent className="p-8">
               <h2 className="font-display text-2xl font-semibold text-gray-900">Authentication</h2>
               <p className="mt-3 text-gray-700">
-                All API requests require authentication using Bearer tokens. Include your API key in the Authorization header.
+                All API requests require an API key. Include your key in the <code className="bg-gray-100 px-2 py-0.5 rounded">X-API-Key</code> header.
               </p>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Header Format</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-green-400 overflow-x-auto">
-                    <code>Authorization: Bearer YOUR_API_KEY</code>
-                  </pre>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                    onClick={() => copyCode("Authorization: Bearer YOUR_API_KEY", "auth")}
-                  >
-                    {copiedSection === "auth" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Get Your API Key</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Generate and manage your API keys from the dashboard.
+              <CodeBlock
+                id="auth"
+                code={`curl -H "X-API-Key: hm_live_your_api_key_here" \\
+  https://api.howmuch.ng/api/v1/products/`}
+              />
+              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Getting an API key:</strong> Contact our sales team at{" "}
+                  <a href="mailto:sales@howmuch.ng" className="underline">sales@howmuch.ng</a>.
+                  After payment confirmation, we'll generate a key for your organization.
                 </p>
-                <Button className="bg-green-600 hover:bg-green-700">
-                  <a href="/integrator/keys" className="flex items-center gap-2">
-                    Go to API Keys
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Rate Limits */}
-          <Card id="rate-limits" className="border-gray-200 bg-white shadow-sm">
+          <Card id="rate-limits" className="border-gray-200 bg-white">
             <CardContent className="p-8">
               <h2 className="font-display text-2xl font-semibold text-gray-900">Rate Limits</h2>
               <p className="mt-3 text-gray-700">
-                Rate limits vary by plan. The API returns rate limit information in response headers.
+                Each API key has a daily request limit based on your plan. Rate limit headers are included in every response.
               </p>
-              <div className="mt-6 space-y-2 text-sm">
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">X-RateLimit-Limit</span>
-                  <span className="font-mono text-gray-900">Total requests per hour</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">X-RateLimit-Remaining</span>
-                  <span className="font-mono text-gray-900">Remaining requests</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-gray-600">X-RateLimit-Reset</span>
-                  <span className="font-mono text-gray-900">Unix timestamp of reset</span>
-                </div>
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-left">
+                      <th className="py-3 pr-4 font-medium text-gray-900">Plan</th>
+                      <th className="py-3 pr-4 font-medium text-gray-900">Daily Limit</th>
+                      <th className="py-3 font-medium text-gray-900">Rate Limit Headers</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600">
+                    <tr className="border-b border-gray-100"><td className="py-3 pr-4">Basic</td><td className="py-3 pr-4">10,000/day</td><td className="py-3">Included</td></tr>
+                    <tr className="border-b border-gray-100"><td className="py-3 pr-4">Pro</td><td className="py-3 pr-4">50,000/day</td><td className="py-3">Included</td></tr>
+                    <tr><td className="py-3 pr-4">Enterprise</td><td className="py-3 pr-4">Custom</td><td className="py-3">Included</td></tr>
+                  </tbody>
+                </table>
               </div>
+              <CodeBlock
+                id="rate-headers"
+                code={`# Response headers
+X-RateLimit-Limit: 10000
+X-RateLimit-Remaining: 9847`}
+              />
             </CardContent>
           </Card>
 
-          {/* Error Handling */}
-          <Card id="errors" className="border-gray-200 bg-white shadow-sm">
+          {/* Errors */}
+          <Card id="errors" className="border-gray-200 bg-white">
             <CardContent className="p-8">
               <h2 className="font-display text-2xl font-semibold text-gray-900">Error Handling</h2>
-              <p className="mt-3 text-gray-700">
-                The API uses standard HTTP status codes. All errors return a JSON response with an error message.
-              </p>
-              
-              <div className="mt-6 space-y-3">
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="font-mono text-sm font-semibold text-gray-900">200</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">OK</p>
-                      <p className="text-sm text-gray-600">Request successful</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="font-mono text-sm font-semibold text-red-700">401</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">Unauthorized</p>
-                      <p className="text-sm text-gray-600">Invalid or missing API key</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="font-mono text-sm font-semibold text-yellow-700">429</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">Rate Limit Exceeded</p>
-                      <p className="text-sm text-gray-600">Too many requests</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="font-mono text-sm font-semibold text-orange-700">500</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">Internal Server Error</p>
-                      <p className="text-sm text-gray-600">Something went wrong on our end</p>
-                    </div>
-                  </div>
-                </div>
+              <p className="mt-3 text-gray-700">Standard HTTP status codes are used. Errors return JSON with a detail field.</p>
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-left">
+                      <th className="py-3 pr-4 font-medium text-gray-900">Code</th>
+                      <th className="py-3 font-medium text-gray-900">Meaning</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600">
+                    <tr className="border-b border-gray-100"><td className="py-3 pr-4"><code>200</code></td><td>Success</td></tr>
+                    <tr className="border-b border-gray-100"><td className="py-3 pr-4"><code>401</code></td><td>Invalid or missing API key</td></tr>
+                    <tr className="border-b border-gray-100"><td className="py-3 pr-4"><code>404</code></td><td>Resource not found</td></tr>
+                    <tr><td className="py-3 pr-4"><code>429</code></td><td>Rate limit exceeded</td></tr>
+                  </tbody>
+                </table>
               </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Error Response Format</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-gray-300 overflow-x-auto">{`{
-  "error": {
-    "message": "Invalid API key provided",
-    "type": "authentication_error",
-    "code": "invalid_key"
-  }
-}`}</pre>
-                </div>
-              </div>
+              <CodeBlock
+                id="error-example"
+                code={`{
+  "detail": "Invalid API key."
+}`}
+              />
             </CardContent>
           </Card>
 
-          {/* List Products */}
-          <Card id="list-products" className="border-gray-200 bg-white shadow-sm">
+          {/* Pagination */}
+          <Card id="pagination" className="border-gray-200 bg-white">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded font-mono text-sm font-semibold">GET</span>
-                <h2 className="font-display text-xl font-semibold text-gray-900">List Products</h2>
+              <h2 className="font-display text-2xl font-semibold text-gray-900">Pagination</h2>
+              <p className="mt-3 text-gray-700">
+                List endpoints return paginated results. Default page size is 20, max is 100.
+              </p>
+              <CodeBlock
+                id="pagination"
+                code={`GET /api/v1/products/?page=2&page_size=50
+
+{
+  "count": 245,
+  "next": "https://api.howmuch.ng/api/v1/products/?page=3&page_size=50",
+  "previous": "https://api.howmuch.ng/api/v1/products/?page=1&page_size=50",
+  "results": [...]
+}`}
+              />
+            </CardContent>
+          </Card>
+
+          {/* --- ENDPOINTS --- */}
+
+          {/* List Products */}
+          <Card id="list-products" className="border-gray-200 bg-white">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                <h2 className="font-display text-xl font-semibold text-gray-900">/products/</h2>
               </div>
-              <p className="text-gray-700">Retrieve a paginated list of all available products.</p>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Endpoint</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-green-400">GET /products</pre>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                    onClick={() => copyCode("GET /products", "list-products")}
-                  >
-                    {copiedSection === "list-products" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
+              <p className="mt-3 text-gray-700">List all approved products in the catalog.</p>
+              <div className="mt-4">
+                <h4 className="text-sm font-medium text-gray-900">Query Parameters</h4>
+                <div className="mt-2 text-sm space-y-2 text-gray-600">
+                  <p><code className="bg-gray-100 px-1.5 rounded">search</code> — Filter by product name or category</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">category</code> — Filter by category slug</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">page</code> — Page number</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">page_size</code> — Results per page (max 100)</p>
                 </div>
               </div>
+              <CodeBlock
+                id="list-products"
+                code={`curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/?category=grains"
 
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Query Parameters</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex gap-4 py-2 border-b border-gray-100">
-                    <span className="font-mono text-gray-900 w-32">category</span>
-                    <span className="text-gray-600 flex-1">Filter by category slug</span>
-                  </div>
-                  <div className="flex gap-4 py-2 border-b border-gray-100">
-                    <span className="font-mono text-gray-900 w-32">page</span>
-                    <span className="text-gray-600 flex-1">Page number (default: 1)</span>
-                  </div>
-                  <div className="flex gap-4 py-2">
-                    <span className="font-mono text-gray-900 w-32">page_size</span>
-                    <span className="text-gray-600 flex-1">Items per page (default: 20, max: 100)</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Example Response</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-xs">
-                  <pre className="text-gray-300 overflow-x-auto">{`{
-  "count": 1247,
-  "next": "https://api.howmuch.ng/v1/products?page=2",
-  "previous": null,
+# Response
+{
+  "count": 24,
   "results": [
     {
-      "id": 42,
-      "name": "Golden Penny Semovita",
-      "slug": "golden-penny-semovita",
-      "category": {
-        "id": 3,
-        "name": "Grains & Cereals",
-        "slug": "grains-cereals"
-      },
-      "image": "https://res.cloudinary.com/.../image.jpg",
+      "slug": "rice",
+      "name": "Rice",
+      "category": "Grains",
+      "image": "https://res.cloudinary.com/...",
       "available_sizes": [
-        {"id": 12, "label": "1kg"},
-        {"id": 13, "label": "5kg"}
+        {"id": 1, "label": "5kg"},
+        {"id": 2, "label": "10kg"},
+        {"id": 3, "label": "25kg"},
+        {"id": 4, "label": "50kg"}
       ]
     }
   ]
-}`}</pre>
-                </div>
-              </div>
+}`}
+              />
             </CardContent>
           </Card>
 
           {/* Get Product */}
-          <Card id="get-product" className="border-gray-200 bg-white shadow-sm">
+          <Card id="get-product" className="border-gray-200 bg-white">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded font-mono text-sm font-semibold">GET</span>
-                <h2 className="font-display text-xl font-semibold text-gray-900">Get Product</h2>
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                <h2 className="font-display text-xl font-semibold text-gray-900">/products/&#123;slug&#125;/</h2>
               </div>
-              <p className="text-gray-700">Retrieve details for a specific product.</p>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Endpoint</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-green-400">GET /products/:slug</pre>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                    onClick={() => copyCode("GET /products/:slug", "get-product")}
-                  >
-                    {copiedSection === "get-product" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
+              <p className="mt-3 text-gray-700">Get detailed information about a specific product.</p>
+              <CodeBlock
+                id="get-product"
+                code={`curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/"
 
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Example Request</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-gray-300">{`curl https://api.howmuch.ng/v1/products/golden-penny-semovita \\
-  -H "Authorization: Bearer YOUR_API_KEY"`}</pre>
-                </div>
-              </div>
+# Response
+{
+  "slug": "rice",
+  "name": "Rice",
+  "sku": "HM-A1B2C3D4",
+  "description": "Locally grown and imported rice varieties",
+  "category": "Grains",
+  "image": "https://res.cloudinary.com/...",
+  "available_sizes": [
+    {"id": 1, "label": "5kg"},
+    {"id": 2, "label": "10kg"},
+    {"id": 3, "label": "25kg"},
+    {"id": 4, "label": "50kg"}
+  ]
+}`}
+              />
             </CardContent>
           </Card>
 
-          {/* Get Prices */}
-          <Card id="get-prices" className="border-gray-200 bg-white shadow-sm">
+          {/* Product Prices */}
+          <Card id="product-prices" className="border-gray-200 bg-white">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded font-mono text-sm font-semibold">GET</span>
-                <h2 className="font-display text-xl font-semibold text-gray-900">Get Prices</h2>
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                <h2 className="font-display text-xl font-semibold text-gray-900">/products/&#123;slug&#125;/prices/</h2>
               </div>
-              <p className="text-gray-700">Fetch current prices for a product across different vendors and locations.</p>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Endpoint</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-green-400">GET /products/:slug/prices</pre>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                    onClick={() => copyCode("GET /products/:slug/prices", "get-prices")}
-                  >
-                    {copiedSection === "get-prices" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
+              <p className="mt-3 text-gray-700">
+                Get current prices for a product from all vendors. Results sorted by price (lowest first).
+              </p>
+              <div className="mt-4">
+                <h4 className="text-sm font-medium text-gray-900">Query Parameters</h4>
+                <div className="mt-2 text-sm space-y-2 text-gray-600">
+                  <p><code className="bg-gray-100 px-1.5 rounded">size</code> — Filter by size label (e.g. "5kg")</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">brand</code> — Filter by brand name</p>
                 </div>
               </div>
+              <CodeBlock
+                id="product-prices"
+                code={`curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/prices/?size=5kg"
 
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Query Parameters</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex gap-4 py-2 border-b border-gray-100">
-                    <span className="font-mono text-gray-900 w-32">size</span>
-                    <span className="text-gray-600 flex-1">Filter by size ID</span>
-                  </div>
-                  <div className="flex gap-4 py-2 border-b border-gray-100">
-                    <span className="font-mono text-gray-900 w-32">city</span>
-                    <span className="text-gray-600 flex-1">Filter by city (e.g., "Lagos", "Abuja")</span>
-                  </div>
-                  <div className="flex gap-4 py-2">
-                    <span className="font-mono text-gray-900 w-32">min_price</span>
-                    <span className="text-gray-600 flex-1">Minimum price filter</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Example Response</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-xs">
-                  <pre className="text-gray-300 overflow-x-auto">{`{
-  "product": {
-    "name": "Golden Penny Semovita",
-    "slug": "golden-penny-semovita"
-  },
-  "prices": [
+# Response
+{
+  "count": 12,
+  "results": [
     {
-      "id": 1523,
-      "price": 4500,
-      "size": {"id": 12, "label": "5kg"},
-      "vendor": {
-        "business_name": "Shoprite Ikeja",
+      "id": 45,
+      "product": "Rice",
+      "product_slug": "rice",
+      "size": "5kg",
+      "brand": "Mama Gold",
+      "price": "4500.00",
+      "vendor_location": {
         "city": "Lagos",
         "state": "Lagos"
       },
-      "brand": "Golden Penny",
-      "in_stock": true,
-      "updated_at": "2024-02-28T10:30:00Z"
+      "is_available": true,
+      "updated_at": "2026-03-14T10:30:00Z"
     }
-  ],
-  "price_stats": {
-    "avg": 4650,
-    "min": 4200,
-    "max": 5100,
-    "count": 23
-  }
-}`}</pre>
-                </div>
-              </div>
+  ]
+}`}
+              />
             </CardContent>
           </Card>
 
           {/* Search */}
-          <Card id="search" className="border-gray-200 bg-white shadow-sm">
+          <Card id="search" className="border-gray-200 bg-white">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded font-mono text-sm font-semibold">GET</span>
-                <h2 className="font-display text-xl font-semibold text-gray-900">Search</h2>
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                <h2 className="font-display text-xl font-semibold text-gray-900">/search/</h2>
               </div>
-              <p className="text-gray-700">Search products by name or description.</p>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Endpoint</h3>
-                <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-sm">
-                  <pre className="text-green-400">GET /search?q=rice</pre>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                    onClick={() => copyCode("GET /search?q=rice", "search")}
-                  >
-                    {copiedSection === "search" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
+              <p className="mt-3 text-gray-700">
+                Search across products, brands, and categories. Returns matching price listings.
+              </p>
+              <div className="mt-4">
+                <h4 className="text-sm font-medium text-gray-900">Query Parameters</h4>
+                <div className="mt-2 text-sm space-y-2 text-gray-600">
+                  <p><code className="bg-gray-100 px-1.5 rounded">q</code> — Search query (required)</p>
                 </div>
               </div>
+              <CodeBlock
+                id="search"
+                code={`curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/search/?q=tomato"
+
+# Response
+{
+  "count": 8,
+  "results": [
+    {
+      "id": 78,
+      "product": "Tomato Paste",
+      "product_slug": "tomato-paste",
+      "size": "70g",
+      "brand": "Gino",
+      "price": "500.00",
+      "vendor_location": {"city": "Lagos", "state": "Lagos"},
+      "is_available": true,
+      "updated_at": "2026-03-14T08:15:00Z"
+    }
+  ]
+}`}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Price History */}
+          <Card id="price-history" className="border-gray-200 bg-white">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                <h2 className="font-display text-xl font-semibold text-gray-900">/prices/history/</h2>
+              </div>
+              <p className="mt-3 text-gray-700">
+                Get historical price data. Useful for trend analysis, charts, and ML training.
+              </p>
+              <div className="mt-4">
+                <h4 className="text-sm font-medium text-gray-900">Query Parameters</h4>
+                <div className="mt-2 text-sm space-y-2 text-gray-600">
+                  <p><code className="bg-gray-100 px-1.5 rounded">product</code> — Filter by product slug</p>
+                  <p><code className="bg-gray-100 px-1.5 rounded">days</code> — Number of days to look back (default 30, max 365)</p>
+                </div>
+              </div>
+              <CodeBlock
+                id="price-history"
+                code={`curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/prices/history/?product=rice&days=30"
+
+# Response
+{
+  "count": 156,
+  "results": [
+    {
+      "product": "Rice",
+      "product_slug": "rice",
+      "size": "5kg",
+      "brand": "Mama Gold",
+      "price": "4200.00",
+      "recorded_at": "2026-03-10T14:22:00Z"
+    }
+  ]
+}`}
+              />
             </CardContent>
           </Card>
 
           {/* Code Examples */}
-          <Card id="code-examples" className="border-gray-200 bg-white shadow-sm">
+          <Card id="code-examples" className="border-gray-200 bg-white">
             <CardContent className="p-8">
               <h2 className="font-display text-2xl font-semibold text-gray-900">Code Examples</h2>
-              
-              <div className="mt-6 space-y-6">
-                {/* Python */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Python</h3>
-                  <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-xs">
-                    <pre className="text-gray-300 overflow-x-auto">{`import requests
 
-API_KEY = "your_api_key_here"
-BASE_URL = "https://api.howmuch.ng/v1"
+              <h3 className="mt-6 font-medium text-gray-900">Python</h3>
+              <CodeBlock
+                id="python"
+                code={`import requests
 
-headers = {"Authorization": f"Bearer {API_KEY}"}
+API_KEY = "hm_live_your_key"
+BASE_URL = "https://api.howmuch.ng/api/v1"
 
-# Get products
-response = requests.get(f"{BASE_URL}/products", headers=headers)
-products = response.json()
+headers = {"X-API-Key": API_KEY}
 
-# Get prices for a product
-response = requests.get(
-    f"{BASE_URL}/products/golden-penny-semovita/prices",
-    headers=headers,
-    params={"city": "Lagos"}
-)
-prices = response.json()`}</pre>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyCode(`import requests\n\nAPI_KEY = "your_api_key_here"\nBASE_URL = "https://api.howmuch.ng/v1"\n\nheaders = {"Authorization": f"Bearer {API_KEY}"}\n\n# Get products\nresponse = requests.get(f"{BASE_URL}/products", headers=headers)\nproducts = response.json()\n\n# Get prices for a product\nresponse = requests.get(\n    f"{BASE_URL}/products/golden-penny-semovita/prices",\n    headers=headers,\n    params={"city": "Lagos"}\n)\nprices = response.json()`, "python")}
-                    >
-                      {copiedSection === "python" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
+# Get rice prices
+response = requests.get(f"{BASE_URL}/products/rice/prices/", headers=headers)
+prices = response.json()
 
-                {/* JavaScript */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">JavaScript (Node.js)</h3>
-                  <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-xs">
-                    <pre className="text-gray-300 overflow-x-auto">{`const axios = require('axios');
+for item in prices["results"]:
+    print(f"{item['brand']} {item['size']}: ₦{item['price']} ({item['vendor_location']['city']})")`}
+              />
 
-const API_KEY = 'your_api_key_here';
-const BASE_URL = 'https://api.howmuch.ng/v1';
+              <h3 className="mt-6 font-medium text-gray-900">JavaScript / Node.js</h3>
+              <CodeBlock
+                id="javascript"
+                code={`const API_KEY = "hm_live_your_key";
+const BASE_URL = "https://api.howmuch.ng/api/v1";
 
-const headers = {
-  'Authorization': \`Bearer \${API_KEY}\`
-};
+const response = await fetch(\`\${BASE_URL}/products/rice/prices/\`, {
+  headers: { "X-API-Key": API_KEY }
+});
 
-// Get products
-const getProducts = async () => {
-  const response = await axios.get(
-    \`\${BASE_URL}/products\`,
-    { headers }
-  );
-  return response.data;
-};
+const { results } = await response.json();
+results.forEach(item => {
+  console.log(\`\${item.brand} \${item.size}: ₦\${item.price}\`);
+});`}
+              />
 
-// Get prices
-const getPrices = async (productSlug, city) => {
-  const response = await axios.get(
-    \`\${BASE_URL}/products/\${productSlug}/prices\`,
-    {
-      headers,
-      params: { city }
-    }
-  );
-  return response.data;
-};`}</pre>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyCode(`const axios = require('axios');\n\nconst API_KEY = 'your_api_key_here';\nconst BASE_URL = 'https://api.howmuch.ng/v1';\n\nconst headers = {\n  'Authorization': \`Bearer \${API_KEY}\`\n};\n\n// Get products\nconst getProducts = async () => {\n  const response = await axios.get(\n    \`\${BASE_URL}/products\`,\n    { headers }\n  );\n  return response.data;\n};\n\n// Get prices\nconst getPrices = async (productSlug, city) => {\n  const response = await axios.get(\n    \`\${BASE_URL}/products/\${productSlug}/prices\`,\n    {\n      headers,\n      params: { city }\n    }\n  );\n  return response.data;\n};`, "javascript")}
-                    >
-                      {copiedSection === "javascript" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
+              <h3 className="mt-6 font-medium text-gray-900">cURL</h3>
+              <CodeBlock
+                id="curl"
+                code={`# List all products
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/"
 
-                {/* cURL */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">cURL</h3>
-                  <div className="relative bg-gray-900 rounded-lg p-4 font-mono text-xs">
-                    <pre className="text-gray-300 overflow-x-auto">{`# Get products
-curl https://api.howmuch.ng/v1/products \\
-  -H "Authorization: Bearer YOUR_API_KEY"
+# Search for tomato prices
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/search/?q=tomato"
 
-# Get prices with city filter
-curl "https://api.howmuch.ng/v1/products/golden-penny-semovita/prices?city=Lagos" \\
-  -H "Authorization: Bearer YOUR_API_KEY"`}</pre>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyCode(`# Get products\ncurl https://api.howmuch.ng/v1/products \\\n  -H "Authorization: Bearer YOUR_API_KEY"\n\n# Get prices with city filter\ncurl "https://api.howmuch.ng/v1/products/golden-penny-semovita/prices?city=Lagos" \\\n  -H "Authorization: Bearer YOUR_API_KEY"`, "curl")}
-                    >
-                      {copiedSection === "curl" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Webhooks */}
-          <Card id="webhooks" className="border-gray-200 bg-white shadow-sm">
-            <CardContent className="p-8">
-              <h2 className="font-display text-2xl font-semibold text-gray-900">Webhooks</h2>
-              <p className="mt-3 text-gray-700">
-                Webhooks allow you to receive real-time notifications when price data changes.
-              </p>
-              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>Coming Soon:</strong> Webhook functionality is currently in development. 
-                  You'll be able to subscribe to events like price updates, new products, and more.
-                </p>
-              </div>
+# Get 90-day price history for rice
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/prices/history/?product=rice&days=90"`}
+              />
             </CardContent>
           </Card>
 
           {/* Support */}
-          <Card className="border-gray-200 bg-gradient-to-br from-green-50 to-green-100">
+          <Card className="border-green-200 bg-green-50">
             <CardContent className="p-8 text-center">
-              <h2 className="font-display text-2xl font-semibold text-gray-900">Need Help?</h2>
-              <p className="mt-2 text-gray-700">
-                Our developer support team is here to help you integrate the HowMuch API.
+              <h2 className="font-display text-xl font-semibold text-green-900">Need Help?</h2>
+              <p className="mt-2 text-green-700">
+                Contact our team for integration support, custom plans, or partnership inquiries.
               </p>
-              <div className="mt-6 flex gap-4 justify-center">
-                <Button className="bg-green-600 hover:bg-green-700">
-                  Contact Support
+              <div className="mt-4 flex justify-center gap-4">
+                <Button className="bg-green-600 hover:bg-green-700 text-white" asChild>
+                  <a href="mailto:sales@howmuch.ng">Contact Sales</a>
                 </Button>
-                <Button variant="outline" className="border-gray-300">
-                  View Status Page
+                <Button variant="outline" className="border-green-300 text-green-700" asChild>
+                  <a href="mailto:dev@howmuch.ng">Developer Support</a>
                 </Button>
               </div>
             </CardContent>
@@ -554,3 +485,4 @@ curl "https://api.howmuch.ng/v1/products/golden-penny-semovita/prices?city=Lagos
     </div>
   );
 }
+

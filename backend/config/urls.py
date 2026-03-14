@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from apps.integrations.urls import v1_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -40,6 +41,9 @@ urlpatterns = [
     path('api/integrations/', include('apps.integrations.urls')),
     path('api/social/', include('apps.social.urls')),
     path('api/notifications/', include('apps.notifications.urls')),
+    
+    # Public API v1 for 3rd party integrators
+    path('api/v1/', include((v1_urlpatterns, 'v1'))),
 ]
 
 if settings.DEBUG:
