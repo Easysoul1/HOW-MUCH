@@ -50,7 +50,12 @@ class ApiClient {
         const errorMessages = Object.entries(errorData)
           .map(([field, messages]) => {
             if (Array.isArray(messages)) {
-              return `${field}: ${messages.join(', ')}`;
+              // Handle nested validation errors (e.g. items: [{price: ["required"]}])
+              const flat = messages.map(m => typeof m === 'object' ? JSON.stringify(m) : m);
+              return `${field}: ${flat.join(', ')}`;
+            }
+            if (typeof messages === 'object') {
+              return `${field}: ${JSON.stringify(messages)}`;
             }
             return `${field}: ${messages}`;
           })
