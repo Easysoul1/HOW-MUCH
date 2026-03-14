@@ -1,9 +1,228 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Download, FileText } from "lucide-react";
+
+const DOCS_MARKDOWN = `# HowMuch API Documentation
+
+> Access real-time Nigerian price data through our RESTful API.
+
+## Base URL
+
+\`\`\`
+https://api.howmuch.ng/api/v1
+\`\`\`
+
+## Authentication
+
+All API requests require an API key. Include your key in the \`X-API-Key\` header.
+
+\`\`\`bash
+curl -H "X-API-Key: hm_live_your_api_key_here" \\
+  https://api.howmuch.ng/api/v1/products/
+\`\`\`
+
+## Rate Limits
+
+| Plan       | Daily Limit | Rate Limit Headers |
+|------------|-------------|-------------------|
+| Basic      | 10,000/day  | Included          |
+| Pro        | 50,000/day  | Included          |
+| Enterprise | Custom      | Included          |
+
+Response headers:
+\`\`\`
+X-RateLimit-Limit: 10000
+X-RateLimit-Remaining: 9847
+\`\`\`
+
+## Error Handling
+
+| Status Code | Meaning                        |
+|-------------|--------------------------------|
+| 200         | Success                        |
+| 400         | Bad request / invalid params   |
+| 401         | Missing or invalid API key     |
+| 404         | Resource not found             |
+| 429         | Rate limit exceeded            |
+| 500         | Server error                   |
+
+Error response format:
+\`\`\`json
+{ "detail": "Invalid API key." }
+\`\`\`
+
+## Pagination
+
+All list endpoints support pagination:
+
+| Parameter   | Default | Max |
+|-------------|---------|-----|
+| page        | 1       | —   |
+| page_size   | 20      | 100 |
+
+Response includes \`count\`, \`next\`, \`previous\`, and \`results\`.
+
+---
+
+## Endpoints
+
+### GET /products/
+
+List all approved products.
+
+**Query Parameters:**
+- \`search\` — Filter by product name or category
+- \`category\` — Filter by category slug
+- \`page\` / \`page_size\` — Pagination
+
+\`\`\`bash
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/?category=grains"
+\`\`\`
+
+### GET /products/{slug}/
+
+Get detailed information about a specific product.
+
+\`\`\`bash
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/"
+\`\`\`
+
+### GET /products/{slug}/prices/
+
+Get current prices from all vendors. Supports location-based filtering.
+
+**Query Parameters:**
+- \`size\` — Filter by size label (e.g. "5kg")
+- \`brand\` — Filter by brand name
+- \`city\` — Filter by vendor city (case-insensitive)
+- \`latitude\` — Your latitude (for geo-filtering)
+- \`longitude\` — Your longitude (for geo-filtering)
+- \`max_distance\` — Maximum distance in km
+
+\`\`\`bash
+# Basic
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/prices/?size=5kg"
+
+# With location (10km radius around Ikeja)
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/prices/?latitude=6.6018&longitude=3.3515&max_distance=10"
+
+# By city
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/rice/prices/?city=ibadan"
+\`\`\`
+
+### GET /search/
+
+Search across products, brands, and categories. Supports location filtering.
+
+**Query Parameters:**
+- \`q\` — Search query (required)
+- \`city\` — Filter by vendor city
+- \`latitude\` / \`longitude\` / \`max_distance\` — Geo-radius filter
+
+\`\`\`bash
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/search/?q=tomato&city=lagos"
+\`\`\`
+
+### GET /prices/history/
+
+Historical price data for trend analysis.
+
+**Query Parameters:**
+- \`product\` — Filter by product slug
+- \`days\` — Number of days to look back (default 30, max 365)
+
+\`\`\`bash
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/prices/history/?product=rice&days=90"
+\`\`\`
+
+---
+
+## Location Filtering
+
+### Filter by City
+Use the \`city\` parameter for case-insensitive partial matching.
+\`\`\`
+GET /api/v1/products/rice/prices/?city=ibadan
+GET /api/v1/search/?q=garri&city=lagos
+\`\`\`
+
+### Geo-Radius Filter
+Pass \`latitude\`, \`longitude\`, and \`max_distance\` (km). Response includes \`distance_km\`.
+\`\`\`
+GET /api/v1/products/rice/prices/?latitude=7.3775&longitude=3.9470&max_distance=15
+\`\`\`
+
+### Combined
+\`\`\`
+GET /api/v1/search/?q=bread&city=lagos&latitude=6.4281&longitude=3.4219&max_distance=5
+\`\`\`
+
+---
+
+## Code Examples
+
+### Python
+\`\`\`python
+import requests
+
+API_KEY = "hm_live_your_key"
+BASE_URL = "https://api.howmuch.ng/api/v1"
+headers = {"X-API-Key": API_KEY}
+
+response = requests.get(f"{BASE_URL}/products/rice/prices/", headers=headers)
+prices = response.json()
+
+for item in prices["results"]:
+    print(f"{item['brand']} {item['size']}: ₦{item['price']} ({item['vendor_location']['city']})")
+\`\`\`
+
+### JavaScript / Node.js
+\`\`\`javascript
+const API_KEY = "hm_live_your_key";
+const BASE_URL = "https://api.howmuch.ng/api/v1";
+
+const response = await fetch(\`\${BASE_URL}/products/rice/prices/\`, {
+  headers: { "X-API-Key": API_KEY }
+});
+
+const { results } = await response.json();
+results.forEach(item => {
+  console.log(\`\${item.brand} \${item.size}: ₦\${item.price}\`);
+});
+\`\`\`
+
+### cURL
+\`\`\`bash
+# List all products
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/products/"
+
+# Search for tomato prices
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/search/?q=tomato"
+
+# Get 90-day price history
+curl -H "X-API-Key: hm_live_your_key" \\
+  "https://api.howmuch.ng/api/v1/prices/history/?product=rice&days=90"
+\`\`\`
+
+---
+
+## Support
+
+- **Sales:** sales@howmuch.ng
+- **Developer Support:** dev@howmuch.ng
+`;
 
 export default function APIDocumentationPage() {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
@@ -13,6 +232,58 @@ export default function APIDocumentationPage() {
     setCopiedSection(section);
     setTimeout(() => setCopiedSection(null), 2000);
   };
+
+  const downloadMarkdown = useCallback(() => {
+    const blob = new Blob([DOCS_MARKDOWN], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "howmuch-api-docs.md";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
+  const downloadPdf = useCallback(() => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    // Convert markdown to simple HTML for print
+    const html = DOCS_MARKDOWN
+      .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+      .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+      .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+      .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>")
+      .replace(/^---$/gm, "<hr/>")
+      .replace(/\`\`\`(\w*)\n([\s\S]*?)\`\`\`/gm, "<pre><code>$2</code></pre>")
+      .replace(/\`([^`]+)\`/g, "<code>$1</code>")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/^\| (.+) \|$/gm, (match) => {
+        const cells = match.split("|").filter(Boolean).map((c) => c.trim());
+        return "<tr>" + cells.map((c) => `<td style="padding:4px 12px;border:1px solid #ddd">${c}</td>`).join("") + "</tr>";
+      })
+      .replace(/^- (.+)$/gm, "<li>$1</li>")
+      .replace(/\n\n/g, "<br/><br/>");
+
+    printWindow.document.write(`<!DOCTYPE html><html><head>
+      <title>HowMuch API Documentation</title>
+      <style>
+        body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.6; }
+        h1 { font-size: 28px; border-bottom: 2px solid #16a34a; padding-bottom: 8px; }
+        h2 { font-size: 22px; margin-top: 32px; color: #16a34a; }
+        h3 { font-size: 18px; margin-top: 24px; }
+        pre { background: #f3f4f6; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
+        code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+        pre code { background: none; padding: 0; }
+        table { border-collapse: collapse; margin: 12px 0; }
+        blockquote { border-left: 3px solid #16a34a; padding-left: 12px; color: #555; }
+        hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+        li { margin: 4px 0; }
+        @media print { body { margin: 20px; } }
+      </style>
+    </head><body>${html}</body></html>`);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.print(); }, 300);
+  }, []);
 
   const CodeBlock = ({ code, id }: { code: string; id: string }) => (
     <div className="relative mt-4">
@@ -30,12 +301,22 @@ export default function APIDocumentationPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-display text-3xl font-bold text-gray-900">API Documentation</h1>
-        <p className="mt-2 text-gray-600">
-          Access real-time Nigerian price data through our RESTful API. Perfect for fintech apps,
-          research platforms, and supply chain analytics.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-gray-900">API Documentation</h1>
+          <p className="mt-2 text-gray-600">
+            Access real-time Nigerian price data through our RESTful API. Perfect for fintech apps,
+            research platforms, and supply chain analytics.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={downloadMarkdown} className="text-gray-600">
+            <FileText className="w-4 h-4 mr-1.5" /> .md
+          </Button>
+          <Button variant="outline" size="sm" onClick={downloadPdf} className="text-gray-600">
+            <Download className="w-4 h-4 mr-1.5" /> PDF
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
