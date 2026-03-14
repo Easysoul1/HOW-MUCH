@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Package,
   LogOut,
+  UserPlus,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -33,6 +34,11 @@ export const sidebarItems = [
     title: "Buyers",
     href: "/admin/buyers",
     icon: ShoppingBag,
+  },
+  {
+    title: "Crowdsourcers",
+    href: "/admin/crowdsourcers",
+    icon: UserPlus,
   },
   {
     title: "Products",

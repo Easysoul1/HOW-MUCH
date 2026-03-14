@@ -191,3 +191,89 @@ class UserListView(generics.ListAPIView):
     filterset_fields = ['user_type', 'is_verified', 'is_active']
     search_fields = ['username', 'email', 'first_name', 'last_name', 'phone_number']
     ordering_fields = ['created_at', 'username']
+
+
+class CrowdsourcerListView(generics.ListAPIView):
+    """
+    List all crowdsourcers (Admin only)
+    """
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get_queryset(self):
+        return User.objects.filter(user_type='CROWDSOURCER').order_by('-created_at')
+
+
+class CreateCrowdsourcerView(APIView):
+    """
+    Create a new crowdsourcer account (Admin only)
+    """
+    permission_classes = [permissions.IsAdminUser]
+    
+    @extend_schema(
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'email': {'type': 'string', 'format': 'email'},
+                    'password': {'type': 'string', 'minLength': 8},
+                    'first_name': {'type': 'string'},
+                    'last_name': {'type': 'string'},
+                    'phone': {'type': 'string', 'nullable': True},
+                },
+                'required': ['email', 'password', 'first_name', 'last_name']
+            }
+        },
+        responses={
+            201: OpenApiResponse(description='Crowdsourcer created successfully'),
+            400: OpenApiResponse(description='Validation error'),
+            403: OpenApiResponse(description='Not authorized - Admin only')
+        }
+    )
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        phone = request.data.get('phone', '')
+        
+        # Validate required fields
+        if not all([email, password, first_name, last_name]):
+            return Response(
+                {'detail': 'Email, password, first name, and last name are required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if user already exists
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {'detail': 'A user with this email already exists.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Create crowdsourcer
+        try:
+            user = User.objects.create_user(
+                username=email,  # Use email as username
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=phone,
+                user_type='CROWDSOURCER',
+                is_verified=True,  # Auto-verify admin-created accounts
+            )
+            
+            return Response(
+                {
+                    'message': 'Crowdsourcer created successfully',
+                    'user': UserSerializer(user).data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response(
+                {'detail': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+

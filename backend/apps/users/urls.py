@@ -17,4 +17,6 @@ urlpatterns = [
     
     # User management (Admin only)
     path('', views.UserListView.as_view(), name='user_list'),
+    path('crowdsourcers/', views.CrowdsourcerListView.as_view(), name='crowdsourcer_list'),
+    path('create-crowdsourcer/', views.CreateCrowdsourcerView.as_view(), name='create_crowdsourcer'),
 ]

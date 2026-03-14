@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { SITE } from "@/lib/constants";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export default function AdminLayout({
   children,
@@ -13,13 +16,16 @@ export default function AdminLayout({
           <Link href="/admin" className="font-display text-xl font-bold text-green-700">
             {SITE.name} — Admin
           </Link>
-          <nav className="hidden sm:flex gap-4 text-sm">
-            <Link href="/admin" className="text-muted-foreground hover:text-foreground">Dashboard</Link>
-            <Link href="/admin/vendor-verification" className="text-muted-foreground hover:text-foreground">Vendors</Link>
-            <Link href="/admin/survey-validation" className="text-muted-foreground hover:text-foreground">Survey</Link>
-            <Link href="/admin/fraud" className="text-muted-foreground hover:text-foreground">Fraud</Link>
-            <Link href="/admin/social" className="text-muted-foreground hover:text-foreground">Social</Link>
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="hidden sm:flex gap-4 text-sm">
+              <Link href="/admin" className="text-muted-foreground hover:text-foreground">Dashboard</Link>
+              <Link href="/admin/vendor-verification" className="text-muted-foreground hover:text-foreground">Vendors</Link>
+              <Link href="/admin/survey-validation" className="text-muted-foreground hover:text-foreground">Survey</Link>
+              <Link href="/admin/fraud" className="text-muted-foreground hover:text-foreground">Fraud</Link>
+              <Link href="/admin/social" className="text-muted-foreground hover:text-foreground">Social</Link>
+            </nav>
+            <NotificationBell />
+          </div>
         </div>
       </header>
       <main className="p-4 md:p-6">{children}</main>

@@ -4,8 +4,11 @@ import Link from "next/link";
 import { Search, ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileBuyerNav } from "./MobileBuyerNav";
+import { useCart } from "@/lib/cart";
 
 export function BuyerHeader() {
+  const { totalItems, openCart } = useCart();
+
   return (
     <header className="h-14 sm:h-16 border-b border-gray-200 bg-white sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 lg:px-10">
       <div className="flex items-center gap-3 flex-1">
@@ -23,12 +26,14 @@ export function BuyerHeader() {
             />
         </div>
 
-        <Link href="/cart">
-            <Button variant="ghost" size="icon" className="relative text-gray-500 hover:text-gray-900">
-            <ShoppingCart className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-[10px] flex items-center justify-center rounded-full font-bold">2</span>
-            </Button>
-        </Link>
+        <Button variant="ghost" size="icon" onClick={openCart} className="relative text-gray-500 hover:text-gray-900">
+          <ShoppingCart className="w-5 h-5" />
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-[10px] flex items-center justify-center rounded-full font-bold">
+              {totalItems > 9 ? "9+" : totalItems}
+            </span>
+          )}
+        </Button>
         
         <Link href="/dashboard/profile">
             <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">

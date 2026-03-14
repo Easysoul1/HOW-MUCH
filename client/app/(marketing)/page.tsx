@@ -132,6 +132,81 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Enterprise Data Access CTA */}
+      <section className="section-padding section-divider bg-gradient-to-br from-green-50 via-white to-green-50/30">
+        <div className="container">
+          <div className="mx-auto max-w-4xl">
+            <ScrollFade>
+              <div className="rounded-2xl border-2 border-green-200 bg-white p-8 shadow-depth-3 shadow-inner-soft md:p-12">
+                <div className="flex flex-col items-center text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-600 text-white shadow-lg">
+                    <Code2 className="h-8 w-8" />
+                  </div>
+                  <h2 className="mt-6 text-display-lg md:text-display-xl font-bold text-gray-900">
+                    Power your business with Nigerian price data
+                  </h2>
+                  <p className="mt-4 max-w-2xl text-body-lg text-gray-600">
+                    Access real-time grocery prices across Nigeria through our enterprise API. Perfect for fintech apps, economic research, supply chain analytics, and business intelligence platforms.
+                  </p>
+                  <div className="mt-8 grid gap-4 text-left w-full max-w-2xl md:grid-cols-2">
+                    <div className="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white">
+                        <BarChart3 className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">2M+ data points</h3>
+                        <p className="text-body-sm text-gray-600">Historical & real-time pricing</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white">
+                        <MapPin className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">12 states covered</h3>
+                        <p className="text-body-sm text-gray-600">Major markets nationwide</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white">
+                        <Zap className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">REST API</h3>
+                        <p className="text-body-sm text-gray-600">Simple JSON integration</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white">
+                        <Code2 className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Developer-friendly</h3>
+                        <p className="text-body-sm text-gray-600">Full docs & support</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-10 flex flex-wrap justify-center gap-4">
+                    <Button size="lg" className="bg-green-600 hover:bg-green-700" asChild>
+                      <Link href="/integrator/docs">
+                        View API Documentation
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="lg" asChild>
+                      <Link href="/contact">Contact Sales</Link>
+                    </Button>
+                  </div>
+                  <p className="mt-6 text-body-sm text-gray-500">
+                    Trusted by fintech, research institutions, and supply chain platforms
+                  </p>
+                </div>
+              </div>
+            </ScrollFade>
+          </div>
+        </div>
+      </section>
+
       {/* Markets: Mile 12, Bodija — real-world context */}
       <section className="section-padding section-divider bg-light-panel/40">
         <div className="container">
