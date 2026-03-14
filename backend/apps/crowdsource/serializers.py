@@ -86,6 +86,10 @@ class CrowdsourcedSubmissionCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
+        # Auto-set location_verified if GPS coordinates were provided
+        lat = validated_data.get('latitude')
+        lon = validated_data.get('longitude')
+        validated_data['location_verified'] = bool(lat and lon)
         submission = CrowdsourcedSubmission.objects.create(**validated_data)
 
         for item_data in items_data:
@@ -102,7 +106,7 @@ class CrowdsourcedSubmissionListSerializer(serializers.ModelSerializer):
         model = CrowdsourcedSubmission
         fields = [
             'id', 'crowdsourcer_email', 'city', 'state',
-            'status', 'item_count', 'approved_item_count',
+            'status', 'location_verified', 'item_count', 'approved_item_count',
             'created_at', 'reviewed_at'
         ]
         read_only_fields = fields
@@ -119,6 +123,7 @@ class CrowdsourcedSubmissionDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'crowdsourcer_email', 'crowdsourcer',
             'latitude', 'longitude', 'address', 'city', 'state',
+            'location_verified',
             'photo_1', 'photo_2', 'photo_3',
             'status', 'admin_notes',
             'items', 'item_count', 'approved_item_count',

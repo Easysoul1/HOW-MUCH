@@ -31,6 +31,9 @@ class CrowdsourcedSubmission(models.Model):
     photo_2 = CloudinaryField('image', blank=True, null=True)
     photo_3 = CloudinaryField('image', blank=True, null=True)
     
+    # Whether GPS coordinates were provided at submission time
+    location_verified = models.BooleanField(default=False)
+    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     admin_notes = models.TextField(blank=True)
     

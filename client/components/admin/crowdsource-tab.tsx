@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, X, Loader2, MapPin, Image as ImageIcon, Package } from "lucide-react";
+import { Check, X, Loader2, MapPin, Image as ImageIcon, Package, AlertTriangle } from "lucide-react";
 import { adminCrowdsourceApi } from "@/lib/api";
 import {
   Dialog,
@@ -18,6 +18,7 @@ interface CrowdsourceSubmission {
   city: string;
   state: string;
   status: string;
+  location_verified: boolean;
   item_count: number;
   approved_item_count: number;
   created_at: string;
@@ -41,6 +42,7 @@ interface SubmissionDetail {
   address: string;
   city: string;
   state: string;
+  location_verified: boolean;
   photo_1: string | null;
   photo_2: string | null;
   photo_3: string | null;
@@ -159,7 +161,12 @@ export function CrowdsourceTab() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-gray-400" />
-                  <p className="font-medium text-gray-900">{submission.city}, {submission.state}</p>
+                  <p className="font-medium text-gray-900">{submission.city || 'No city'}, {submission.state || 'No state'}</p>
+                  {!submission.location_verified && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                      <AlertTriangle className="w-3 h-3" /> No GPS
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   {submission.item_count} items · {submission.approved_item_count} approved · 
@@ -196,7 +203,19 @@ export function CrowdsourceTab() {
             <div className="space-y-6">
               {/* Location */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-sm text-gray-700 mb-2">Location</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-sm text-gray-700">Location</h3>
+                  {!selectedSubmission.location_verified && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">
+                      <AlertTriangle className="w-3.5 h-3.5" /> GPS not provided — verify manually
+                    </span>
+                  )}
+                  {selectedSubmission.location_verified && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      <Check className="w-3.5 h-3.5" /> GPS verified
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-gray-900">
                   {selectedSubmission.address && `${selectedSubmission.address}, `}
                   {selectedSubmission.city}, {selectedSubmission.state}

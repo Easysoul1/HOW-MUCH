@@ -197,10 +197,10 @@ export default function SubmitPricePage() {
     setStorePhotos((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const requestLocation = (): Promise<{ latitude: number; longitude: number }> => {
-    return new Promise((resolve, reject) => {
+  const requestLocation = (): Promise<{ latitude: number; longitude: number } | null> => {
+    return new Promise((resolve) => {
       if (!navigator.geolocation) {
-        reject(new Error("Geolocation is not supported by your browser."));
+        resolve(null);
         return;
       }
 
@@ -211,25 +211,9 @@ export default function SubmitPricePage() {
             longitude: position.coords.longitude,
           });
         },
-        (err) => {
-          console.error("Geolocation error:", err);
-          let errorMessage = "Unable to get your location.";
-          
-          switch (err.code) {
-            case err.PERMISSION_DENIED:
-              errorMessage = "Location access denied. Please enable location permissions in your browser settings.";
-              break;
-            case err.POSITION_UNAVAILABLE:
-              errorMessage = "Location information unavailable. Please check your device's location settings.";
-              break;
-            case err.TIMEOUT:
-              errorMessage = "Location request timed out. Please try again.";
-              break;
-            default:
-              errorMessage = "Unable to get your location. Please try again.";
-          }
-          
-          reject(new Error(errorMessage));
+        () => {
+          // GPS unavailable — resolve with null instead of rejecting
+          resolve(null);
         },
         {
           enableHighAccuracy: true,
@@ -247,15 +231,16 @@ export default function SubmitPricePage() {
     setSuccess(false);
 
     try {
-      // Step 1: Request location first
+      // Step 1: Try to get location (non-blocking)
       const coords = await requestLocation();
       
-      // Update location state with coordinates
-      setLocation(prev => ({
-        ...prev,
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      }));
+      if (coords) {
+        setLocation(prev => ({
+          ...prev,
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        }));
+      }
 
       // Step 2: Validation
       if (items.length === 0) {
@@ -292,9 +277,11 @@ export default function SubmitPricePage() {
       // Step 3: Prepare FormData for multipart upload to Django
       const formData = new FormData();
       
-      // Add location data
-      formData.append('latitude', coords.latitude.toString());
-      formData.append('longitude', coords.longitude.toString());
+      // Add location data (coordinates optional)
+      if (coords) {
+        formData.append('latitude', coords.latitude.toString());
+        formData.append('longitude', coords.longitude.toString());
+      }
       formData.append('address', location.address);
       formData.append('city', location.city);
       formData.append('state', location.state);
@@ -376,9 +363,9 @@ export default function SubmitPricePage() {
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 flex items-start gap-3">
         <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-medium">Location Required</p>
+          <p className="font-medium">Location Info</p>
           <p className="text-sm text-blue-600">
-            When you submit, you'll be asked to allow location access. Make sure location services are enabled on your device and browser permissions are granted.
+            GPS coordinates will be captured automatically if available. If location access is unavailable, you can still submit — the admin will verify the location manually.
           </p>
         </div>
       </div>
@@ -389,7 +376,7 @@ export default function SubmitPricePage() {
           <CardHeader>
             <CardTitle>Store Location</CardTitle>
             <CardDescription>
-              Your device location will be requested when you submit. Please allow location access when prompted and provide city and state details.
+              GPS coordinates are captured automatically when available. Please provide city and state details.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
