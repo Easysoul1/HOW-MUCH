@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X, Plus, Trash2 } from "lucide-react";
+import { Loader2, ArrowLeft, Upload, AlertCircle, CheckCircle2, X, Plus, Trash2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { crowdsourceApi, productsApi, sizesApi, unitsApi } from "@/lib/api";
@@ -213,7 +213,28 @@ export default function SubmitPricePage() {
         },
         (err) => {
           console.error("Geolocation error:", err);
-          reject(new Error("Unable to get your location. Please enable location access."));
+          let errorMessage = "Unable to get your location.";
+          
+          switch (err.code) {
+            case err.PERMISSION_DENIED:
+              errorMessage = "Location access denied. Please enable location permissions in your browser settings.";
+              break;
+            case err.POSITION_UNAVAILABLE:
+              errorMessage = "Location information unavailable. Please check your device's location settings.";
+              break;
+            case err.TIMEOUT:
+              errorMessage = "Location request timed out. Please try again.";
+              break;
+            default:
+              errorMessage = "Unable to get your location. Please try again.";
+          }
+          
+          reject(new Error(errorMessage));
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         }
       );
     });
@@ -352,12 +373,24 @@ export default function SubmitPricePage() {
         </div>
       )}
 
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 flex items-start gap-3">
+        <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <p className="font-medium">Location Required</p>
+          <p className="text-sm text-blue-600">
+            When you submit, you'll be asked to allow location access. Make sure location services are enabled on your device and browser permissions are granted.
+          </p>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Location */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
             <CardTitle>Store Location</CardTitle>
-            <CardDescription>Your location will be requested when you submit. Please provide city and state.</CardDescription>
+            <CardDescription>
+              Your device location will be requested when you submit. Please allow location access when prompted and provide city and state details.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-3">
