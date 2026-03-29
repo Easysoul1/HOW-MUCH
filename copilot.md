@@ -107,6 +107,29 @@ PriceHistory    — listing FK, price, recorded_at (auto_now_add, immutable)
                   Used for price trend % and ML/graph data
 ```
 
+### `apps/saved_items` — Saved Items
+```
+SavedItem       — user FK, listing FK (VendorListing)
+                  saved_at (auto_now_add), notes (optional text)
+                  unique_together: [user, listing]
+                  For buyers to save/favorite listings
+```
+
+### `apps/vendors` — Vendor Verification
+```
+VendorVerification — user FK (VENDOR, OneToOne)
+                     business_name, nin (11 digits), store_address
+                     store_city, store_state, store_landmark (optional)
+                     store_image_1, store_image_2, store_image_3 (Cloudinary)
+                     years_in_business (int), products_sold (text)
+                     status: NOT_SUBMITTED | PENDING | APPROVED | REJECTED
+                     rejection_reason (text), submitted_at, reviewed_at
+                     reviewed_by FK (ADMIN)
+                     
+                     approve() → sets status=APPROVED, sets user.is_verified=True
+                     reject(reason) → sets status=REJECTED, reason, user.is_verified=False
+```
+
 ---
 
 ## Key API Endpoints
@@ -162,6 +185,16 @@ GET    /api/pricing/history/?listing_id=42        — for specific listing
 GET    /api/pricing/history/?include_current=1    — also includes current prices as data points
 ```
 
+### Saved Items — `/api/saved-items/`
+```
+GET    /api/saved-items/             — list user's saved items (with listing detail)
+POST   /api/saved-items/             — save a listing {listing: id, notes?: string}
+GET    /api/saved-items/{id}/        — get single saved item
+DELETE /api/saved-items/{id}/        — remove saved item
+GET    /api/saved-items/ids/         — get list of saved listing IDs (for quick checks)
+POST   /api/saved-items/toggle/      — toggle save state {listing: id} → {saved: bool, id: int|null}
+```
+
 ---
 
 ## Frontend API Client (`client/lib/api.ts`)
@@ -182,6 +215,7 @@ sizesApi         — list, create
 listingsApi      — list, create, update(id), delete(id)    [vendor own listings]
 publicListingsApi — search({search, product_slug, size, ordering})  [buyer]
 priceHistoryApi  — get({product_slug, listing_id, include_current, ordering})
+savedItemsApi    — list, getIds, save(listingId, notes?), remove(id), toggle(listingId)
 ```
 
 ---
@@ -208,7 +242,8 @@ priceHistoryApi  — get({product_slug, listing_id, include_current, ordering})
 ### Buyer Dashboard (`/dashboard/`)
 | Page | Status | Notes |
 |---|---|---|
-| `/dashboard/` | ✅ Built | Hero search bar → free-text search or autocomplete product select. Cards show: price, vendor, brand, size, % trend, vendor location + distance, "Compare" button. Filters: vendor, price range, size, distance radius, sort. Distance filter uses browser geolocation + Haversine API. Compare view: full-screen overlay with multi-line price history graph (SVG), add more items picker, side-by-side comparison table. |
+| `/dashboard/` | ✅ Built | Hero search bar → free-text search or autocomplete product select. Cards show: price, vendor, brand, size, % trend, vendor location + distance, heart icon (save), "Compare" button, "Add to cart". Click card → detail modal with price graph. Filters: vendor, price range, size, distance radius, sort. Distance filter uses browser geolocation + Haversine API. Compare view: full-screen overlay with multi-line price history graph (SVG), add more items picker, side-by-side comparison table. |
+| `/dashboard/saved-items` | ✅ Full | Lists user's saved listings with product image, price, vendor, location, trend. Remove button. Empty state when no items saved. |
 | `/dashboard/profile` | ✅ | Email/phone read-only, "Get Location" button triggers geolocation → auto-fills address fields |
 
 ---
@@ -290,6 +325,19 @@ Notification:  bg-red-500 dot (2px)
 - Table is horizontally scrollable with sticky first column for mobile
 - Items can be removed individually from comparison
 
+### Saved Items / Favorites
+- `SavedItemsContext` (`lib/saved-items.tsx`) provides `isSaved()`, `toggle()`, `refresh()` across components
+- Loads saved listing IDs on mount via `GET /api/saved-items/ids/`
+- Heart icon on listing cards toggles save state via `POST /api/saved-items/toggle/`
+- Saved items page (`/dashboard/saved-items`) lists all saved with remove functionality
+- Red filled heart = saved, gray outline heart = not saved
+
+### Listing Detail Modal
+- Click any listing card → opens `ListingDetailModal`
+- Shows price history graph (single item), product image, details (vendor, location, distance, trend)
+- Save button (heart icon) and "Add to Cart" button at bottom
+- Mobile-friendly bottom sheet style on small screens
+
 ### Unit Creation
 - Any authenticated user can create units via `POST /api/products/units/`
 - Vendor size suggestion form has a toggle "Unit not listed? Add a new one" → creates the unit first, uses its ID for the size request
@@ -336,7 +384,7 @@ Notification:  bg-red-500 dot (2px)
 1. **Admin approvals** — KYC and Vendor Registration tabs are placeholders
 2. **Vendor dashboard** — stats are mock data, not connected to real backend counts
 3. **VendorProfile model** — `apps/vendors` is mostly empty; `vendor_name` in listings falls back to email prefix. A proper `VendorProfile` with `business_name`, `location`, `logo` would improve the buyer experience
-4. **Buyer saved items / saved searches** — pages exist but are placeholder/mock
+4. **Saved searches** — page exists but is placeholder/mock (saved items now working ✅)
 
 ---
 

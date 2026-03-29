@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Loader2, ImageIcon, ArrowUpDown, X, SlidersHorizontal, Store, TrendingUp, TrendingDown, Minus, MapPin, Navigation, BarChart3, Plus, Trash2, ShoppingCart } from "lucide-react";
+import { Search, Loader2, ImageIcon, ArrowUpDown, X, SlidersHorizontal, Store, TrendingUp, TrendingDown, Minus, MapPin, Navigation, BarChart3, Plus, Trash2, ShoppingCart, Heart, BadgeCheck, AlertTriangle } from "lucide-react";
 import { publicListingsApi, productsApi, sizesApi, priceHistoryApi } from "@/lib/api";
 import { useCart } from "@/lib/cart";
+import { useSavedItems } from "@/lib/saved-items";
 
 interface Product { id: number; name: string; slug: string; category_name: string; image: string | null; }
 interface Size { id: number; label: string; }
@@ -21,6 +22,7 @@ interface Listing {
   vendor_state: string | null;
   vendor_latitude: string | null;
   vendor_longitude: string | null;
+  vendor_verified: boolean;
   distance_km: number | null;
   updated_at: string;
   price_change_pct: number | null;
@@ -246,6 +248,194 @@ function CompareView({ items, onRemove, onClose, allListings, onAdd }: {
   );
 }
 
+// Save button with heart icon
+function SaveButton({ listing, className = "" }: { listing: Listing; className?: string }) {
+  const { isSaved, toggle, isLoading } = useSavedItems();
+  const [saving, setSaving] = useState(false);
+  const saved = isSaved(listing.id);
+
+  const handleToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isLoading || saving) return;
+    setSaving(true);
+    try {
+      await toggle(listing.id);
+    } catch {
+      // Error handled in context
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleToggle}
+      disabled={isLoading || saving}
+      className={`p-2 rounded-full transition-all ${saved 
+        ? "bg-red-50 text-red-500 hover:bg-red-100" 
+        : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-red-400"
+      } ${className}`}
+      title={saved ? "Remove from saved" : "Save item"}
+    >
+      <Heart className={`w-4 h-4 ${saved ? "fill-current" : ""}`} />
+    </button>
+  );
+}
+
+// Listing detail modal
+function ListingDetailModal({ listing, onClose }: { listing: Listing; onClose: () => void }) {
+  const { addItem, items: cartItems } = useCart();
+  const { isSaved, toggle, isLoading } = useSavedItems();
+  const [saving, setSaving] = useState(false);
+  const saved = isSaved(listing.id);
+  const inCart = cartItems.some(c => c.listingId === listing.id);
+
+  const handleSave = async () => {
+    if (isLoading || saving) return;
+    setSaving(true);
+    try {
+      await toggle(listing.id);
+    } catch {
+      // Error handled in context
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddToCart = () => {
+    addItem({
+      listingId: listing.id,
+      productName: listing.product_name,
+      productImage: listing.product_image,
+      vendorName: listing.vendor_name,
+      vendorCity: listing.vendor_city,
+      sizeLabel: listing.size_label,
+      brand: listing.brand,
+      price: parseFloat(listing.price),
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
+      <div 
+        className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header with close button */}
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+          <h2 className="font-semibold text-gray-900">Item Details</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-5">
+          {/* Price History Graph */}
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-green-600" />
+              Price History
+            </h3>
+            <PriceChart items={[listing]} />
+          </div>
+
+          {/* Product Image & Info */}
+          <div className="flex gap-4">
+            {listing.product_image ? (
+              <img src={listing.product_image} alt={listing.product_name} className="w-24 h-24 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-24 h-24 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                <ImageIcon className="w-8 h-8 text-gray-300" />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 text-lg">{listing.product_name}</h3>
+              <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                {listing.brand && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{listing.brand}</span>}
+                <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">{listing.size_label}</span>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 mt-2">₦{parseFloat(listing.price).toLocaleString()}</p>
+            </div>
+          </div>
+
+          {/* Details */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-2 border-b border-gray-100">
+              <span className="text-sm text-gray-500">Vendor</span>
+              <span className="text-sm font-medium text-gray-900 flex items-center gap-1.5">
+                <Store className="w-3.5 h-3.5 text-gray-400" />
+                {listing.vendor_name}
+                {listing.vendor_verified ? (
+                  <span className="flex items-center gap-0.5 text-green-600" title="Verified Vendor">
+                    <BadgeCheck className="w-4 h-4" />
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-0.5 text-amber-500" title="Unverified Vendor">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                  </span>
+                )}
+              </span>
+            </div>
+            {!listing.vendor_verified && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+                <strong>⚠️ Unverified Vendor:</strong> This vendor has not completed verification. Exercise caution when making purchases.
+              </div>
+            )}
+            {(listing.vendor_city || listing.vendor_state) && (
+              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                <span className="text-sm text-gray-500">Location</span>
+                <span className="text-sm font-medium text-gray-900 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                  {[listing.vendor_city, listing.vendor_state].filter(Boolean).join(', ')}
+                </span>
+              </div>
+            )}
+            {listing.distance_km != null && (
+              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                <span className="text-sm text-gray-500">Distance</span>
+                <span className="text-sm font-medium text-blue-600">
+                  {listing.distance_km < 1 ? `${Math.round(listing.distance_km * 1000)}m away` : `${listing.distance_km}km away`}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between py-2 border-b border-gray-100">
+              <span className="text-sm text-gray-500">Price Trend</span>
+              <PriceTrendBadge pct={listing.price_change_pct} />
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-gray-500">Last Updated</span>
+              <span className="text-sm text-gray-700">{timeAgo(listing.updated_at)}</span>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={handleSave}
+              disabled={isLoading || saving}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-colors ${
+                saved
+                  ? "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
+                  : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${saved ? "fill-current" : ""}`} />
+              {saving ? "Saving..." : saved ? "Saved" : "Save"}
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {inCart ? "Add More" : "Add to Cart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardOverviewPage() {
   const { addItem, items: cartItems } = useCart();
   const [query, setQuery] = useState("");
@@ -275,6 +465,9 @@ export default function DashboardOverviewPage() {
   // Comparison
   const [compareItems, setCompareItems] = useState<Listing[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+
+  // Detail modal
+  const [detailListing, setDetailListing] = useState<Listing | null>(null);
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -577,7 +770,11 @@ export default function DashboardOverviewPage() {
               {filtered.map(l => {
                 const isBest = bestPrice !== null && parseFloat(l.price) === bestPrice;
                 return (
-                  <div key={l.id} className={`bg-white border rounded-xl px-4 sm:px-5 py-4 hover:shadow-sm transition-shadow ${isBest ? "border-green-300 ring-1 ring-green-200" : "border-gray-200"}`}>
+                  <div 
+                    key={l.id} 
+                    className={`bg-white border rounded-xl px-4 sm:px-5 py-4 hover:shadow-sm transition-shadow cursor-pointer ${isBest ? "border-green-300 ring-1 ring-green-200" : "border-gray-200"}`}
+                    onClick={() => setDetailListing(l)}
+                  >
                     <div className="flex items-start gap-3 sm:gap-4">
                       {l.product_image ? (
                         <img src={l.product_image} alt={l.product_name} className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover shrink-0" />
@@ -599,14 +796,26 @@ export default function DashboardOverviewPage() {
                               <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">{l.size_label}</span>
                             </div>
                           </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-lg sm:text-2xl font-bold text-gray-900">₦{parseFloat(l.price).toLocaleString()}</p>
+                          <div className="flex items-start gap-2 shrink-0">
+                            <SaveButton listing={l} />
+                            <div className="text-right">
+                              <p className="text-lg sm:text-2xl font-bold text-gray-900">₦{parseFloat(l.price).toLocaleString()}</p>
+                            </div>
                           </div>
                         </div>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
                           <div className="flex items-center gap-1.5">
                             <Store className="w-3.5 h-3.5 text-gray-400" />
                             <span className="text-sm text-gray-500">{l.vendor_name}</span>
+                            {l.vendor_verified ? (
+                              <span className="flex items-center gap-0.5 text-xs text-green-600" title="Verified Vendor">
+                                <BadgeCheck className="w-3.5 h-3.5" />
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-0.5 text-xs text-amber-500" title="Unverified Vendor">
+                                <AlertTriangle className="w-3 h-3" />
+                              </span>
+                            )}
                           </div>
                           {(l.vendor_city || l.vendor_state) && (
                             <div className="flex items-center gap-1">
@@ -625,7 +834,7 @@ export default function DashboardOverviewPage() {
                           <span className="text-xs text-gray-400">Updated {timeAgo(l.updated_at)}</span>
                         </div>
                         {/* Action buttons */}
-                        <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+                        <div className="mt-2.5 flex items-center gap-2 flex-wrap" onClick={e => e.stopPropagation()}>
                           {/* Compare button */}
                           {compareItems.find(c => c.id === l.id) ? (
                             <button
@@ -730,6 +939,14 @@ export default function DashboardOverviewPage() {
           onClose={() => setShowCompare(false)}
           allListings={filtered}
           onAdd={(l) => setCompareItems(prev => [...prev, l])}
+        />
+      )}
+
+      {/* Detail modal */}
+      {detailListing && (
+        <ListingDetailModal
+          listing={detailListing}
+          onClose={() => setDetailListing(null)}
         />
       )}
     </div>

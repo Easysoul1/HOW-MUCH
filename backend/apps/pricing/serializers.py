@@ -43,6 +43,7 @@ class PublicListingSerializer(serializers.ModelSerializer):
     vendor_state = serializers.CharField(source='vendor.state', read_only=True)
     vendor_latitude = serializers.DecimalField(source='vendor.latitude', max_digits=10, decimal_places=7, read_only=True)
     vendor_longitude = serializers.DecimalField(source='vendor.longitude', max_digits=10, decimal_places=7, read_only=True)
+    vendor_verified = serializers.BooleanField(source='vendor.is_verified', read_only=True)
     distance_km = serializers.SerializerMethodField()
     updated_at = serializers.DateTimeField(read_only=True)
     price_change_pct = serializers.SerializerMethodField()
@@ -53,7 +54,7 @@ class PublicListingSerializer(serializers.ModelSerializer):
             'id', 'product_name', 'product_slug', 'product_image',
             'size_label', 'brand', 'price', 'is_available',
             'vendor_name', 'vendor_city', 'vendor_state',
-            'vendor_latitude', 'vendor_longitude', 'distance_km',
+            'vendor_latitude', 'vendor_longitude', 'vendor_verified', 'distance_km',
             'updated_at', 'price_change_pct',
         )
 
@@ -65,9 +66,10 @@ class PublicListingSerializer(serializers.ModelSerializer):
         return None
 
     def get_vendor_name(self, obj):
-        profile = getattr(obj.vendor, 'vendor_profile', None)
-        if profile and hasattr(profile, 'business_name'):
-            return profile.business_name
+        # Try to get business name from vendor verification
+        verification = getattr(obj.vendor, 'vendor_verification', None)
+        if verification and verification.business_name:
+            return verification.business_name
         return obj.vendor.get_full_name() or obj.vendor.email.split('@')[0]
 
     def get_price_change_pct(self, obj):

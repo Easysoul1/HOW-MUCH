@@ -373,12 +373,45 @@ export const approvalsApi = {
   rejectVendor: (id: string) => apiClient.patch(`/vendors/${id}/`, { status: 'rejected' }, true),
 };
 
-// Wishlist API
-export const wishlistApi = {
-  list: () => apiClient.get('/wishlist/', true),
-  add: (productId: number) => apiClient.post('/wishlist/', { product: productId }, true),
-  remove: (id: string | number) => apiClient.delete(`/wishlist/${id}/`, true),
+// Vendor Verification API
+export const vendorVerificationApi = {
+  // Vendor: get own verification status
+  getStatus: () => apiClient.get('/vendors/verification/', true),
+  
+  // Vendor: submit verification (FormData with images)
+  submit: (data: FormData) => apiClient.postFormData('/vendors/verification/', data, true),
+  
+  // Vendor: update verification after rejection (FormData with images)
+  update: (data: FormData) => apiClient.patchFormData('/vendors/verification/', data, true),
+  
+  // Admin: list all verifications (optionally filter by status)
+  adminList: (status?: 'PENDING' | 'APPROVED' | 'REJECTED') => 
+    apiClient.get(`/vendors/admin/verifications/${status ? `?status=${status}` : ''}`, true),
+  
+  // Admin: get single verification detail
+  adminGet: (id: number) => apiClient.get(`/vendors/admin/verifications/${id}/`, true),
+  
+  // Admin: approve verification
+  adminApprove: (id: number) => apiClient.post(`/vendors/admin/verifications/${id}/approve/`, {}, true),
+  
+  // Admin: reject verification with reason
+  adminReject: (id: number, reason: string) => 
+    apiClient.post(`/vendors/admin/verifications/${id}/reject/`, { reason }, true),
 };
+
+// Saved Items API
+export const savedItemsApi = {
+  list: () => apiClient.get('/saved-items/', true),
+  getIds: () => apiClient.get<{ listing_ids: number[] }>('/saved-items/ids/', true),
+  save: (listingId: number, notes?: string) => 
+    apiClient.post('/saved-items/', { listing: listingId, notes }, true),
+  remove: (id: number) => apiClient.delete(`/saved-items/${id}/`, true),
+  toggle: (listingId: number) => 
+    apiClient.post<{ saved: boolean; id: number | null }>('/saved-items/toggle/', { listing: listingId }, true),
+};
+
+// Legacy alias for backwards compatibility
+export const wishlistApi = savedItemsApi;
 
 // Crowdsource API
 export const crowdsourceApi = {

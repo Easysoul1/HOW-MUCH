@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/integrations/', include('apps.integrations.urls')),
     path('api/social/', include('apps.social.urls')),
     path('api/notifications/', include('apps.notifications.urls')),
+    path('api/saved-items/', include('apps.saved_items.urls')),
     
     # Public API v1 for 3rd party integrators
     path('api/v1/', include((v1_urlpatterns, 'v1'))),
