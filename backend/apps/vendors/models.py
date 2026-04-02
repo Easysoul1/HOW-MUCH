@@ -15,7 +15,7 @@ class VendorVerification(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='vendor_verification',
+        related_name='vendorverification',
         limit_choices_to={'user_type': 'VENDOR'}
     )
     

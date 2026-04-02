@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Loader2, ImageIcon, ArrowUpDown, X, SlidersHorizontal, Store, TrendingUp, TrendingDown, Minus, MapPin, Navigation, BarChart3, Plus, Trash2, ShoppingCart, Heart, BadgeCheck, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { Search, Loader2, ImageIcon, ArrowUpDown, X, SlidersHorizontal, Store, TrendingUp, TrendingDown, Minus, MapPin, Navigation, BarChart3, Plus, Trash2, ShoppingCart, Heart, BadgeCheck, AlertTriangle, ExternalLink } from "lucide-react";
 import { publicListingsApi, productsApi, sizesApi, priceHistoryApi } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 import { useSavedItems } from "@/lib/saved-items";
@@ -17,6 +18,7 @@ interface Listing {
   brand: string;
   price: string;
   is_available: boolean;
+  vendor_id: number;
   vendor_name: string;
   vendor_city: string | null;
   vendor_state: string | null;
@@ -380,6 +382,16 @@ function ListingDetailModal({ listing, onClose }: { listing: Listing; onClose: (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
                 <strong>⚠️ Unverified Vendor:</strong> This vendor has not completed verification. Exercise caution when making purchases.
               </div>
+            )}
+            {listing.vendor_id && (
+              <Link
+                href={`/dashboard/vendors/${listing.vendor_id}`}
+                className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+              >
+                <Store className="w-4 h-4" />
+                View Vendor Profile
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
             )}
             {(listing.vendor_city || listing.vendor_state) && (
               <div className="flex items-center justify-between py-2 border-b border-gray-100">

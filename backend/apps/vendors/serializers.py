@@ -131,3 +131,58 @@ class AdminVendorVerificationSerializer(serializers.ModelSerializer):
 class VendorVerificationActionSerializer(serializers.Serializer):
     """For admin approve/reject actions."""
     reason = serializers.CharField(required=False, allow_blank=True)
+
+
+class VendorPublicSerializer(serializers.Serializer):
+    """Public vendor information for buyers browsing vendors."""
+    id = serializers.IntegerField()
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    phone_number = serializers.CharField()
+    city = serializers.CharField()
+    state = serializers.CharField()
+    address = serializers.CharField()
+    latitude = serializers.DecimalField(max_digits=10, decimal_places=7)
+    longitude = serializers.DecimalField(max_digits=10, decimal_places=7)
+    is_verified = serializers.BooleanField()
+    created_at = serializers.DateTimeField()
+    
+    # Verification details
+    business_name = serializers.SerializerMethodField()
+    years_in_business = serializers.SerializerMethodField()
+    products_sold = serializers.SerializerMethodField()
+    store_image_url = serializers.SerializerMethodField()
+    verification_status = serializers.SerializerMethodField()
+    
+    def get_business_name(self, obj):
+        try:
+            return obj.vendorverification.business_name
+        except:
+            return obj.get_full_name() or obj.email.split('@')[0]
+    
+    def get_years_in_business(self, obj):
+        try:
+            return obj.vendorverification.years_in_business
+        except:
+            return None
+    
+    def get_products_sold(self, obj):
+        try:
+            return obj.vendorverification.products_sold
+        except:
+            return None
+    
+    def get_store_image_url(self, obj):
+        try:
+            img = obj.vendorverification.store_image_1
+            return img.url if img else None
+        except:
+            return None
+    
+    def get_verification_status(self, obj):
+        try:
+            return obj.vendorverification.status
+        except:
+            return 'NOT_SUBMITTED'

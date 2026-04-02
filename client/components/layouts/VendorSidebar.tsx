@@ -12,6 +12,8 @@ import {
   Settings,
   Archive,
   LogOut,
+  Inbox,
+  ClipboardList,
 } from "lucide-react";
 
 export const vendorItems = [
@@ -21,15 +23,19 @@ export const vendorItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Products",
-    href: "/vendor/products",
-    icon: Package,
+    title: "Requests",
+    href: "/vendor/requests",
+    icon: Inbox,
   },
   {
     title: "Orders",
     href: "/vendor/orders",
-    icon: ShoppingCart,
-    badge: 5, // Mock pending orders
+    icon: ClipboardList,
+  },
+  {
+    title: "Products",
+    href: "/vendor/products",
+    icon: Package,
   },
   {
     title: "Inventory",
@@ -37,8 +43,8 @@ export const vendorItems = [
     icon: Archive,
   },
   {
-    title: "Performance",
-    href: "/vendor/performance",
+    title: "Analytics",
+    href: "/vendor/analytics",
     icon: BarChart,
   },
   {
@@ -90,18 +96,6 @@ export function VendorSidebar() {
                   <item.icon className="w-5 h-5" />
                   <span>{item.title}</span>
                 </div>
-                {item.badge && (
-                  <span
-                    className={cn(
-                      "text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center",
-                      isActive
-                        ? "bg-green-700 text-white"
-                        : "bg-green-600 text-white"
-                    )}
-                  >
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             );
           })}

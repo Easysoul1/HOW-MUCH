@@ -12,6 +12,9 @@ import {
   Clock,
   LogOut,
   LayoutDashboard,
+  Store,
+  Settings,
+  Bell,
 } from "lucide-react";
 
 export const buyerItems = [
@@ -19,6 +22,11 @@ export const buyerItems = [
     title: "Overview",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Vendors",
+    href: "/dashboard/vendors",
+    icon: Store,
   },
   {
     title: "My Orders",
@@ -38,12 +46,12 @@ export const buyerItems = [
   {
     title: "Settings",
     href: "/dashboard/settings",
-    icon: MapPin,
+    icon: Settings,
   },
   {
     title: "Notifications",
     href: "/dashboard/notifications",
-    icon: Clock,
+    icon: Bell,
   },
 ];
 

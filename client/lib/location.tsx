@@ -1,10 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import apiClient from './api';
 
 interface LocationCoords {
   latitude: number;
   longitude: number;
+  timestamp?: number;
 }
 
 interface LocationAddress {
@@ -19,11 +21,14 @@ interface LocationContextType {
   address: LocationAddress | null;
   loading: boolean;
   error: string | null;
+  isUsingCached: boolean;
   requestLocation: () => Promise<void>;
   clearLocation: () => void;
 }
 
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
+
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
 // Reverse geocoding using Nominatim (OpenStreetMap) - Free and no API key needed
 async function reverseGeocode(lat: number, lon: number): Promise<LocationAddress> {
@@ -60,6 +65,16 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   const [address, setAddress] = useState<LocationAddress | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isUsingCached, setIsUsingCached] = useState(false);
+
+  // Update backend with new location
+  const updateBackend = useCallback(async (latitude: number, longitude: number) => {
+    try {
+      await apiClient.patch('/users/me/', { latitude, longitude }, true);
+    } catch (err) {
+      console.error('Failed to update location in backend:', err);
+    }
+  }, []);
 
   useEffect(() => {
     // Load location from localStorage on mount
@@ -69,7 +84,17 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       
       if (savedLocation) {
         try {
-          setLocation(JSON.parse(savedLocation));
+          const parsed = JSON.parse(savedLocation) as LocationCoords;
+          const age = parsed.timestamp ? Date.now() - parsed.timestamp : Infinity;
+          
+          if (age < CACHE_DURATION) {
+            setLocation(parsed);
+            setIsUsingCached(false);
+          } else {
+            // Location is stale
+            setLocation(parsed);
+            setIsUsingCached(true);
+          }
         } catch (err) {
           console.error('Error parsing saved location:', err);
         }
@@ -82,10 +107,13 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
           console.error('Error parsing saved address:', err);
         }
       }
-    }
-  }, []);
 
-  const requestLocation = async () => {
+      // Auto-request fresh location on mount
+      requestLocation();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const requestLocation = useCallback(async () => {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser');
       return;
@@ -103,18 +131,23 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         });
       });
 
-      const coords = {
+      const coords: LocationCoords = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
+        timestamp: Date.now(),
       };
 
       setLocation(coords);
+      setIsUsingCached(false);
       localStorage.setItem('user_location', JSON.stringify(coords));
 
       // Reverse geocode to get address
       const addressData = await reverseGeocode(coords.latitude, coords.longitude);
       setAddress(addressData);
       localStorage.setItem('user_address', JSON.stringify(addressData));
+
+      // Update backend
+      updateBackend(coords.latitude, coords.longitude);
 
       setLoading(false);
     } catch (err: any) {
@@ -134,20 +167,26 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
       setError(errorMessage);
       setLoading(false);
+      
+      // Keep using cached location if available
+      if (location) {
+        setIsUsingCached(true);
+      }
     }
-  };
+  }, [location, updateBackend]);
 
   const clearLocation = () => {
     setLocation(null);
     setAddress(null);
     setError(null);
+    setIsUsingCached(false);
     localStorage.removeItem('user_location');
     localStorage.removeItem('user_address');
   };
 
   return (
     <LocationContext.Provider
-      value={{ location, address, loading, error, requestLocation, clearLocation }}
+      value={{ location, address, loading, error, isUsingCached, requestLocation, clearLocation }}
     >
       {children}
     </LocationContext.Provider>

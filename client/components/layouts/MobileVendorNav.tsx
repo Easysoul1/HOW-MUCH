@@ -52,18 +52,6 @@ export function MobileVendorNav() {
                       <item.icon className="w-5 h-5" />
                       <span>{item.title}</span>
                     </div>
-                    {item.badge && (
-                      <span
-                        className={cn(
-                          "text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center",
-                          isActive
-                            ? "bg-green-700 text-white"
-                            : "bg-green-600 text-white"
-                        )}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
                   </Link>
                 );
               })}

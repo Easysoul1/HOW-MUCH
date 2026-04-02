@@ -114,13 +114,17 @@ class PublicListingViewSet(viewsets.ReadOnlyModelViewSet):
                 try:
                     radius_km = float(radius)
                     results = [item for item in results if item.get('distance_km') is not None and item['distance_km'] <= radius_km]
-                    if isinstance(response.data, dict) and 'results' in response.data:
-                        response.data['results'] = results
-                        response.data['count'] = len(results)
-                    else:
-                        response.data = results
                 except (ValueError, TypeError):
                     pass
+
+            # Sort by distance (null values at end)
+            results = sorted(results, key=lambda x: (x.get('distance_km') is None, x.get('distance_km') or 0))
+            
+            if isinstance(response.data, dict) and 'results' in response.data:
+                response.data['results'] = results
+                response.data['count'] = len(results)
+            else:
+                response.data = results
 
         return response
 
