@@ -14,11 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Store, ShoppingBag, ArrowLeft, MapPin, AlertCircle, MailCheck } from "lucide-react";
+import { Loader2, Store, ShoppingBag, ArrowLeft, MapPin, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "@/lib/location";
-import { authApi } from "@/lib/api";
 
 type Role = "buyer" | "vendor" | null;
 
@@ -37,13 +36,6 @@ export default function SignupPage() {
   const [step, setStep] = useState<"role-selection" | "form">("role-selection");
   const [isLoading, setIsLoading] = useState(false);
   
-  // Email Verification State
-  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [showOtpInput, setShowOtpInput] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-  const [verificationError, setVerificationError] = useState("");
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -79,14 +71,6 @@ export default function SignupPage() {
     }
   }, [step, location, locationError, requestLocation]);
 
-  // Reset verification tracking if email changes
-  useEffect(() => {
-    if (emailVerified) setEmailVerified(false);
-    if (showOtpInput) setShowOtpInput(false);
-    setOtpCode("");
-    setVerificationError("");
-  }, [formData.email]);
-
   const handleRoleSelect = (selectedRole: "buyer" | "vendor") => {
     setRole(selectedRole);
     setStep("form");
@@ -103,53 +87,10 @@ export default function SignupPage() {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSendVerificationCode = async () => {
-    if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) {
-      setVerificationError("Please enter a valid email address first.");
-      return;
-    }
-    
-    setIsVerifyingEmail(true);
-    setVerificationError("");
-    try {
-      await authApi.requestEmailVerification(formData.email);
-      setShowOtpInput(true);
-    } catch (err: any) {
-      setVerificationError(err.message || "Failed to send verification code");
-    } finally {
-      setIsVerifyingEmail(false);
-    }
-  };
-
-  const handleVerifyCode = async () => {
-    if (!otpCode || otpCode.length < 4) {
-      setVerificationError("Please enter the verification code");
-      return;
-    }
-
-    setIsVerifyingEmail(true);
-    setVerificationError("");
-    try {
-      await authApi.verifyEmailCode(formData.email, otpCode);
-      setEmailVerified(true);
-      setShowOtpInput(false);
-    } catch (err: any) {
-      setVerificationError(err.message || "Invalid verification code");
-    } finally {
-      setIsVerifyingEmail(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    if (!emailVerified) {
-      setError("Please verify your email address before creating an account.");
-      setIsLoading(false);
-      return;
-    }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
@@ -401,67 +342,14 @@ export default function SignupPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="john@example.com"
-                          required
-                          value={formData.email}
-                          onChange={handleChange}
-                          disabled={emailVerified}
-                          className={cn("flex-1", emailVerified && "bg-status-success/10 border-status-success text-status-success disabled:opacity-100")}
-                        />
-                        {!emailVerified && (
-                          <Button 
-                            type="button" 
-                            variant="outline" 
-                            disabled={isVerifyingEmail || !formData.email}
-                            onClick={handleSendVerificationCode}
-                            className="shrink-0"
-                          >
-                            {isVerifyingEmail && !showOtpInput ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
-                          </Button>
-                        )}
-                        {emailVerified && (
-                          <div className="flex items-center justify-center px-3 bg-status-success/10 border border-status-success rounded-md text-status-success">
-                            <MailCheck className="w-5 h-5" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* OTP Input UI */}
-                      <AnimatePresence>
-                        {showOtpInput && !emailVerified && (
-                          <motion.div 
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="mt-3 p-3 bg-light-panel border border-light-border rounded-lg space-y-3"
-                          >
-                            <Label htmlFor="otpCode" className="text-xs">Enter Verification Code</Label>
-                            <div className="flex gap-2">
-                              <Input
-                                id="otpCode"
-                                placeholder="123456"
-                                value={otpCode}
-                                onChange={(e) => setOtpCode(e.target.value)}
-                                className="flex-1 font-mono tracking-widest"
-                                maxLength={6}
-                              />
-                              <Button 
-                                type="button" 
-                                onClick={handleVerifyCode}
-                                disabled={isVerifyingEmail || otpCode.length < 4}
-                              >
-                                {isVerifyingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirm"}
-                              </Button>
-                            </div>
-                            {verificationError && <p className="text-xs text-status-danger mt-1">{verificationError}</p>}
-                            <p className="text-xs text-muted-foreground mt-2">Code sent to {formData.email}</p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="john@example.com"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -546,7 +434,7 @@ export default function SignupPage() {
                     )}
                     disabled={isLoading}
                   >
-                    {!emailVerified ? "Verify Email to Continue" : isLoading ? (
+                    {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Creating {role} account...

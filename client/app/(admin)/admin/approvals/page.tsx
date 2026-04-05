@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, X, Loader2, Search, ImageIcon, Package, ShieldCheck, Store, Ruler, BadgeCheck, MapPin, Calendar, Eye } from "lucide-react";
+import { Check, X, Loader2, Search, ImageIcon, Package, ShieldCheck, Store, Ruler, BadgeCheck, MapPin, Calendar, Eye, UserCheck, Phone, Star } from "lucide-react";
 import { adminProductsApi, sizeRequestsApi, vendorVerificationApi } from "@/lib/api";
+import apiClient from "@/lib/api";
 import { CrowdsourceTab } from "@/components/admin/crowdsource-tab";
 
 interface PendingProduct {
@@ -49,11 +50,32 @@ interface VendorVerification {
   submitted_at: string;
 }
 
+interface ShopperApplication {
+  id: number;
+  user: number;
+  user_email: string;
+  user_name: string;
+  user_phone: string;
+  user_city: string;
+  user_state: string;
+  bio: string;
+  experience: string;
+  nin: string;
+  profile_photo_url: string | null;
+  service_radius_km: number;
+  status: string;
+  total_completed_orders: number;
+  average_rating: string;
+  total_ratings: number;
+  created_at: string;
+}
+
 const TABS = [
   { id: "products",      label: "Product Suggestions", icon: Package },
   { id: "sizes",         label: "Size Requests",        icon: Ruler },
   { id: "crowdsource",   label: "Crowdsourced Prices",  icon: Store },
   { id: "kyc",           label: "Vendor Verification",  icon: ShieldCheck },
+  { id: "shoppers",      label: "Shopper Verification", icon: UserCheck },
 ] as const;
 type TabId = typeof TABS[number]["id"];
 
@@ -62,6 +84,7 @@ export default function ApprovalsPage() {
   const [products, setProducts] = useState<PendingProduct[]>([]);
   const [sizeRequests, setSizeRequests] = useState<SizeRequest[]>([]);
   const [verifications, setVerifications] = useState<VendorVerification[]>([]);
+  const [shopperApplications, setShopperApplications] = useState<ShopperApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -82,6 +105,13 @@ export default function ApprovalsPage() {
 
   // Verification detail modal
   const [selectedVerification, setSelectedVerification] = useState<VendorVerification | null>(null);
+
+  // Shopper reject modal
+  const [rejectShopperId, setRejectShopperId] = useState<number | null>(null);
+  const [rejectShopperReason, setRejectShopperReason] = useState("");
+
+  // Shopper detail modal
+  const [selectedShopper, setSelectedShopper] = useState<ShopperApplication | null>(null);
 
   const fetchPending = async () => {
     setLoading(true);
@@ -104,9 +134,22 @@ export default function ApprovalsPage() {
     }
   };
 
+  const fetchShopperApplications = async () => {
+    try {
+      console.log('Fetching shopper applications...');
+      const data = await apiClient.get<ShopperApplication[] | { results: ShopperApplication[] }>('/admin/shoppers/?status=pending');
+      console.log('Shopper applications response:', data);
+      setShopperApplications(Array.isArray(data) ? data : (data.results ?? []));
+    } catch (error) {
+      console.error('Error fetching shopper applications:', error);
+      setShopperApplications([]);
+    }
+  };
+
   useEffect(() => {
     fetchPending();
     fetchVerifications();
+    fetchShopperApplications();
     sizeRequestsApi.list('PENDING')
       .then(d => setSizeRequests((d as { results?: SizeRequest[] }).results ?? (d as SizeRequest[])))
       .catch(() => setSizeRequests([]));
@@ -151,6 +194,32 @@ export default function ApprovalsPage() {
       setRejectVerificationReason("");
       setSelectedVerification(null);
     } catch { alert("Failed to reject vendor"); }
+    finally { setActionLoading(null); }
+  };
+
+  // Shopper handlers
+  const handleApproveShopper = async (id: number) => {
+    setActionLoading(`s-${id}`);
+    try {
+      await apiClient.post(`/admin/shoppers/${id}/approve/`);
+      setShopperApplications(prev => prev.filter(s => s.id !== id));
+      setSelectedShopper(null);
+    } catch { alert("Failed to approve shopper"); }
+    finally { setActionLoading(null); }
+  };
+
+  const handleRejectShopper = async () => {
+    if (rejectShopperId === null) return;
+    setActionLoading(`s-${rejectShopperId}`);
+    try {
+      await apiClient.post(`/admin/shoppers/${rejectShopperId}/reject/`, {
+        reason: rejectShopperReason.trim() || 'Application rejected by admin'
+      });
+      setShopperApplications(prev => prev.filter(s => s.id !== rejectShopperId));
+      setRejectShopperId(null);
+      setRejectShopperReason("");
+      setSelectedShopper(null);
+    } catch { alert("Failed to reject shopper"); }
     finally { setActionLoading(null); }
   };
 
@@ -204,7 +273,11 @@ export default function ApprovalsPage() {
         {TABS.map(t => {
           const Icon = t.icon;
           const isActive = tab === t.id;
-          const count = t.id === "products" ? products.length : t.id === "sizes" ? sizeRequests.length : 0;
+          const count = t.id === "products" ? products.length 
+            : t.id === "sizes" ? sizeRequests.length 
+            : t.id === "kyc" ? verifications.length
+            : t.id === "shoppers" ? shopperApplications.length
+            : 0;
           return (
             <button
               key={t.id}
@@ -410,6 +483,85 @@ export default function ApprovalsPage() {
                       variant="outline"
                       className="border-red-300 text-red-600 hover:bg-red-50"
                       onClick={() => { setRejectVerificationId(v.id); setRejectVerificationReason(""); }}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Shoppers Tab */}
+      {tab === "shoppers" && (
+        <div className="space-y-4">
+          {shopperApplications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 bg-white border border-gray-200 rounded-xl gap-3">
+              <UserCheck className="w-10 h-10 text-gray-500" />
+              <p className="text-gray-900 font-medium">No Pending Applications</p>
+              <p className="text-sm text-gray-500">Shopper applications will appear here.</p>
+            </div>
+          ) : (
+            shopperApplications.map(s => (
+              <div key={s.id} className="bg-white border border-gray-200 rounded-xl p-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {/* Avatar */}
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shrink-0">
+                    <UserCheck className="w-8 h-8 text-green-600" />
+                  </div>
+                  
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-gray-900 font-semibold">{s.user_name}</span>
+                      <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">Pending</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-0.5">{s.user_email} · {s.user_phone}</p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500 mt-1.5">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />{s.user_city}, {s.user_state}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(s.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                      </span>
+                      {s.total_ratings > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                          {parseFloat(s.average_rating).toFixed(1)} ({s.total_ratings})
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-700 mt-2 line-clamp-2">{s.bio}</p>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div className="flex gap-2 shrink-0 w-full sm:w-auto">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 sm:flex-none border-gray-200 text-gray-700 hover:bg-gray-50"
+                      onClick={() => setSelectedShopper(s)}
+                    >
+                      <Eye className="w-3.5 h-3.5 mr-1" />
+                      Review
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
+                      disabled={actionLoading === `s-${s.id}`}
+                      onClick={() => handleApproveShopper(s.id)}
+                    >
+                      {actionLoading === `s-${s.id}` ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Check className="w-3.5 h-3.5 mr-1" />}
+                      Approve
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-red-300 text-red-600 hover:bg-red-50"
+                      onClick={() => { setRejectShopperId(s.id); setRejectShopperReason(""); }}
                     >
                       <X className="w-3.5 h-3.5" />
                     </Button>
@@ -642,6 +794,197 @@ export default function ApprovalsPage() {
                   disabled={actionLoading === `v-${rejectVerificationId}` || !rejectVerificationReason.trim()}
                 >
                   {actionLoading === `v-${rejectVerificationId}` && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                  Reject
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shopper Detail Modal */}
+      {selectedShopper && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <UserCheck className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">{selectedShopper.user_name}</h2>
+                  <p className="text-xs text-gray-500">Shopper Application</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedShopper(null)} className="text-gray-500 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Profile Photo */}
+              {selectedShopper.profile_photo_url && (
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <img
+                      src={selectedShopper.profile_photo_url}
+                      alt={selectedShopper.user_name}
+                      className="w-32 h-32 rounded-full object-cover border-4 border-gray-100"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Contact Information */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Contact Information</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">Full Name</p>
+                    <p className="text-gray-900 font-medium">{selectedShopper.user_name}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">Email</p>
+                    <p className="text-gray-900 font-medium break-all">{selectedShopper.user_email}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">Phone</p>
+                    <p className="text-gray-900 font-medium">{selectedShopper.user_phone}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">Location</p>
+                    <p className="text-gray-900 font-medium">{selectedShopper.user_city}, {selectedShopper.user_state}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* KYC Information */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Verification Details</h3>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-0.5">NIN (National Identification Number)</p>
+                  <p className="text-gray-900 font-mono font-medium tracking-wider">{selectedShopper.nin || 'Not provided'}</p>
+                </div>
+              </div>
+
+              {/* Service Details */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Service Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">Service Radius</p>
+                    <p className="text-gray-900 font-medium">{selectedShopper.service_radius_km} km</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">Completed Orders</p>
+                    <p className="text-gray-900 font-medium">{selectedShopper.total_completed_orders}</p>
+                  </div>
+                  {selectedShopper.total_ratings > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 mb-0.5">Rating</p>
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                        <p className="text-gray-900 font-medium">
+                          {parseFloat(selectedShopper.average_rating).toFixed(1)} ({selectedShopper.total_ratings} reviews)
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Bio</h3>
+                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{selectedShopper.bio}</p>
+              </div>
+
+              {/* Experience */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Experience</h3>
+                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">{selectedShopper.experience}</p>
+              </div>
+
+              {/* Application Date */}
+              <div className="text-xs text-gray-500 pt-2 border-t border-gray-100">
+                Applied on {new Date(selectedShopper.created_at).toLocaleDateString("en-GB", { 
+                  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                })}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50">
+              <Button
+                variant="outline"
+                className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-100"
+                onClick={() => setSelectedShopper(null)}
+              >
+                Close
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                onClick={() => {
+                  setRejectShopperId(selectedShopper.id);
+                  setRejectShopperReason("");
+                }}
+              >
+                <X className="w-4 h-4 mr-2" />
+                Reject
+              </Button>
+              <Button
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                disabled={actionLoading === `s-${selectedShopper.id}`}
+                onClick={() => handleApproveShopper(selectedShopper.id)}
+              >
+                {actionLoading === `s-${selectedShopper.id}` ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
+                Approve Shopper
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shopper Reject Modal */}
+      {rejectShopperId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Reject Application</h2>
+              <button onClick={() => setRejectShopperId(null)} className="text-gray-500 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <p className="text-sm text-gray-500">Provide a reason to help the applicant understand why they were rejected.</p>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-900">Rejection Reason</label>
+                <textarea
+                  className="w-full bg-gray-100 border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 resize-none h-24 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                  value={rejectShopperReason}
+                  onChange={e => setRejectShopperReason(e.target.value)}
+                  placeholder="e.g. Insufficient experience, service radius too small..."
+                />
+              </div>
+              <div className="flex gap-3 pt-1">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50" 
+                  onClick={() => setRejectShopperId(null)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white" 
+                  onClick={handleRejectShopper} 
+                  disabled={actionLoading === `s-${rejectShopperId}`}
+                >
+                  {actionLoading === `s-${rejectShopperId}` && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                   Reject
                 </Button>
               </div>

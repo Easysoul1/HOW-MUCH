@@ -113,10 +113,22 @@ class ShopperDashboardView(APIView):
     """
     Dashboard stats for shoppers.
     """
-    permission_classes = [IsApprovedShopper]
+    permission_classes = [IsShopper]
 
     def get(self, request):
-        profile = request.user.shopper_profile
+        try:
+            profile = request.user.shopper_profile
+        except ShopperProfile.DoesNotExist:
+            return Response({
+                'profile_status': 'not_applied',
+                'is_available': False,
+                'pool_requests': 0,
+                'active_requests': 0,
+                'completed_requests': 0,
+                'total_earnings': '0',
+                'average_rating': 0,
+                'total_ratings': 0,
+            })
         
         # Get current requests
         active_requests = ShopperRequest.objects.filter(
@@ -124,21 +136,20 @@ class ShopperDashboardView(APIView):
             status__in=['accepted', 'offer_made', 'confirmed', 'in_progress']
         ).count()
         
-        open_requests = ShopperRequest.objects.filter(
-            status='open'
-        ).count()
+        pool_requests = ShopperRequest.objects.filter(
+            status='open',
+            expires_at__gt=timezone.now()
+        ).count() if profile.status == 'approved' else 0
         
         return Response({
-            'status': profile.status,
+            'profile_status': profile.status,
             'is_available': profile.is_available,
-            'stats': {
-                'active_requests': active_requests,
-                'open_requests': open_requests,
-                'total_completed': profile.total_completed_orders,
-                'total_earnings': str(profile.total_earnings),
-                'average_rating': str(profile.average_rating),
-                'total_ratings': profile.total_ratings,
-            }
+            'pool_requests': pool_requests,
+            'active_requests': active_requests,
+            'completed_requests': profile.total_completed_orders,
+            'total_earnings': str(profile.total_earnings),
+            'average_rating': float(profile.average_rating),
+            'total_ratings': profile.total_ratings,
         })
 
 
@@ -381,12 +392,14 @@ class ShopperMyRequestsViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='update-status')
     def update_status(self, request, pk=None):
-        """Update request status (in_progress, completed)."""
+        """Update request status (in_progress, completed, cancelled)."""
         shopper_request = self.get_object()
         new_status = request.data.get('status')
         
         valid_transitions = {
-            'confirmed': ['in_progress'],
+            'accepted': ['in_progress', 'cancelled'],
+            'offer_made': ['cancelled'],
+            'confirmed': ['in_progress', 'cancelled'],
             'in_progress': ['completed'],
         }
         
@@ -417,3 +430,105 @@ class ShopperMyRequestsViewSet(viewsets.ReadOnlyModelViewSet):
             'request': serializer.data,
         })
 
+
+# --- Admin Views ---
+
+class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_staff
+
+
+class AdminShopperListView(APIView):
+    """
+    List all shopper applications for admin review.
+    GET /api/admin/shoppers/
+    """
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        queryset = ShopperProfile.objects.select_related('user').order_by('-created_at')
+        
+        # Filter by status if provided
+        status_filter = request.query_params.get('status')
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        
+        profiles = []
+        for profile in queryset:
+            profiles.append({
+                'id': profile.id,
+                'user': profile.user.id,
+                'user_email': profile.user.email,
+                'user_name': profile.user.get_full_name() or profile.user.email.split('@')[0],
+                'user_phone': profile.user.phone_number or '',
+                'user_city': profile.user.city or '',
+                'user_state': profile.user.state or '',
+                'bio': profile.bio or '',
+                'experience': profile.experience or '',
+                'nin': profile.nin or '',
+                'profile_photo_url': request.build_absolute_uri(profile.profile_photo.url) if profile.profile_photo else None,
+                'service_radius_km': profile.service_radius_km,
+                'status': profile.status,
+                'total_completed_orders': profile.total_completed_orders,
+                'average_rating': str(profile.average_rating),
+                'total_ratings': profile.total_ratings,
+                'total_earnings': str(profile.total_earnings),
+                'is_available': profile.is_available,
+                'created_at': profile.created_at.isoformat(),
+                'verified_at': profile.verified_at.isoformat() if profile.verified_at else None,
+            })
+        
+        return Response(profiles)
+
+
+class AdminShopperApproveView(APIView):
+    """
+    Approve a shopper application.
+    POST /api/admin/shoppers/{id}/approve/
+    """
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            profile = ShopperProfile.objects.get(pk=pk)
+        except ShopperProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        profile.approve(request.user)
+        return Response({'message': 'Shopper approved successfully.'})
+
+
+class AdminShopperRejectView(APIView):
+    """
+    Reject a shopper application.
+    POST /api/admin/shoppers/{id}/reject/
+    """
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            profile = ShopperProfile.objects.get(pk=pk)
+        except ShopperProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        reason = request.data.get('reason', 'Application rejected by admin.')
+        profile.reject(request.user, reason=reason)
+        return Response({'message': 'Shopper rejected.'})
+
+
+class AdminShopperSuspendView(APIView):
+    """
+    Suspend an approved shopper.
+    POST /api/admin/shoppers/{id}/suspend/
+    """
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            profile = ShopperProfile.objects.get(pk=pk)
+        except ShopperProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        profile.status = 'suspended'
+        profile.save()
+        return Response({'message': 'Shopper suspended.'})

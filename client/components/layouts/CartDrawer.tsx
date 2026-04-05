@@ -159,15 +159,15 @@ export function CartDrawer() {
           <div className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5 text-green-600" />
             <SheetTitle className="text-base font-semibold text-gray-900">
-              {showDeliveryForm ? 'Delivery Options' : 'My Cart'}
-              {!showDeliveryForm && totalItems > 0 && (
+              {showShopperForm ? 'Personal Shopper' : showDeliveryForm ? 'Delivery Options' : 'My Cart'}
+              {!showDeliveryForm && !showShopperForm && totalItems > 0 && (
                 <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
                   {totalItems} item{totalItems !== 1 ? "s" : ""}
                 </span>
               )}
             </SheetTitle>
           </div>
-          {items.length > 0 && !showDeliveryForm && (
+          {items.length > 0 && !showDeliveryForm && !showShopperForm && (
             <button
               onClick={clearCart}
               className="text-xs text-red-400 hover:text-red-600 transition-colors flex items-center gap-1"
@@ -178,6 +178,14 @@ export function CartDrawer() {
           {showDeliveryForm && (
             <button
               onClick={() => setShowDeliveryForm(false)}
+              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              ← Back to cart
+            </button>
+          )}
+          {showShopperForm && (
+            <button
+              onClick={() => setShowShopperForm(false)}
               className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
             >
               ← Back to cart
@@ -346,6 +354,95 @@ export function CartDrawer() {
               </div>
             </div>
           </div>
+        ) : showShopperForm ? (
+          /* Shopper Form View */
+          <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <UserCheck className="w-5 h-5 text-purple-600 mt-0.5" />
+                <div>
+                  <div className="font-medium text-purple-700">Personal Shopper Service</div>
+                  <p className="text-sm text-purple-600 mt-1">
+                    A personal shopper will handle your entire order — sourcing items from multiple vendors and delivering to you.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Address (required for shopper) */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Delivery Address <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <textarea
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    placeholder="Enter your full delivery address"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm resize-none"
+                    rows={2}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">City</label>
+                  <input
+                    type="text"
+                    value={deliveryCity}
+                    onChange={(e) => setDeliveryCity(e.target.value)}
+                    placeholder="City"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">State</label>
+                  <input
+                    type="text"
+                    value={deliveryState}
+                    onChange={(e) => setDeliveryState(e.target.value)}
+                    placeholder="State"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Special Instructions <span className="text-gray-400">(optional)</span>
+              </label>
+              <textarea
+                value={buyerNotes}
+                onChange={(e) => setBuyerNotes(e.target.value)}
+                placeholder="Any preferences, alternatives, or special instructions..."
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm resize-none"
+                rows={3}
+              />
+            </div>
+
+            {/* Summary */}
+            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Items</span>
+                <span className="font-medium">{totalItems}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Vendors</span>
+                <span className="font-medium">{vendorCount}</span>
+              </div>
+              <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
+                <span className="font-medium text-gray-700">Items Subtotal</span>
+                <span className="font-bold text-gray-900">₦{totalAmount.toLocaleString()}</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Service fee will be calculated by the shopper based on items and vendors.
+              </p>
+            </div>
+          </div>
         ) : (
           /* Items View */
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
@@ -423,6 +520,16 @@ export function CartDrawer() {
                 <Send className="w-4 h-4" />
                 {requesting ? "Sending Request..." : `Send Request to ${vendorCount} Vendor${vendorCount > 1 ? 's' : ''}`}
               </button>
+            ) : showShopperForm ? (
+              /* Submit to Shopper Button */
+              <button
+                onClick={handleSubmitToShopper}
+                disabled={assigning || !deliveryAddress.trim()}
+                className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition-colors"
+              >
+                <UserCheck className="w-4 h-4" />
+                {assigning ? "Sending to Shopper..." : "Send to Personal Shopper"}
+              </button>
             ) : (
               <>
                 {/* Multi-vendor info */}
@@ -451,7 +558,7 @@ export function CartDrawer() {
                   <button
                     onClick={handleAssignToShopper}
                     disabled={assigning}
-                    className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-70 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm border border-gray-200"
+                    className="flex-1 flex items-center justify-center gap-2 bg-purple-100 hover:bg-purple-200 disabled:opacity-70 text-purple-700 font-semibold py-3 rounded-xl transition-colors text-sm border border-purple-200"
                   >
                     <UserCheck className="w-4 h-4" />
                     {assigning ? "..." : "Use Shopper"}

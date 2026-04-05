@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import apiClient from "@/lib/api";
 import {
   ShoppingBag,
   Heart,
@@ -15,6 +17,8 @@ import {
   Store,
   Settings,
   Bell,
+  UserCheck,
+  UserPlus,
 } from "lucide-react";
 
 export const buyerItems = [
@@ -32,6 +36,11 @@ export const buyerItems = [
     title: "My Orders",
     href: "/dashboard/orders",
     icon: ShoppingBag,
+  },
+  {
+    title: "Shopper Requests",
+    href: "/dashboard/shopper-requests",
+    icon: UserCheck,
   },
   {
     title: "Saved Items",
@@ -59,11 +68,32 @@ export function BuyerSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuth();
+  const [shopperProfile, setShopperProfile] = useState<any>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    const fetchShopperProfile = async () => {
+      try {
+        const profile = await apiClient.get('/shoppers/profile/');
+        setShopperProfile(profile);
+      } catch {
+        setShopperProfile(null);
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+    fetchShopperProfile();
+  }, []);
 
   const handleSignOut = async () => {
     await logout();
     router.push('/login');
   };
+
+  // Dynamic shopper link based on profile status
+  const shopperLink = shopperProfile 
+    ? { title: "Shopper Dashboard", href: "/shopper/dashboard", icon: UserCheck }
+    : { title: "Become a Shopper", href: "/dashboard/become-shopper", icon: UserPlus };
 
   return (
     <aside className="w-64 border-r border-gray-200 bg-white hidden md:flex flex-col h-screen sticky top-0">
@@ -96,6 +126,22 @@ export function BuyerSidebar() {
               </Link>
             );
           })}
+          
+          {/* Dynamic Shopper Link */}
+          {!loadingProfile && (
+            <Link
+              href={shopperLink.href}
+              className={cn(
+                "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
+                pathname === shopperLink.href || pathname.startsWith(shopperLink.href.split('/').slice(0, 3).join('/'))
+                  ? "bg-purple-50 text-purple-700 border border-purple-200"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <shopperLink.icon className="w-4 h-4" />
+              <span>{shopperLink.title}</span>
+            </Link>
+          )}
         </nav>
       </div>
 

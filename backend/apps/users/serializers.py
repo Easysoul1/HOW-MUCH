@@ -64,6 +64,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             state=validated_data.get('state', ''),
             latitude=validated_data.get('latitude'),
             longitude=validated_data.get('longitude'),
+            is_verified=True,  # Auto-verify all new users (email verification disabled)
         )
         return user
 

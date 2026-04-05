@@ -27,6 +27,10 @@ class ShopperProfile(models.Model):
     bio = models.TextField(blank=True, help_text="Brief description about the shopper")
     experience = models.TextField(blank=True, help_text="Relevant experience")
     
+    # KYC Information
+    nin = models.CharField(max_length=11, blank=True, help_text="National Identification Number")
+    profile_photo = models.ImageField(upload_to='shopper_photos/', blank=True, null=True, help_text="Shopper profile photo")
+    
     # Verification
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     id_document = models.ImageField(upload_to='shopper_docs/', blank=True, null=True)

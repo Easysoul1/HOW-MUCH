@@ -18,6 +18,7 @@ import {
   LogOut,
   UserPlus,
   Key,
+  Store,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -30,6 +31,11 @@ export const sidebarItems = [
     title: "Vendors",
     href: "/admin/vendors",
     icon: Users,
+  },
+  {
+    title: "Vendor Verification",
+    href: "/admin/vendor-verification",
+    icon: Store,
   },
   {
     title: "Buyers",

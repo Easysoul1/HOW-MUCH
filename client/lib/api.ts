@@ -79,10 +79,18 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
+    const isFormData = data instanceof FormData;
+    const headers = this.getHeaders(includeAuth);
+    
+    // Remove Content-Type for FormData (browser sets it with boundary)
+    if (isFormData) {
+      delete (headers as any)['Content-Type'];
+    }
+    
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
-      headers: this.getHeaders(includeAuth),
-      body: JSON.stringify(data),
+      headers,
+      body: isFormData ? data : JSON.stringify(data),
     });
     return this.handleResponse<T>(response);
   }

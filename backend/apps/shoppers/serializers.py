@@ -13,12 +13,13 @@ class ShopperProfileSerializer(serializers.ModelSerializer):
     user_phone = serializers.CharField(source='user.phone_number', read_only=True)
     user_city = serializers.CharField(source='user.city', read_only=True)
     user_state = serializers.CharField(source='user.state', read_only=True)
+    profile_photo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ShopperProfile
         fields = [
             'id', 'user', 'user_email', 'user_name', 'user_phone', 'user_city', 'user_state',
-            'bio', 'experience', 'status', 'service_radius_km',
+            'bio', 'experience', 'nin', 'profile_photo', 'profile_photo_url', 'status', 'service_radius_km',
             'total_completed_orders', 'total_earnings', 'average_rating', 'total_ratings',
             'is_available', 'created_at', 'verified_at',
         ]
@@ -30,12 +31,20 @@ class ShopperProfileSerializer(serializers.ModelSerializer):
     def get_user_name(self, obj):
         return obj.user.get_full_name() or obj.user.email.split('@')[0]
 
+    def get_profile_photo_url(self, obj):
+        if obj.profile_photo:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.profile_photo.url)
+            return obj.profile_photo.url
+        return None
+
 
 class ShopperApplicationSerializer(serializers.ModelSerializer):
     """For applying to become a shopper."""
     class Meta:
         model = ShopperProfile
-        fields = ['bio', 'experience', 'service_radius_km']
+        fields = ['bio', 'experience', 'nin', 'profile_photo', 'service_radius_km']
 
 
 class ShopperRequestItemSerializer(serializers.ModelSerializer):
@@ -149,13 +158,15 @@ class ShopperRequestListSerializer(serializers.ModelSerializer):
     items_subtotal = serializers.SerializerMethodField()
     service_fee = serializers.SerializerMethodField()
     distance_km = serializers.SerializerMethodField()
+    items = ShopperRequestItemSerializer(many=True, read_only=True)
+    customer_notes = serializers.CharField(read_only=True)
 
     class Meta:
         model = ShopperRequest
         fields = [
             'id', 'customer_name', 'status', 'delivery_city', 'delivery_state',
-            'created_at', 'expires_at', 'total_items', 'unique_vendors',
-            'items_subtotal', 'service_fee', 'distance_km',
+            'customer_notes', 'created_at', 'expires_at', 'total_items', 'unique_vendors',
+            'items_subtotal', 'service_fee', 'distance_km', 'items',
         ]
 
     def get_customer_name(self, obj):

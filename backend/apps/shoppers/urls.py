@@ -26,3 +26,10 @@ urlpatterns = [
     path('', include(shopper_router.urls)),
 ]
 
+# Admin routes (separate prefix)
+admin_urlpatterns = [
+    path('shoppers/', views.AdminShopperListView.as_view(), name='admin-shopper-list'),
+    path('shoppers/<int:pk>/approve/', views.AdminShopperApproveView.as_view(), name='admin-shopper-approve'),
+    path('shoppers/<int:pk>/reject/', views.AdminShopperRejectView.as_view(), name='admin-shopper-reject'),
+    path('shoppers/<int:pk>/suspend/', views.AdminShopperSuspendView.as_view(), name='admin-shopper-suspend'),
+]
