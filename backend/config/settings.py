@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+from urllib.parse import urlparse
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -107,11 +108,74 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+def _database_config_from_url(database_url: str):
+    parsed = urlparse(database_url)
+    scheme = (parsed.scheme or '').lower()
+
+    engine_map = {
+        'postgres': 'django.db.backends.postgresql',
+        'postgresql': 'django.db.backends.postgresql',
+        'pgsql': 'django.db.backends.postgresql',
+        'mysql': 'django.db.backends.mysql',
+        'sqlite': 'django.db.backends.sqlite3',
+        'sqlite3': 'django.db.backends.sqlite3',
+    }
+
+    engine = engine_map.get(scheme)
+    if not engine:
+        raise ValueError(f'Unsupported database scheme: {scheme}')
+
+    if engine == 'django.db.backends.sqlite3':
+        db_name = parsed.path or ''
+        if db_name.startswith('/'):
+            db_name = db_name[1:]
+        return {
+            'ENGINE': engine,
+            'NAME': db_name or str(BASE_DIR / 'db.sqlite3'),
+        }
+
+    return {
+        'ENGINE': engine,
+        'NAME': (parsed.path or '').lstrip('/'),
+        'USER': parsed.username or '',
+        'PASSWORD': parsed.password or '',
+        'HOST': parsed.hostname or '',
+        'PORT': str(parsed.port or ''),
+    }
+
+
+database_url = os.environ.get('DATABASE_URL', '').strip()
+db_engine = os.environ.get('DB_ENGINE', 'sqlite').strip().lower()
+
+if database_url:
+    default_database = _database_config_from_url(database_url)
+elif db_engine in ('postgres', 'postgresql', 'pgsql'):
+    default_database = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
+elif db_engine == 'mysql':
+    default_database = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+    }
+else:
+    default_database = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.environ.get('DATABASE_PATH', str(BASE_DIR / 'db.sqlite3')),
     }
+
+
+DATABASES = {
+    'default': default_database,
 }
 
 
