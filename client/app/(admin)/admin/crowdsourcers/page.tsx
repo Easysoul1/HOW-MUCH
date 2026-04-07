@@ -51,7 +51,8 @@ export default function CrowdsourcersPage() {
   const fetchCrowdsourcers = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/users/crowdsourcers/', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+      const response = await fetch(`${API_URL}/users/crowdsourcers/`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
         },
@@ -76,7 +77,8 @@ export default function CrowdsourcersPage() {
     setCreating(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/users/create-crowdsourcer/', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+      const response = await fetch(`${API_URL}/users/create-crowdsourcer/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
