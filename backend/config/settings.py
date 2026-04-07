@@ -30,7 +30,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-zpbown6)8yi9mw1k@o=*5
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+_allowed_hosts = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,how-much-m6lo.onrender.com,*')
+ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts.split(',')]
 
 
 # Application definition
