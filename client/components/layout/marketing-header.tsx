@@ -25,7 +25,8 @@ export function MarketingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full section-divider bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/85">
+    <>
+      <header className="sticky top-0 z-50 w-full section-divider bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/85">
       <div className="container flex h-14 md:h-16 items-center justify-between gap-6">
         <Link
           href="/"
@@ -72,10 +73,10 @@ export function MarketingHeader() {
             </Button>
           </div>
         </div>
-      </div>
+      </header>
 
       {mobileOpen && (
-        <div className="fixed inset-x-0 top-[3.5rem] bottom-0 z-50 bg-white md:hidden animate-in slide-in-from-top-5 duration-200 overflow-y-auto border-t border-light-border">
+        <div className="fixed inset-x-0 top-[3.5rem] bottom-0 z-40 bg-white md:hidden animate-in slide-in-from-top-5 duration-200 overflow-y-auto border-t border-light-border">
           <nav className="container flex flex-col gap-1 py-6 px-6">
             {navLinks.map((link) => (
               <Link
@@ -101,6 +102,6 @@ export function MarketingHeader() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
