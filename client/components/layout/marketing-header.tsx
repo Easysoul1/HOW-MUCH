@@ -73,7 +73,8 @@ export function MarketingHeader() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
       {mobileOpen && (
         <div className="fixed inset-x-0 top-[3.5rem] bottom-0 z-40 bg-white md:hidden animate-in slide-in-from-top-5 duration-200 overflow-y-auto border-t border-light-border">
