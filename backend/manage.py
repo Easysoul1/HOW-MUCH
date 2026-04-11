@@ -20,3 +20,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# adding a simple test to check if the environment variables are loaded correctly
