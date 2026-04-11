@@ -48,6 +48,11 @@ export function CartDrawer() {
   const vendorCount = Object.keys(vendorGroups).length;
   const isMultiVendor = vendorCount > 1;
 
+  // Backend expects Decimal(max_digits=10, decimal_places=7) for coordinates.
+  // Round to 7 dp so payload never exceeds max_digits.
+  const normalizeCoordinate = (value?: number | null) =>
+    typeof value === "number" ? Number(value.toFixed(7)) : null;
+
   const handleAssignToShopper = () => {
     setShowShopperForm(true);
   };
@@ -70,8 +75,8 @@ export function CartDrawer() {
         delivery_address: deliveryAddress,
         delivery_city: deliveryCity,
         delivery_state: deliveryState,
-        delivery_latitude: location?.latitude || null,
-        delivery_longitude: location?.longitude || null,
+        delivery_latitude: normalizeCoordinate(location?.latitude),
+        delivery_longitude: normalizeCoordinate(location?.longitude),
       };
 
       await apiClient.post('/shoppers/requests/', payload, true);
@@ -126,8 +131,8 @@ export function CartDrawer() {
         delivery_address: deliveryMethod === 'delivery' ? deliveryAddress : '',
         delivery_city: deliveryMethod === 'delivery' ? deliveryCity : '',
         delivery_state: deliveryMethod === 'delivery' ? deliveryState : '',
-        delivery_latitude: location?.latitude || null,
-        delivery_longitude: location?.longitude || null,
+        delivery_latitude: normalizeCoordinate(location?.latitude),
+        delivery_longitude: normalizeCoordinate(location?.longitude),
       };
 
       await apiClient.post('/orders/requests/', payload, true);

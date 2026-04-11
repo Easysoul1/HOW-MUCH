@@ -3,6 +3,7 @@
 ## Prerequisites
 - Python 3.12+ installed
 - Virtual environment activated
+- PostgreSQL database URL (Neon supported)
 
 ## Getting Started
 
@@ -11,22 +12,30 @@
 source /Users/mac/Desktop/HOWMUCH/backend/venv/bin/activate
 ```
 
-### 2. Run Development Server
+### 2. Set Database URL
+Add your PostgreSQL connection string in `backend/.env`:
+```bash
+DATABASE_URL=postgresql://<user>:<password>@<host>/<database>?sslmode=require
+```
+
+### 3. Run Development Server
 ```bash
 cd /Users/mac/Desktop/HOWMUCH/backend
 python manage.py runserver
 ```
 
-### 3. Access the Application
+### 4. Access the Application
 - **API Documentation (Swagger UI)**: http://127.0.0.1:8000/api/docs/
 - **Admin Panel**: http://127.0.0.1:8000/admin/ (requires superuser)
 - **API Schema**: http://127.0.0.1:8000/api/schema/
 
-### 4. Create Admin User (First Time Only)
+### 5. Create Admin User (First Time Only)
 ```bash
-python manage.py createsuperuser
+python manage.py seed_admin
 ```
-Follow the prompts to set username, email, and password.
+Creates/updates:
+- Email/username: `admin@howmuch.com`
+- Password: `Admin1234!`
 
 ## Project Structure
 ```
@@ -45,7 +54,7 @@ backend/
 │   └── social/             # Social media flyers
 ├── config/                 # Django settings
 ├── media/                  # Uploaded files
-├── db.sqlite3             # SQLite database
+├── PostgreSQL             # External DB via DATABASE_URL
 └── manage.py              # Django CLI
 
 ```
@@ -112,7 +121,7 @@ python manage.py collectstatic  # Collect static files
 
 ## Environment Configuration
 Settings are in `config/settings.py`:
-- **Database**: SQLite (development) - Change to PostgreSQL for production
+- **Database**: PostgreSQL via `DATABASE_URL` (Neon-compatible)
 - **Time Zone**: Africa/Lagos
 - **CORS**: Enabled for localhost:3000 (Next.js frontend)
 - **Authentication**: JWT tokens (djangorestframework-simplejwt)
@@ -129,10 +138,10 @@ lsof -ti:8000 | xargs kill -9
 
 ### Database Issues
 ```bash
-# Reset database (WARNING: Deletes all data)
-rm db.sqlite3
-rm -rf apps/*/migrations/0*.py
-python manage.py makemigrations
+# Confirm DATABASE_URL is present and valid in .env
+python manage.py check
+
+# Apply pending migrations
 python manage.py migrate
 ```
 

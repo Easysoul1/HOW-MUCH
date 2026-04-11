@@ -359,7 +359,7 @@ Notification:  bg-red-500 dot (2px)
 - Single image: 2-stage build (node:20-alpine builds Next.js, python:3.12-slim runs everything)
 - nginx on 80: `/api/*` → gunicorn:8000, `/*` → Next.js node:3000
 - `output: 'standalone'` in `next.config.mjs`
-- Database path: env var `DATABASE_PATH` (default `db.sqlite3`)
+- Database connection: env var `DATABASE_URL` (PostgreSQL/Neon)
 
 ---
 

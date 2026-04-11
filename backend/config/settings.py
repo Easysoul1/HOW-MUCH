@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
-from urllib.parse import urlparse
 from pathlib import Path
+import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -109,47 +109,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-def _database_config_from_url(database_url: str):
-    parsed = urlparse(database_url)
-    scheme = (parsed.scheme or '').lower()
-
-    engine_map = {
-        'postgres': 'django.db.backends.postgresql',
-        'postgresql': 'django.db.backends.postgresql',
-        'pgsql': 'django.db.backends.postgresql',
-        'mysql': 'django.db.backends.mysql',
-        'sqlite': 'django.db.backends.sqlite3',
-        'sqlite3': 'django.db.backends.sqlite3',
-    }
-
-    engine = engine_map.get(scheme)
-    if not engine:
-        raise ValueError(f'Unsupported database scheme: {scheme}')
-
-    if engine == 'django.db.backends.sqlite3':
-        db_name = parsed.path or ''
-        if db_name.startswith('/'):
-            db_name = db_name[1:]
-        return {
-            'ENGINE': engine,
-            'NAME': db_name or str(BASE_DIR / 'db.sqlite3'),
-        }
-
-    return {
-        'ENGINE': engine,
-        'NAME': (parsed.path or '').lstrip('/'),
-        'USER': parsed.username or '',
-        'PASSWORD': parsed.password or '',
-        'HOST': parsed.hostname or '',
-        'PORT': str(parsed.port or ''),
-    }
-
-
 database_url = os.environ.get('DATABASE_URL', '').strip()
 db_engine = os.environ.get('DB_ENGINE', 'sqlite').strip().lower()
 
 if database_url:
-    default_database = _database_config_from_url(database_url)
+    default_database = dj_database_url.parse(
+        database_url,
+        conn_max_age=600,
+        ssl_require=True,
+    )
 elif db_engine in ('postgres', 'postgresql', 'pgsql'):
     default_database = {
         'ENGINE': 'django.db.backends.postgresql',
