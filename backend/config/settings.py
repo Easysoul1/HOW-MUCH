@@ -29,8 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-zpbown6)8yi9mw1k@o=*5
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-_allowed_hosts = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,how-much-m6lo.onrender.com,*')
-ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts.split(',')]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -251,7 +250,7 @@ SIMPLE_JWT = {
 # CORS Settings (for Next.js frontend)
 _cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000')
 CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(',') if o.strip()]
-CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True') == 'True'
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
 CORS_ALLOW_CREDENTIALS = True
 
 # Debug Toolbar
