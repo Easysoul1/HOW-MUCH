@@ -145,6 +145,8 @@ python manage.py check
 python manage.py migrate
 ```
 
+If admin login fails after setup, run `python manage.py seed_admin` to recreate the default admin account.
+
 ### Virtual Environment Issues
 ```bash
 # Recreate virtual environment
